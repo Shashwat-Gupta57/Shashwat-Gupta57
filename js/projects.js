@@ -650,6 +650,8 @@ window.PROJECTS = [
     ],
     highlights: [
       { t: 'Endless running', d: 'Stone blocks, pillars to jump and obstacles that never stop coming.' },
+      { t: 'Gravity flip', d: 'Shift flips gravity — Rex runs along the ceiling until you flip him back.' },
+      { t: 'Shields', d: 'A shield power-up that absorbs a hit.' },
       { t: 'Coins & lives', d: 'Collect coins and hearts as you run.' },
       { t: 'The shop', d: 'Spend your coins.' },
       { t: 'Avatar editor', d: 'Make Rex your own.' },
