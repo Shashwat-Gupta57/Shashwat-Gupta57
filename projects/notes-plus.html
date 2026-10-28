@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js" data-base="../">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes+ — Shashwat Gupta</title>
+  <meta name="description" content="Notes+: a cross-platform notes app for Android, Windows and the web with Backend Zero — no servers of its own — and dual zero-knowledge encrypted vaults. Built by Shashwat Gupta." />
+  <meta property="og:title" content="Notes+ — notes without limits" />
+  <meta property="og:description" content="Six kinds of note, synced across Android, Windows and the web — with no servers of its own." />
+  <meta property="og:image" content="../assets/img/notes-plus/windows-notes.webp" />
+  <meta name="theme-color" content="#0c0c0e" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <script>document.documentElement.classList.remove("no-js");(function(){try{var t=localStorage.getItem('sg-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="np-page">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="Shashwat Gupta, home">
+        <span class="brand-mark">SG</span>
+        <span class="brand-name">shashwat<span class="dim">.gupta</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#kinds">Notes</a>
+        <a href="#backend">Backend Zero</a>
+        <a href="#vaults">Vaults</a>
+        <a href="../index.html#work">All projects</a>
+      </nav>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="tk-hero" data-paths="flow" data-paths-mirror data-paths-color="#6366f1,#8b5cf6" data-paths-opacity="0.8">
+      <div class="wrap">
+        <a class="back mono" href="../index.html#work">← all projects</a>
+        <p class="kicker"><span class="pulse" aria-hidden="true"></span> v16.6 live · Android · Windows · Web</p>
+        <h1 class="tk-title"><span class="decrypt" data-text="Notes">Notes</span><em>+</em></h1>
+        <p class="tk-tagline">Notes without limits. Synced across your universe.</p>
+        <p class="tk-lede">
+          Text that looks the way it reads, checklists, journals, infinite mind maps, sketches and recordings —
+          synced across Android, Windows and the web. Backend Zero: free, open source, no servers of its own.
+          And behind a discreet gesture, dual zero-knowledge encrypted vaults.
+        </p>
+        <div class="tk-actions">
+          <a class="btn btn-solid" href="https://notes.talken.in/app/" target="_blank" rel="noopener">Open the web app <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-ghost" href="https://notes.talken.in" target="_blank" rel="noopener">notes.talken.in</a>
+          <a class="btn btn-ghost" href="https://github.com/Shashwat-Gupta57/Notes-Plus" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div class="tk-facts">
+          <div data-reveal><b>6</b><span>kinds of note</span></div>
+          <div data-reveal><b>3</b><span>platforms, one sync</span></div>
+          <div data-reveal><b>0</b><span>servers of its own</span></div>
+          <div data-reveal><b>GPL-3</b><span>open source</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" data-reveal>
+      <div class="np-gallery">
+        <figure class="wide"><img src="../assets/img/notes-plus/windows-notes.webp" alt="Notes+ for Windows: the notes grid with a checklist, a journal day, a mind map and a sketch" decoding="async" /><figcaption>windows — the notes grid</figcaption></figure>
+        <figure class="tall"><img src="../assets/img/notes-plus/phone-notes.webp" alt="Notes on a phone: cards for a launch plan, a checklist, a journal day and a mind map" loading="lazy" /><figcaption>android — your notes</figcaption></figure>
+        <figure class="tall"><img src="../assets/img/notes-plus/phone-editor.webp" alt="A text note edited as it looks, with the format bar" loading="lazy" /><figcaption>edited as it looks, saved as markdown</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section" id="kinds">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">01</span>
+          <div>
+            <p class="eyebrow mono">The workspace</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="Six kinds of note.">Six kinds of note.</span></h2>
+          </div>
+          <p class="sec-sub">Works offline and without an account. Sign in to sync every device and share notes with people.</p>
+        </header>
+        <div class="feature-grid">
+          <article data-reveal><span class="f-ico">01</span><h3>Text, as it looks</h3><p>Bold is bold, a heading is big, and no symbol is ever on screen — like Word, but saved as plain Markdown.</p></article>
+          <article data-reveal><span class="f-ico">02</span><h3>Checklists</h3><p>Tick things off on your phone, watch them tick off on your desktop.</p></article>
+          <article data-reveal><span class="f-ico">03</span><h3>Journal days</h3><p>One page per day, kept in order, ready when you are.</p></article>
+          <article data-reveal><span class="f-ico">04</span><h3>Infinite mind maps</h3><p>Break free from paragraphs — connect ideas across an endless canvas, with pictures.</p></article>
+          <article data-reveal><span class="f-ico">05</span><h3>Ink sketches</h3><p>Vector diagrams with pressure-sensitive ink.</p></article>
+          <article data-reveal><span class="f-ico">06</span><h3>Voice recordings</h3><p>Capture a thought out loud, keep it with everything else.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="backend">
+      <div class="wrap two-col">
+        <header data-reveal>
+          <p class="eyebrow mono">02 — Backend Zero</p>
+          <h2 class="sec-title"><span class="decrypt" data-text="No servers.">No servers.</span> <em>No subscriptions.</em></h2>
+        </header>
+        <div class="prose" data-reveal>
+          <p>There is <strong>no Notes+ API and no server code anywhere</strong>. Hosted for free, existing for free — and so free for everyone who uses it.</p>
+          <ol class="layers">
+            <li><span class="l-n">web</span><div><h3>Website &amp; web app</h3><p>Static files on GitHub Pages, installable as a PWA, works fully offline.</p></div><span class="state live">free</span></li>
+            <li><span class="l-n">auth</span><div><h3>Accounts</h3><p>Firebase Authentication.</p></div><span class="state live">free</span></li>
+            <li><span class="l-n">sync</span><div><h3>Notes, sharing, sync</h3><p>Firebase Realtime Database, guarded by its security rules — the whole "backend" — over offline-first SQLite and Room on device.</p></div><span class="state live">free</span></li>
+            <li><span class="l-n">media</span><div><h3>Photos, videos, recordings</h3><p>Each user's own Google Drive.</p></div><span class="state live">yours</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="vaults">
+      <div class="wrap two-col">
+        <div class="window" data-reveal>
+          <div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">Notes+ — mind map</span></div>
+          <img class="pv-shot" src="../assets/img/notes-plus/windows-mind-map.webp" alt="A mind map in Notes+ for Windows" loading="lazy" />
+        </div>
+        <div class="prose" data-reveal>
+          <p class="eyebrow mono">03 — Hardened security</p>
+          <h2 class="sec-title" style="color:var(--text)">Dual secret vaults.</h2>
+          <p>Behind an innocuous gesture lies an encrypted <strong>media safe</strong> and a <strong>covert chat</strong> — each with its own key, encrypted on the device with AES-256-GCM, auto-locking after a timeout, with encrypted backups.</p>
+          <p>Zero-knowledge by design: the lock is one only you know.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom: clamp(80px, 10vw, 120px)">
+      <div class="launch-card" data-paths="ribbon" data-paths-color="#34d399,#22d3ee" data-paths-opacity="0.4" data-reveal>
+        <p class="eyebrow mono">Free · open source · GPL-3.0</p>
+        <h2>Get <em>Notes+</em>.</h2>
+        <p>Android 7.0+, Windows 10/11 (Java built in), and the web on everything else — macOS, iPhone, iPad and Linux.</p>
+        <div class="tk-actions">
+          <a class="btn btn-solid" href="https://notes.talken.in/download.html" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-ghost" href="https://notes.talken.in/app/" target="_blank" rel="noopener">Open web app</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner mono">
+      <span>© <span id="year">2026</span> Shashwat Gupta · Flex Studios</span>
+      <a href="../index.html">← back to the portfolio</a>
+      <a href="#main">back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/projects.js"></script>
+  <script src="../js/paths.js" defer></script>
+  <script src="../js/main.js" defer></script>
+</body>
+</html>
