@@ -18,6 +18,21 @@
   }
   function projectHref(p) { return BASE + (p.page || 'projects/view.html?id=' + encodeURIComponent(p.id)); }
   function isExternal(href) { return /^https?:/.test(href); }
+  function linkHref(l) { return l.internal ? BASE + l.href : l.href; }
+  function linkHTML(l, cls) {
+    var ext = isExternal(l.href);
+    return '<a class="' + cls + '" href="' + esc(linkHref(l)) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+      esc(l.label) + (ext ? ' <span aria-hidden="true">↗</span>' : '') + '</a>';
+  }
+  // The card artwork: the project's own colours with its icon, or a glyph when it has none.
+  function posterHTML(p, big) {
+    var pz = p.poster || { from: '#222', to: '#555', ink: '#fff', glyph: p.title.charAt(0) };
+    var mark = pz.icon
+      ? '<img class="poster-icon" src="' + esc(BASE + pz.icon) + '" alt="" loading="lazy" decoding="async" />'
+      : '<span class="poster-glyph">' + esc(pz.glyph) + '</span>';
+    return '<div class="poster' + (big ? ' poster-big' : '') + '" style="--p-from:' + esc(pz.from) + ';--p-to:' + esc(pz.to) + ';--p-ink:' + esc(pz.ink) + '" aria-hidden="true">' +
+      mark + '<b>' + esc(p.title) + '</b><small>' + esc(p.tagline) + '</small></div>';
+  }
 
   /* ---------------- theme ---------------- */
   var root = document.documentElement;
@@ -68,18 +83,20 @@
   if (year) year.textContent = new Date().getFullYear();
 
   /* ---------------- project grid (home) ---------------- */
+  // The whole card opens the project page (the title link is stretched over it);
+  // the small outline buttons sit above that and go straight to GitHub / the website.
   function cardHTML(p) {
     var cat = CATS[p.category] || p.category;
-    return '<a class="pcard' + (p.featured ? ' pcard-wide' : '') + '" href="' + esc(projectHref(p)) + '" data-cat="' + esc(p.category) + '">' +
+    return '<article class="pcard" data-cat="' + esc(p.category) + '">' +
       '<div class="pcard-body">' +
-        '<span class="pcard-meta mono">' + esc(cat) + ' · ' + esc(p.year) + '</span>' +
-        '<h3>' + esc(p.title) + '</h3>' +
+        '<span class="pcard-meta mono">' + esc(cat) + ' · ' + esc(p.year) + (p.status ? ' <span class="pcard-status">' + esc(p.status) + '</span>' : '') + '</span>' +
+        '<h3><a class="pcard-link" href="' + esc(projectHref(p)) + '">' + esc(p.title) + '</a></h3>' +
         '<p>' + esc(p.tagline) + '</p>' +
-        '<ul class="pcard-tags mono">' + p.tags.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
-        '<span class="pcard-cta mono">View project <span aria-hidden="true">→</span></span>' +
+        '<ul class="pcard-tags mono">' + p.tags.slice(0, 5).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+        '<div class="pcard-actions mono">' + (p.links || []).slice(0, 2).map(function (l) { return linkHTML(l, 'pbtn'); }).join('') + '</div>' +
       '</div>' +
-      '<div class="pcard-media"><img src="' + esc(BASE + p.image) + '" alt="" loading="lazy" decoding="async" /></div>' +
-    '</a>';
+      posterHTML(p) +
+    '</article>';
   }
 
   (function grid() {
@@ -126,25 +143,27 @@
 
     var prev = PROJECTS[(idx - 1 + PROJECTS.length) % PROJECTS.length];
     var next = PROJECTS[(idx + 1) % PROJECTS.length];
-    var links = (p.links || []).map(function (l) {
-      var ext = isExternal(l.href);
-      return '<a class="btn btn-ghost" href="' + esc(l.href) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(l.label) + (ext ? ' <span aria-hidden="true">↗</span>' : '') + '</a>';
-    }).join('');
+    var links = (p.links || []).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('');
+    var media = p.image
+      ? '<div class="window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div>' +
+          '<img class="pv-shot" src="' + esc(BASE + p.image) + '" alt="' + esc(p.title) + ' screenshot" /></div>'
+      : posterHTML(p, true);
 
     el.innerHTML =
       '<section class="pv-hero" data-paths="orbit" data-paths-opacity="0.5">' +
         '<div class="wrap">' +
           '<a class="back mono" href="' + BASE + 'index.html#work">← all projects</a>' +
-          '<p class="eyebrow mono">' + esc(CATS[p.category] || p.category) + ' · ' + esc(p.year) + '</p>' +
+          '<p class="eyebrow mono">' + esc(CATS[p.category] || p.category) + ' · ' + esc(p.year) +
+            (p.status ? ' <span class="pcard-status">' + esc(p.status) + '</span>' : '') + '</p>' +
           '<h1 class="pv-title">' + esc(p.title) + '</h1>' +
           '<p class="pv-tagline">' + esc(p.tagline) + '</p>' +
           '<ul class="pcard-tags mono">' + p.tags.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
           (links ? '<div class="pv-links">' + links + '</div>' : '') +
+          (p.stats ? '<div class="pv-stats">' + p.stats.map(function (s) { return '<div><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('') + '</div>' : '') +
         '</div>' +
       '</section>' +
       '<section class="wrap pv-main">' +
-        '<div class="window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div>' +
-          '<img class="pv-shot" src="' + esc(BASE + p.image) + '" alt="' + esc(p.title) + ' screenshot" /></div>' +
+        media +
         '<div class="pv-text">' +
           (p.body || []).map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
           (p.features ? '<ul class="pv-features">' + p.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '') +
@@ -159,23 +178,35 @@
 
   /* ---------------- decrypt text ---------------- */
   var GLYPHS = '!<>-_\\/[]{}=+*^?#$%&01ABCDEFGHJKLMNPQRSTUVWXYZ';
-  function decrypt(el) {
-    if (el.dataset.done) return;
-    el.dataset.done = '1';
-    var text = el.dataset.text || el.textContent;
-    el.setAttribute('aria-label', text);
-    if (reduceMotion) { el.textContent = text; return; }
-    var frame = 0, total = 18 + text.length * 2;
+  // Decrypts one or more elements as a single sweep: every element starts scrambled, and the
+  // reveal runs left to right through the first and carries straight on into the next
+  // (so a two-line name reads as one word being decoded, not two at once).
+  function decrypt(els) {
+    els = [].concat(els).filter(function (el) { return !el.dataset.done; });
+    if (!els.length) return;
+    var texts = els.map(function (el) {
+      el.dataset.done = '1';
+      var t = el.dataset.text || el.textContent;
+      el.setAttribute('aria-label', t);
+      return t;
+    });
+    if (reduceMotion) { els.forEach(function (el, k) { el.textContent = texts[k]; }); return; }
+    var totalChars = texts.reduce(function (n, t) { return n + t.length; }, 0);
+    var frame = 0, last = 8 + totalChars * 2;
     (function step() {
-      var out = '';
-      for (var i = 0; i < text.length; i++) {
-        var ch = text[i];
-        if (ch === ' ' || frame >= 8 + i * 2) out += ch;
-        else out += GLYPHS[(Math.random() * GLYPHS.length) | 0];
-      }
-      el.textContent = out;
-      if (++frame <= total) setTimeout(step, 38);
-      else el.textContent = text;
+      var offset = 0;
+      els.forEach(function (el, k) {
+        var text = texts[k], out = '';
+        for (var i = 0; i < text.length; i++) {
+          var ch = text[i];
+          if (ch === ' ' || frame >= 8 + (offset + i) * 2) out += ch;
+          else out += GLYPHS[(Math.random() * GLYPHS.length) | 0];
+        }
+        el.textContent = out;
+        offset += text.length;
+      });
+      if (++frame <= last) setTimeout(step, 38);
+      else els.forEach(function (el, k) { el.textContent = texts[k]; });
     })();
   }
 
@@ -183,7 +214,7 @@
   function countUp(el) {
     if (el.dataset.done) return;
     el.dataset.done = '1';
-    var target = +el.dataset.count, suffix = el.dataset.suffix || '';
+    var target = el.dataset.count === 'projects' ? PROJECTS.length : +el.dataset.count, suffix = el.dataset.suffix || '';
     var fmt = function (n) { return n.toLocaleString('en-US') + suffix; };
     if (reduceMotion) { el.textContent = fmt(target); return; }
     var start = performance.now(), dur = 1400;
@@ -197,7 +228,7 @@
   /* ---------------- reveal on scroll ---------------- */
   function activate(el) {
     el.classList.add('in');
-    $$('.decrypt', el).forEach(decrypt);
+    $$('.decrypt', el).forEach(function (d) { decrypt(d); });
     $$('[data-count]', el).forEach(countUp);
   }
   if ('IntersectionObserver' in window) {
@@ -217,8 +248,9 @@
   } else {
     $$('[data-reveal]').forEach(activate);
   }
-  $$('.hero .decrypt, .pv-hero .decrypt, .tk-hero .decrypt').forEach(function (el, i) {
-    setTimeout(function () { decrypt(el); }, 150 + i * 260);
+  // Each hero heading decodes as one sweep, first line flowing into the second.
+  $$('.hero-name, .tk-title').forEach(function (h) {
+    decrypt($$('.decrypt', h));
   });
 
   /* ---------------- walker terminal ---------------- */
