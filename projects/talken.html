@@ -28,8 +28,9 @@
       <nav class="nav-links" aria-label="Primary">
         <a href="#how">How it works</a>
         <a href="#features">Features</a>
+        <a href="#custom">Built, not assembled</a>
         <a href="#privacy">Privacy</a>
-        <a href="#roadmap">Roadmap</a>
+        <a href="#startups">For Startups</a>
         <a href="../index.html#work">All projects</a>
       </nav>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">
@@ -45,13 +46,14 @@
     <section class="tk-hero" data-paths="flow" data-paths-mirror data-paths-opacity="0.75">
       <div class="wrap">
         <a class="back mono" href="../index.html#work">← all projects</a>
+        <img class="tk-logo" src="../assets/img/icons/talken.png" alt="Talken logo" width="88" height="88" />
         <p class="kicker"><span class="pulse" aria-hidden="true"></span> Flagship · in beta since Oct 2025 · launching Apr 2027</p>
         <h1 class="tk-title"><span class="decrypt" data-text="Talken">Talken</span><em>.</em></h1>
         <p class="tk-tagline">Talk like no one's watching — because no one is.</p>
         <p class="tk-lede">
           A fully decentralized, serverless, peer-to-peer encrypted messenger for Windows and Android.
           Your messages go straight from your device to your friend's. Your files stay in your own Drive.
-          Your account is a key only you hold. I designed and built every layer of it, from scratch.
+          Your account is a key only you hold. And there is no server in the middle for anyone to watch — I designed and built every layer of it, from the wire protocol up.
         </p>
         <div class="tk-actions">
           <a class="btn btn-solid" href="https://talken.in/downloads.html" target="_blank" rel="noopener">Download the beta <span aria-hidden="true">↓</span></a>
@@ -121,22 +123,58 @@
           <span class="sec-num mono">02</span>
           <div>
             <p class="eyebrow mono">What you get</p>
-            <h2 class="sec-title"><span class="decrypt" data-text="Privacy is just">Privacy is just</span> <em>the start.</em></h2>
+            <h2 class="sec-title"><span class="decrypt" data-text="Everything.">Everything.</span> <em>Minus the middleman.</em></h2>
           </div>
-          <p class="sec-sub">Everything you'd expect from a modern messenger — rebuilt on an architecture where you own the data.</p>
+          <p class="sec-sub">Every feature you'd expect from a modern messenger — and several you won't find anywhere else — rebuilt on an architecture where nobody stands between you and the person you're talking to.</p>
         </header>
 
         <div class="feature-grid">
-          <article data-reveal><span class="f-ico">01 / files</span><h3>Gigabytes, at full quality</h3><p>Movies, whole albums, project folders. Files ride through your own Google Drive, so a 4 GB video sends as easily as a text — no compression, no links that die in a week.</p></article>
-          <article data-reveal><span class="f-ico">02 / identity</span><h3>No phone number</h3><p>Your account is a cryptographic key only you hold. No SIM, no OTP circus, no uploading your contact list. Nobody — not even Talken — can take it away.</p></article>
-          <article data-reveal><span class="f-ico">03 / personas</span><h3>Personas</h3><p>Show one name and photo to work, another to friends. Each contact sees the you that you choose.</p></article>
-          <article data-reveal><span class="f-ico">04 / groups</span><h3>Groups</h3><p>Members, roles and group photos, fanned out device to device across the mesh — with offline members caught up the moment they return.</p></article>
-          <article data-reveal><span class="f-ico">05 / channels</span><h3>Public channels</h3><p>One person posts, anyone can follow — like a tiny newspaper, readable even without an account.</p></article>
-          <article data-reveal><span class="f-ico">06 / voice</span><h3>Calls &amp; voice notes</h3><p>Voice calls and quick voice messages over the same private route as everything else — no STUN or TURN servers in the middle.</p></article>
-          <article data-reveal><span class="f-ico">07 / offline</span><h3>Never miss a message</h3><p>Friend offline? Their messages wait in a post-office box — up to 1,000 of them, for three years — and arrive the moment they sign in.</p></article>
-          <article data-reveal><span class="f-ico">08 / backup</span><h3>Your-own-cloud backup</h3><p>Chat history backs up to your own Drive as AES-256-GCM-encrypted files. Restore on a new device; nobody else can read them.</p></article>
-          <article data-reveal><span class="f-ico">09 / platforms</span><h3>Desktop &amp; Android</h3><p>A Java 21 + JavaFX desktop app with its own Windows installer, and a native Kotlin + Jetpack Compose Android app with an encrypted on-device database.</p></article>
+          <article data-reveal><span class="f-ico">01 / identity</span><h3>Your key is your account</h3><p>No phone number, no SIM, no contact upload. A cryptographic key only you hold — your address on the mesh is derived from it. Nobody, not even Talken, can take it away.</p></article>
+          <article data-reveal><span class="f-ico">02 / personas</span><h3>Personas</h3><p>Be several people, honestly. One name and photo for work, another for friends — each contact sees the you that you choose, and your whole chat list can switch persona in one tap.</p></article>
+          <article data-reveal><span class="f-ico">03 / files</span><h3>Gigabytes, at full quality</h3><p>Movies, albums, whole project folders. Files ride through your own Google Drive, so a 4 GB video sends as easily as a text — no compression, no links that die in a week.</p></article>
+          <article data-reveal><span class="f-ico">04 / groups</span><h3>Groups with real roles</h3><p>Owners, admins and members, enforced on every change — add, remove, promote, rename, delete — fanned out device to device across the mesh.</p></article>
+          <article data-reveal><span class="f-ico">05 / whispers</span><h3>Whispers</h3><p>Because every group leg is its own encrypted channel, you can speak to part of a group without the rest ever receiving a byte — sub-groups, built into the crypto itself.</p></article>
+          <article data-reveal><span class="f-ico">06 / channels</span><h3>Public channels</h3><p>One person posts, anyone follows — like a tiny newspaper, readable even without an account. Posts, media, posters and edits, served from the edge.</p></article>
+          <article data-reveal><span class="f-ico">07 / calls</span><h3>Voice calls, peer to peer</h3><p>Opus audio over RTP, straight between the two devices. Ring the other person, or call silently. No STUN, no TURN, no relay, no media server — anywhere.</p></article>
+          <article data-reveal><span class="f-ico">08 / video</span><h3>Video, whenever you want it</h3><p>There's no "video call" button: every call starts as audio, and either side can turn the camera on or off mid-call — negotiated up front, so it's instant.</p></article>
+          <article data-reveal><span class="f-ico">09 / huddles</span><h3>Voice rooms</h3><p>Drop-in huddles: nobody is rung, members just see a "Join" banner, and the room lives as long as one person stays. Built end to end — launching with a later release.</p></article>
+          <article data-reveal><span class="f-ico">10 / voice notes</span><h3>Voice notes</h3><p>Hold to record, release to send — over the same private route as everything else.</p></article>
+          <article data-reveal><span class="f-ico">11 / threads</span><h3>Replies &amp; pins</h3><p>Quote any message to reply to it, and pin what matters to the top of a chat — synced between both sides.</p></article>
+          <article data-reveal><span class="f-ico">12 / presence</span><h3>Presence that's never stored</h3><p>Online and offline signals are tiny peer-to-peer state packets that are never written anywhere. If a peer can't be reached, the silence itself is the signal.</p></article>
+          <article data-reveal><span class="f-ico">13 / offline</span><h3>Never miss a message</h3><p>Friend offline? Messages wait in a post-office box — up to 1,000 of them, for three years — and arrive the moment they sign in.</p></article>
+          <article data-reveal><span class="f-ico">14 / backup</span><h3>Your-own-cloud sync</h3><p>History backs up to your own Drive as AES-256-GCM files you can restore on a new device. Nobody else can read them — including me.</p></article>
+          <article data-reveal><span class="f-ico">15 / platforms</span><h3>Desktop &amp; Android</h3><p>A Java 21 + JavaFX desktop app with its own Windows installer, and a native Kotlin + Jetpack Compose Android app with an encrypted on-device database.</p></article>
         </div>
+      </div>
+    </section>
+
+    <!-- ============ CUSTOM ============ -->
+    <section class="section" id="custom">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">03</span>
+          <div>
+            <p class="eyebrow mono">Built, not assembled</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="Nothing to tap.">Nothing to tap.</span></h2>
+          </div>
+          <p class="sec-sub">Most messengers are glued together from the same chat SDKs, push services and relay servers — and every one of them is a place to listen in. Talken has none of them. Where it matters, I wrote my own.</p>
+        </header>
+
+        <div class="nope mono" data-reveal>
+          <span>no chat SDK</span><span>no Firebase</span><span>no WebRTC relay</span><span>no STUN / TURN</span><span>no message server</span><span>no phone number</span><span>no analytics</span>
+        </div>
+
+        <div class="custom-grid">
+          <article data-reveal><h3>Messaging engine &amp; wire protocol</h3><p>One module that is both client and server, speaking a hand-designed wire format over direct TCP on the mesh — with scope-first dispatch for messages, control packets and state signals.</p></article>
+          <article data-reveal><h3>SIPS — State Info Packets</h3><p>My own framework for real-time peer-to-peer state like presence: fire-and-forget, never persisted, never queued on a server.</p></article>
+          <article data-reveal><h3>OMDB — the offline mailbox</h3><p>An offline-delivery system on my own server: it holds sealed messages for people who aren't online and hands them over when they return.</p></article>
+          <article data-reveal><h3>A calling stack</h3><p>Signalling over the messaging engine, Opus over RTP, its own AEAD media encryption with key epochs — peer to peer, with no media server in the path.</p></article>
+          <article data-reveal><h3>An identity chain</h3><p>Email + password is the single root of trust: Argon2id and PBKDF2 derive everything else, the private key is sealed before it ever leaves your device, and the OS keystore guards it locally.</p></article>
+          <article data-reveal><h3>Edge storage without an SDK</h3><p>Channels and group archives talk to Cloudflare R2 through hand-rolled AWS SigV4 request signing — no cloud SDK pulled in.</p></article>
+          <article data-reveal><h3>A Drive library</h3><p>A standalone Google Drive handler for desktop and Android — the reason Talken sends multi-gigabyte files without owning a file server.</p></article>
+          <article data-reveal><h3>A REST backend</h3><p>Spring Boot services for discovery, key recovery and offline delivery — with their own client library shipped into both apps.</p></article>
+        </div>
+        <p class="fine" data-reveal>Custom where it matters, standard where it's proven: the cryptographic primitives underneath — AES-256-GCM, X25519, HKDF, Argon2 — are the battle-tested ones. Rolling your own <em>primitives</em> is how messengers get broken; building your own <em>system</em> around them is how they stay unwatchable.</p>
       </div>
     </section>
 
@@ -144,7 +182,7 @@
     <section class="section" id="privacy">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">03</span>
+          <span class="sec-num mono">04</span>
           <div>
             <p class="eyebrow mono">The privacy story</p>
             <h2 class="sec-title"><span class="decrypt" data-text="Layer on layer.">Layer on layer.</span></h2>
@@ -159,7 +197,8 @@
           <li data-reveal><span class="l-n">L4</span><div><h3>Proof without the key</h3><p>You prove you own your account with an Argon2 hash of your key — the key itself is never sent anywhere.</p></div><span class="state live">live</span></li>
           <li data-reveal><span class="l-n">L5</span><div><h3>Encrypted cloud backups</h3><p>Backups in your own Drive are AES-256-GCM ciphertext, with an owner check that works without the key.</p></div><span class="state live">live</span></li>
           <li data-reveal><span class="l-n">L6</span><div><h3>Whole-envelope encryption, on by default</h3><p>Every part of every message — replies, media references, captions, each group leg — sealed with X25519 + HKDF, fresh keys per session.</p></div><span class="state testing">in testing</span></li>
-          <li data-reveal><span class="l-n">L7</span><div><h3>The moving-target cipher</h3><p>AES-256-GCM as the trusted floor, wrapped in a Feistel engine whose structure is chosen from 2¹⁵ = 32,768 configurations — so the shape of the cipher itself keeps moving.</p></div><span class="state design">designed</span></li>
+          <li data-reveal><span class="l-n">L7</span><div><h3>Pairwise group encryption</h3><p>A group message is really N direct messages, each leg sealed with that member's own pairwise channel — so member A can never read B's copy, leaving is just "stop sending", and whispers to part of a group come for free. Group keys rotate per epoch whenever someone is removed.</p></div><span class="state testing">in testing</span></li>
+          <li data-reveal><span class="l-n">L8</span><div><h3>The moving-target cipher</h3><p>AES-256-GCM as the trusted floor, wrapped in a Feistel engine whose structure is chosen from 2¹⁵ = 32,768 configurations — so the shape of the cipher itself keeps moving.</p></div><span class="state design">designed</span></li>
         </ol>
 
         <div class="cipher" data-reveal>
@@ -179,14 +218,86 @@
       </div>
     </section>
 
+    <!-- ============ PLATFORM ============ -->
+    <section class="section" id="platform">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">05</span>
+          <div>
+            <p class="eyebrow mono">Beyond messaging</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="A platform.">A platform.</span> <em>Not just an app.</em></h2>
+          </div>
+          <p class="sec-sub">Talken is designed to be built on — by other developers inside the app, and by operators running it headless.</p>
+        </header>
+        <div class="eco-grid eco-grid-2">
+          <article class="eco-card" data-reveal>
+            <span class="mono f-ico">talken extensions · mods</span>
+            <h3>Mods, safely</h3>
+            <p>Third-party extensions running inside Talken — new chat features, UI moments, even re-skinning the app. Untrusted by design and sandboxed, with one load-bearing rule: <strong>an extension never gets internet access</strong>, so it can never smuggle your messages out. Researched around a pure-Java WebAssembly runtime, so one mod runs on desktop and Android alike.</p>
+            <div class="eco-meta mono"><span class="state design">vision</span></div>
+          </article>
+          <article class="eco-card" data-reveal>
+            <span class="mono f-ico">talken daemon · cli</span>
+            <h3>Talken, headless</h3>
+            <p>A background daemon and command-line tool — <span class="mono">talkend</span> and <span class="mono">talken</span> — exposing every Talken operation over a local socket, the way Yggdrasil itself runs. For servers, bots and automation on machines the operator owns.</p>
+            <div class="eco-meta mono"><span class="state design">planned</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STARTUPS ============ -->
+    <section class="section" id="startups">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">06</span>
+          <div>
+            <p class="eyebrow mono">Talken for Startups</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="A cloud made">A cloud made</span> <em>of its users.</em></h2>
+          </div>
+          <p class="sec-sub">The biggest idea in the ecosystem: turn the devices already running Talken into a decentralised cloud — database, storage and compute — the thing AWS does with data centres, done with the network that already exists.</p>
+        </header>
+
+        <div class="dcs-stack">
+          <article class="dcs-layer" data-reveal>
+            <div class="dcs-tag mono"><b>DDB</b><span>distributed database</span></div>
+            <p>A mutable DHT with a controller that <em>looks</em> like a normal database: you give it database-style input, it translates that into key → value form underneath and reads and writes the DHT. Phones are full nodes because Talken runs all day; broadcast is gossip, not a tree.</p>
+            <span class="state design">designed</span>
+          </article>
+          <article class="dcs-layer" data-reveal>
+            <div class="dcs-tag mono"><b>DSS</b><span>distributed storage</span></div>
+            <p>Push the maximum work onto each client itself — 100% peer to peer over Yggdrasil — with storage and auth resolved through the DDB's hash mapping. No storage servers.</p>
+            <span class="state design">designed</span>
+          </article>
+          <article class="dcs-layer" data-reveal>
+            <div class="dcs-tag mono"><b>DCS</b><span>distributed compute</span></div>
+            <p>Users publish <strong>buckets</strong> — approved code snippets to run. A thin coordinator only remembers which devices are grouped together; it never runs anything. When device A is busy, it asks B to run bucket #A1 with this input; B returns the output instantly — or answers <span class="mono">BUSY</span>, and A tries C. A keeps a priority list of whoever has been most available, and stronger devices are lent to more nodes by weightage, earning a bigger share.</p>
+            <span class="state design">designed</span>
+          </article>
+        </div>
+
+        <div class="dcs-math" data-reveal>
+          <div><b>20</b><span>nodes in a group</span></div>
+          <div class="op mono">×</div>
+          <div><b>50+</b><span>buckets each</span></div>
+          <div class="op mono">=</div>
+          <div><b>~20×</b><span>the compute — for free</span></div>
+        </div>
+        <div class="two-col" style="margin-top: 28px">
+          <div class="side-card" data-reveal><h3>Sensitive stays home</h3><p>Any bucket can be marked sensitive, and is never sent into the shared compute pool.</p></div>
+          <div class="side-card" data-reveal><h3>Private self-networks</h3><p>A small startup can join its founders' and developers' own devices into a private network — and run hundreds of sensitive buckets at once instead of fifty.</p></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ STACK ============ -->
     <section class="section">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">04</span>
+          <span class="sec-num mono">07</span>
           <div>
             <p class="eyebrow mono">Built by hand</p>
-            <h2 class="sec-title"><span class="decrypt" data-text="Five projects, one app.">Five projects, one app.</span></h2>
+            <h2 class="sec-title"><span class="decrypt" data-text="One ecosystem.">One ecosystem.</span></h2>
           </div>
           <p class="sec-sub">Talken isn't one codebase — it's an ecosystem I build and ship myself, from the network layer to the installer.</p>
         </header>
@@ -197,6 +308,8 @@
           <div data-reveal><h3>network</h3><p>Yggdrasil mesh · Netty</p></div>
           <div data-reveal><h3>storage</h3><p>Your Google Drive · Cloudflare R2</p></div>
           <div data-reveal><h3>shipping</h3><p>Launch4j · Inno Setup · GitHub Pages</p></div>
+          <div data-reveal><h3>backend</h3><p>Talken REST API · 11,600+ lines</p></div>
+          <div data-reveal><h3>updates</h3><p>Talken Toolkit · versions.json</p></div>
         </div>
       </div>
     </section>
@@ -205,7 +318,7 @@
     <section class="section" id="roadmap">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">05</span>
+          <span class="sec-num mono">08</span>
           <div>
             <p class="eyebrow mono">Roadmap</p>
             <h2 class="sec-title"><span class="decrypt" data-text="Where it's headed">Where it's headed</span></h2>
@@ -217,7 +330,8 @@
           <li class="launch" data-reveal><time class="mono">Oct 20, 2025</time><div><h3>Beta testing begins <span class="tag">beta</span></h3><p>1:1 messaging, your-own-Drive storage and self-sovereign accounts, in testers' hands.</p></div></li>
           <li data-reveal><time class="mono">2026</time><div><h3>Talken grows up</h3><p>The Android app, groups, public channels, personas, calls and voice notes, encrypted cloud backup — and a codebase past 140,000 lines.</p></div></li>
           <li data-reveal><time class="mono">Next</time><div><h3>Encryption on by default, usernames, 2FA</h3><p>Whole-envelope encryption switched on for everyone, global search by username, and an optional second factor at sign-in.</p></div></li>
-          <li class="future" data-reveal><time class="mono">Apr 2027</time><div><h3>Official launch <span class="tag tag-ghost">upcoming</span></h3><p>Talken 1.0, for everyone.</p></div></li>
+          <li class="future" data-reveal><time class="mono">Apr 2027</time><div><h3>Official launch <span class="tag tag-ghost">upcoming</span></h3><p>Talken 1.0, for everyone — with voice rooms switched on.</p></div></li>
+          <li class="future" data-reveal><time class="mono">Beyond</time><div><h3>The platform</h3><p>Extensions, the headless daemon and CLI, and Talken for Startups — DDB, DSS and DCS.</p></div></li>
         </ol>
       </div>
     </section>

@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notes+ — Shashwat Gupta</title>
-  <meta name="description" content="Notes+: a cross-platform notes app for Android, Windows and the web with Backend Zero — no servers of its own — and dual zero-knowledge encrypted vaults. Built by Shashwat Gupta." />
-  <meta property="og:title" content="Notes+ — notes without limits" />
-  <meta property="og:description" content="Six kinds of note, synced across Android, Windows and the web — with no servers of its own." />
+  <meta name="description" content="Notes+: a notes ecosystem for Android, Windows and the web with Backend Zero — no servers of its own — and hidden, encrypted vaults underneath. Built by Shashwat Gupta." />
+  <meta property="og:title" content="Notes+ — Backend Zero. Everything else, infinite." />
+  <meta property="og:description" content="Three apps, one account, zero servers — and two hidden encrypted spaces beneath a plain notes app." />
   <meta property="og:image" content="../assets/img/notes-plus/windows-notes.webp" />
   <meta name="theme-color" content="#0c0c0e" />
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
@@ -26,9 +26,9 @@
         <span class="brand-name">shashwat<span class="dim">.gupta</span></span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#kinds">Notes</a>
         <a href="#backend">Backend Zero</a>
-        <a href="#vaults">Vaults</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#vaults">Hidden vaults</a>
         <a href="../index.html#work">All projects</a>
       </nav>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">
@@ -42,13 +42,14 @@
     <section class="tk-hero" data-paths="flow" data-paths-mirror data-paths-color="#6366f1,#8b5cf6" data-paths-opacity="0.8">
       <div class="wrap">
         <a class="back mono" href="../index.html#work">← all projects</a>
+        <img class="tk-logo" src="../assets/img/icons/notesplus.png" alt="Notes+ logo" width="88" height="88" />
         <p class="kicker"><span class="pulse" aria-hidden="true"></span> v16.6 live · Android · Windows · Web</p>
         <h1 class="tk-title"><span class="decrypt" data-text="Notes">Notes</span><em>+</em></h1>
-        <p class="tk-tagline">Notes without limits. Synced across your universe.</p>
+        <p class="tk-tagline">Backend Zero. Everything else, infinite.</p>
         <p class="tk-lede">
-          Text that looks the way it reads, checklists, journals, infinite mind maps, sketches and recordings —
-          synced across Android, Windows and the web. Backend Zero: free, open source, no servers of its own.
-          And behind a discreet gesture, dual zero-knowledge encrypted vaults.
+          A notes ecosystem across Android, Windows and the web — one account, live sync — with
+          no servers of its own. Hosted for free, existing for free, and so free for everyone who uses it.
+          And beneath the plain notes app, two hidden, encrypted spaces that nobody knows are there.
         </p>
         <div class="tk-actions">
           <a class="btn btn-solid" href="https://notes.talken.in/app/" target="_blank" rel="noopener">Open the web app <span aria-hidden="true">↗</span></a>
@@ -56,73 +57,149 @@
           <a class="btn btn-ghost" href="https://github.com/Shashwat-Gupta57/Notes-Plus" target="_blank" rel="noopener">GitHub</a>
         </div>
         <div class="tk-facts">
-          <div data-reveal><b>6</b><span>kinds of note</span></div>
-          <div data-reveal><b>3</b><span>platforms, one sync</span></div>
           <div data-reveal><b>0</b><span>servers of its own</span></div>
-          <div data-reveal><b>GPL-3</b><span>open source</span></div>
+          <div data-reveal><b>3</b><span>apps, one account</span></div>
+          <div data-reveal><b data-count="65000" data-suffix="+">0</b><span>lines across the three apps</span></div>
+          <div data-reveal><b>2</b><span>hidden encrypted spaces</span></div>
         </div>
       </div>
     </section>
 
     <section class="wrap" data-reveal>
       <div class="np-gallery">
-        <figure class="wide"><img src="../assets/img/notes-plus/windows-notes.webp" alt="Notes+ for Windows: the notes grid with a checklist, a journal day, a mind map and a sketch" decoding="async" /><figcaption>windows — the notes grid</figcaption></figure>
-        <figure class="tall"><img src="../assets/img/notes-plus/phone-notes.webp" alt="Notes on a phone: cards for a launch plan, a checklist, a journal day and a mind map" loading="lazy" /><figcaption>android — your notes</figcaption></figure>
-        <figure class="tall"><img src="../assets/img/notes-plus/phone-editor.webp" alt="A text note edited as it looks, with the format bar" loading="lazy" /><figcaption>edited as it looks, saved as markdown</figcaption></figure>
+        <figure class="wide"><img src="../assets/img/notes-plus/windows-notes.webp" alt="Notes+ for Windows: the notes grid with a checklist, a journal day, a mind map and a sketch" decoding="async" /><figcaption>windows — javafx</figcaption></figure>
+        <figure class="tall"><img src="../assets/img/notes-plus/phone-notes.webp" alt="Notes+ on Android: cards for a launch plan, a checklist, a journal day and a mind map" loading="lazy" /><figcaption>android — the cover app</figcaption></figure>
+        <figure class="tall"><img src="../assets/img/notes-plus/web-mind-map.webp" alt="A mind map in the Notes+ web app" loading="lazy" /><figcaption>web — installable pwa</figcaption></figure>
       </div>
     </section>
 
-    <section class="section" id="kinds">
+    <!-- ============ BACKEND ZERO ============ -->
+    <section class="section" id="backend">
       <div class="wrap">
         <header class="sec-head" data-reveal>
           <span class="sec-num mono">01</span>
           <div>
-            <p class="eyebrow mono">The workspace</p>
-            <h2 class="sec-title"><span class="decrypt" data-text="Six kinds of note.">Six kinds of note.</span></h2>
+            <p class="eyebrow mono">Backend Zero</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="No servers.">No servers.</span> <em>No subscriptions.</em></h2>
           </div>
-          <p class="sec-sub">Works offline and without an account. Sign in to sync every device and share notes with people.</p>
+          <p class="sec-sub">There is no Notes+ API and no server code anywhere. Every piece runs on a free tier, so the app costs nothing to keep alive — and nothing to use.</p>
         </header>
-        <div class="feature-grid">
-          <article data-reveal><span class="f-ico">01</span><h3>Text, as it looks</h3><p>Bold is bold, a heading is big, and no symbol is ever on screen — like Word, but saved as plain Markdown.</p></article>
-          <article data-reveal><span class="f-ico">02</span><h3>Checklists</h3><p>Tick things off on your phone, watch them tick off on your desktop.</p></article>
-          <article data-reveal><span class="f-ico">03</span><h3>Journal days</h3><p>One page per day, kept in order, ready when you are.</p></article>
-          <article data-reveal><span class="f-ico">04</span><h3>Infinite mind maps</h3><p>Break free from paragraphs — connect ideas across an endless canvas, with pictures.</p></article>
-          <article data-reveal><span class="f-ico">05</span><h3>Ink sketches</h3><p>Vector diagrams with pressure-sensitive ink.</p></article>
-          <article data-reveal><span class="f-ico">06</span><h3>Voice recordings</h3><p>Capture a thought out loud, keep it with everything else.</p></article>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" id="backend">
-      <div class="wrap two-col">
-        <header data-reveal>
-          <p class="eyebrow mono">02 — Backend Zero</p>
-          <h2 class="sec-title"><span class="decrypt" data-text="No servers.">No servers.</span> <em>No subscriptions.</em></h2>
-        </header>
-        <div class="prose" data-reveal>
-          <p>There is <strong>no Notes+ API and no server code anywhere</strong>. Hosted for free, existing for free — and so free for everyone who uses it.</p>
-          <ol class="layers">
-            <li><span class="l-n">web</span><div><h3>Website &amp; web app</h3><p>Static files on GitHub Pages, installable as a PWA, works fully offline.</p></div><span class="state live">free</span></li>
-            <li><span class="l-n">auth</span><div><h3>Accounts</h3><p>Firebase Authentication.</p></div><span class="state live">free</span></li>
-            <li><span class="l-n">sync</span><div><h3>Notes, sharing, sync</h3><p>Firebase Realtime Database, guarded by its security rules — the whole "backend" — over offline-first SQLite and Room on device.</p></div><span class="state live">free</span></li>
+        <div class="two-col">
+          <ol class="layers" data-reveal>
+            <li><span class="l-n">web</span><div><h3>Website &amp; web app</h3><p>Static files on GitHub Pages.</p></div><span class="state live">free</span></li>
+            <li><span class="l-n">auth</span><div><h3>Accounts</h3><p>Firebase Authentication — verified email or Google only.</p></div><span class="state live">free</span></li>
+            <li><span class="l-n">sync</span><div><h3>Notes, sharing, sync</h3><p>Firebase Realtime Database. Its security rules <em>are</em> the whole backend.</p></div><span class="state live">free</span></li>
             <li><span class="l-n">media</span><div><h3>Photos, videos, recordings</h3><p>Each user's own Google Drive.</p></div><span class="state live">yours</span></li>
+            <li><span class="l-n">ship</span><div><h3>Downloads &amp; updates</h3><p>Cloudflare R2 and GitHub Releases, announced by one version.json.</p></div><span class="state live">free</span></li>
           </ol>
+          <div class="prose" data-reveal>
+            <p><strong>The clients do the work.</strong> With no server to lean on, everything a backend normally does lives in the apps themselves — and in about a page of database rules.</p>
+            <ul class="pv-features">
+              <li>Security rules as the API: per-user read/write, typed and size-capped fields, atomic username claims</li>
+              <li>Revision-checked sync that never overwrites a newer edit by accident</li>
+              <li>On-device encryption for locked notes and the private spaces — the database only ever sees ciphertext or nothing</li>
+              <li>Verified self-updates: the APK must match the package, the signing certificate and the published SHA-256</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- ============ ECOSYSTEM ============ -->
+    <section class="section" id="ecosystem">
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">02</span>
+          <div>
+            <p class="eyebrow mono">The ecosystem</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="Three apps.">Three apps.</span> <em>One account.</em></h2>
+          </div>
+          <p class="sec-sub">Edit on Windows, review on Android, open it anywhere on the web. Each app is native to its platform, and all three speak the same format.</p>
+        </header>
+
+        <div class="eco-grid">
+          <article class="eco-card" data-reveal>
+            <span class="mono f-ico">android</span>
+            <h3>The original</h3>
+            <p>Native Android in Java — the notes app, the hidden vaults, Drive backups and verified self-updates. Android 7.0+.</p>
+            <div class="eco-meta mono"><span>29,000+ lines</span><span>74 files</span></div>
+          </article>
+          <article class="eco-card" data-reveal>
+            <span class="mono f-ico">windows</span>
+            <h3>The desktop twin</h3>
+            <p>A JavaFX app that looks and behaves like the phone and syncs through the same account. Installer or portable, Java built in.</p>
+            <div class="eco-meta mono"><span>29,800+ lines</span><span>87 files</span></div>
+          </article>
+          <article class="eco-card" data-reveal>
+            <span class="mono f-ico">web</span>
+            <h3>Everywhere else</h3>
+            <p>Vanilla JS, installable as an app and fully offline — Notes+ on macOS, iPhone, iPad and Linux.</p>
+            <div class="eco-meta mono"><span>6,500+ lines</span><span>no framework</span></div>
+          </article>
+        </div>
+
+        <div class="eco-bus" data-reveal>
+          <span class="mono">shared by all three →</span>
+          <ul class="chips accent">
+            <li>One Markdown note format, in Java, JavaFX and JS</li>
+            <li>Text, lists, journal, mind maps, sketches, audio</li>
+            <li>Offline-first local databases</li>
+            <li>Sharing notes with people</li>
+            <li>Locked notes, byte-compatible between phone and desktop</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HIDDEN VAULTS ============ -->
     <section class="section" id="vaults">
-      <div class="wrap two-col">
-        <div class="window" data-reveal>
-          <div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">Notes+ — mind map</span></div>
-          <img class="pv-shot" src="../assets/img/notes-plus/windows-mind-map.webp" alt="A mind map in Notes+ for Windows" loading="lazy" />
+      <div class="wrap">
+        <header class="sec-head" data-reveal>
+          <span class="sec-num mono">03</span>
+          <div>
+            <p class="eyebrow mono">Hidden vault architecture</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="A notes app.">A notes app.</span> <em>Until it isn't.</em></h2>
+          </div>
+          <p class="sec-sub">On the surface, the Android app is exactly what it looks like. Underneath, behind a secret gesture, are two encrypted spaces — designed so that nothing on the phone gives them away.</p>
+        </header>
+
+        <div class="vault-diagram" data-reveal aria-label="Diagram: the notes app is the cover; a secret gesture leads to one lock screen, which opens either the private gallery or the covert chat. The two spaces never reference each other.">
+          <div class="vd-cover">
+            <span class="mono vd-tag">what everyone sees</span>
+            <b>Notes+</b>
+            <span>a plain notes app</span>
+          </div>
+          <div class="vd-gesture mono"><span>secret gesture</span></div>
+          <div class="vd-lock">
+            <span class="mono vd-tag">one identical lock screen</span>
+            <b>Lock</b>
+            <span>shared lockout, per-space auto-lock</span>
+          </div>
+          <div class="vd-split">
+            <div class="vd-space">
+              <span class="mono vd-tag">space one</span>
+              <b>Private gallery</b>
+              <span>photos &amp; videos, albums, multiple vaults</span>
+            </div>
+            <div class="vd-wall mono" aria-hidden="true">no link<br>between<br>them</div>
+            <div class="vd-space">
+              <span class="mono vd-tag">space two</span>
+              <b>Covert chat</b>
+              <span>@username + vault ID addresses</span>
+            </div>
+          </div>
         </div>
-        <div class="prose" data-reveal>
-          <p class="eyebrow mono">03 — Hardened security</p>
-          <h2 class="sec-title" style="color:var(--text)">Dual secret vaults.</h2>
-          <p>Behind an innocuous gesture lies an encrypted <strong>media safe</strong> and a <strong>covert chat</strong> — each with its own key, encrypted on the device with AES-256-GCM, auto-locking after a timeout, with encrypted backups.</p>
-          <p>Zero-knowledge by design: the lock is one only you know.</p>
-        </div>
+
+        <ol class="layers" style="margin-top: 48px">
+          <li data-reveal><span class="l-n">V1</span><div><h3>Two spaces that never mention each other</h3><p>Separate tables, separate auto-lock, separate settings and backups. No screen, string or setting in one ever refers to the other — so finding one reveals nothing about the second.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V2</span><div><h3>Your lock only wraps the key</h3><p>Everything is encrypted with a random vault data key. Your PIN, password or pattern just wraps that key — so changing a lock rewrites about 200 bytes and never re-encrypts a single photo.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V3</span><div><h3>Streaming AES-256-GCM, bound to the hardware</h3><p>Media is sealed with Tink streaming AEAD in 4 KB segments under an Android Keystore master key. Videos decrypt as they play, seekable, without ever being written out.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V4</span><div><h3>Plaintext never touches the disk</h3><p>Decrypted media lives in memory; the one exception, the share folder, is swept every time a vault opens.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V5</span><div><h3>The vault never touches the cloud account</h3><p>No vault code talks to Firebase, and there is no analytics, crash reporting or remote config at all — automatic screen reporting would name the vault's screens.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V6</span><div><h3>Hardened against eyes and guesses</h3><p>Screenshots blocked by default, auto-lock on leave, a persisted lockout, PBKDF2 at 210,000 iterations, and an optional backup password for when a 4-digit PIN isn't enough.</p></div><span class="state live">live</span></li>
+          <li data-reveal><span class="l-n">V7</span><div><h3>Encrypted, add-only backups in your own Drive</h3><p>Every backup is a new restore point of ciphertext in your own Google Drive — never overwritten, restorable on a new phone.</p></div><span class="state live">live</span></li>
+        </ol>
       </div>
     </section>
 
@@ -130,7 +207,7 @@
       <div class="launch-card" data-paths="ribbon" data-paths-color="#34d399,#22d3ee" data-paths-opacity="0.4" data-reveal>
         <p class="eyebrow mono">Free · open source · GPL-3.0</p>
         <h2>Get <em>Notes+</em>.</h2>
-        <p>Android 7.0+, Windows 10/11 (Java built in), and the web on everything else — macOS, iPhone, iPad and Linux.</p>
+        <p>Android 7.0+, Windows 10/11 with Java built in, and the web on everything else.</p>
         <div class="tk-actions">
           <a class="btn btn-solid" href="https://notes.talken.in/download.html" target="_blank" rel="noopener">Download</a>
           <a class="btn btn-ghost" href="https://notes.talken.in/app/" target="_blank" rel="noopener">Open web app</a>

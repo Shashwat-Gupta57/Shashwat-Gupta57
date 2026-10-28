@@ -8,7 +8,8 @@
      category  key of window.CATEGORIES
      year      shown on the card
      tags      tech chips
-     poster    card artwork: { from, to, ink, icon?, glyph? } — icon is an image, glyph is text
+     poster    card artwork: { from, to, ink, icon?, glyph?, bare?, pixel? } — icon is the app's logo
+               (bare: no tile behind it; pixel: crisp upscaling), glyph is text when there's no logo
      image     optional screenshot (project page)
      page      optional: a hand-built page instead of the shared template
      status    optional badge, e.g. "private beta"
@@ -28,7 +29,7 @@ window.PROJECTS = [
     year: '2024 – now',
     status: 'beta',
     tags: ['Java 21', 'JavaFX', 'Kotlin', 'Compose', 'Netty', 'Yggdrasil'],
-    poster: { from: '#5450AA', to: '#FF7A5C', ink: '#fff', glyph: 'T' },
+    poster: { from: '#5450AA', to: '#FF7A5C', ink: '#fff', icon: 'assets/img/icons/talken.png' },
     image: 'assets/img/talken-main-interface.png',
     page: 'projects/talken.html',
     links: [
@@ -39,11 +40,11 @@ window.PROJECTS = [
   {
     id: 'notes-plus',
     title: 'Notes+',
-    tagline: 'Notes without limits — Android, Windows and the web, with no servers of its own.',
+    tagline: 'Backend Zero: a notes ecosystem with no servers — and hidden encrypted vaults underneath.',
     category: 'cross',
     year: '2026',
-    tags: ['Kotlin', 'Compose', 'JavaFX', 'PWA', 'Firebase'],
-    poster: { from: '#1e1b4b', to: '#6366f1', ink: '#fff', glyph: 'N+' },
+    tags: ['Java', 'Android', 'JavaFX', 'PWA', 'Firebase'],
+    poster: { from: '#1e1b4b', to: '#6366f1', ink: '#fff', icon: 'assets/img/icons/notesplus.png' },
     image: 'assets/img/notes-plus/windows-notes.webp',
     page: 'projects/notes-plus.html',
     links: [
@@ -164,7 +165,7 @@ window.PROJECTS = [
     category: 'tools',
     year: '2026',
     tags: ['Python', 'FastAPI', 'mitmproxy', 'React', 'Deck.gl'],
-    poster: { from: '#020617', to: '#0891b2', ink: '#fff', glyph: '🌐' },
+    poster: { from: '#020617', to: '#0891b2', ink: '#fff', icon: 'assets/img/icons/nglobe.svg', bare: true },
     stats: [['14,000+', 'lines of code'], ['60fps', '3D rendering']],
     links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/NGlobe' }],
     body: ['Tools like Wireshark show traffic as endless rows of text. NGlobe intercepts your local traffic and maps every request geographically in real time — packets fly across the globe like lasers.'],
@@ -211,18 +212,6 @@ window.PROJECTS = [
     features: ['User discovery', 'Account-key recovery', 'Offline message delivery — up to 1,000 messages, kept 3 years', 'Ships its own client library for the apps']
   },
   {
-    id: 'talken-ddb',
-    title: 'Talken DDB',
-    tagline: 'A distributed database over the Talken peer network.',
-    category: 'talken',
-    year: '2026',
-    status: 'in development',
-    tags: ['Java', 'Kademlia DHT', 'P2P'],
-    poster: { from: '#1a1a2e', to: '#e94560', ink: '#fff', glyph: 'DDB' },
-    stats: [['27,000+', 'lines of Java'], ['169', 'source files']],
-    body: ['A mutable Kademlia DHT with a database-shaped interface on top: you talk to it like a normal database, and underneath it reads and writes a distributed hash table spread across Talken devices. Its first real consumer will be public channels.']
-  },
-  {
     id: 'drive-handler',
     title: 'Drive Handler',
     tagline: 'The Google Drive library that lets Talken keep your files in your own storage.',
@@ -240,7 +229,7 @@ window.PROJECTS = [
     category: 'talken',
     year: '2025',
     tags: ['Java', 'JavaFX'],
-    poster: { from: '#2a1f3d', to: '#8580C8', ink: '#fff', glyph: '↻' },
+    poster: { from: '#2a1f3d', to: '#8580C8', ink: '#fff', icon: 'assets/img/icons/talken.png' },
     body: ['A small JavaFX utility that checks for the latest Talken version and downloads new builds into your Talken directory.']
   },
 
@@ -252,7 +241,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing'],
-    poster: { from: '#1f2937', to: '#ef4444', ink: '#fff', glyph: '🎨' },
+    poster: { from: '#1f2937', to: '#ef4444', ink: '#fff', icon: 'assets/img/icons/sgpaint.png', bare: true },
     image: 'assets/img/sg-paint.png',
     stats: [['3,500+', 'lines of Java']],
     body: ['A desktop painting application built from scratch in Java — brushes, shapes, colours and a full tool palette, reimagining what MS Paint could be.'],
@@ -277,7 +266,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing'],
-    poster: { from: '#292524', to: '#eab308', ink: '#fff', glyph: '✎' },
+    poster: { from: '#292524', to: '#eab308', ink: '#fff', icon: 'assets/img/icons/notes.png', bare: true },
     image: 'assets/img/notes-app.png',
     stats: [['2,500+', 'lines of Java']],
     body: ['A desktop text editor that started as a Notepad clone and kept going — the ancestor of what later became Notes+.'],
@@ -290,7 +279,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing', 'JavaFX'],
-    poster: { from: '#7c3aed', to: '#f97316', ink: '#fff', glyph: '◐' },
+    poster: { from: '#7c3aed', to: '#f97316', ink: '#fff', icon: 'assets/img/icons/colorpicker.png', bare: true },
     body: ['A tiny utility I built twice: first in Swing, then rebuilt from scratch in JavaFX. Pick a colour and copy its RGB, HEX or HSB code in one click.']
   },
   {
@@ -375,7 +364,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
-    poster: { from: '#3f3f46', to: '#facc15', ink: '#fff', glyph: '🦖' },
+    poster: { from: '#3f3f46', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/rexrun.png', bare: true, pixel: true },
     image: 'assets/img/rex-run-game.png',
     stats: [['6,300+', 'lines of Java']],
     body: ['The first game I ever built, right after the terminal stopped being enough. An endless runner that borrows the simplicity of Chrome’s dinosaur and the rhythm of Geometry Dash.'],
@@ -388,7 +377,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
-    poster: { from: '#052e16', to: '#dc2626', ink: '#fff', glyph: '✈' },
+    poster: { from: '#052e16', to: '#dc2626', ink: '#fff', icon: 'assets/img/icons/flyingdual.png' },
     image: 'assets/img/flying-dual.png',
     body: ['Two players, one keyboard, one sky. A local multiplayer shooter on a hand-rolled game loop, with difficulty levels and a round timer.']
   },

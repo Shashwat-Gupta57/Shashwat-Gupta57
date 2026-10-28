@@ -28,7 +28,7 @@
   function posterHTML(p, big) {
     var pz = p.poster || { from: '#222', to: '#555', ink: '#fff', glyph: p.title.charAt(0) };
     var mark = pz.icon
-      ? '<img class="poster-icon" src="' + esc(BASE + pz.icon) + '" alt="" loading="lazy" decoding="async" />'
+      ? '<img class="poster-icon' + (pz.bare ? ' bare' : '') + (pz.pixel ? ' pixel' : '') + '" src="' + esc(BASE + pz.icon) + '" alt="" loading="lazy" decoding="async" />'
       : '<span class="poster-glyph">' + esc(pz.glyph) + '</span>';
     return '<div class="poster' + (big ? ' poster-big' : '') + '" style="--p-from:' + esc(pz.from) + ';--p-to:' + esc(pz.to) + ';--p-ink:' + esc(pz.ink) + '" aria-hidden="true">' +
       mark + '<b>' + esc(p.title) + '</b><small>' + esc(p.tagline) + '</small></div>';
