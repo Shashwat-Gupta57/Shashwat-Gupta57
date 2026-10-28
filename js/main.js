@@ -126,7 +126,9 @@
     });
   })();
 
-  /* ---------------- shared project page (projects/view.html) ---------------- */
+  /* ---------------- project pages (projects/view.html?id=…) ---------------- */
+  // Each project gets a small site of its own, tinted with its poster colour. Every section is
+  // optional and only renders when the project has that kind of content.
   (function view() {
     var el = $('#pview');
     if (!el) return;
@@ -140,40 +142,196 @@
     }
     if (p.page) { location.replace(BASE + p.page); return; }
     document.title = p.title + ' — Shashwat Gupta';
+    var pz = p.poster || {};
+    if (pz.to) {
+      document.body.style.setProperty('--accent', pz.to);
+      document.body.style.setProperty('--accent-soft', 'color-mix(in srgb, ' + pz.to + ' 14%, transparent)');
+      document.body.classList.add('pv-site');
+    }
+
+    var cat = CATS[p.category] || p.category;
+    var num = 0;
+    function head(eyebrow, title, sub) {
+      num++;
+      return '<header class="sec-head" data-reveal><span class="sec-num mono">' + (num < 10 ? '0' : '') + num + '</span>' +
+        '<div><p class="eyebrow mono">' + esc(eyebrow) + '</p><h2 class="sec-title">' + title + '</h2></div>' +
+        (sub ? '<p class="sec-sub">' + esc(sub) + '</p>' : '') + '</header>';
+    }
+    function section(idName, inner) { return '<section class="section pv-sec" id="' + idName + '"><div class="wrap">' + inner + '</div></section>'; }
+
+    var links = (p.links || []).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('');
+    var mark = pz.icon
+      ? '<img class="pv-logo' + (pz.bare ? ' bare' : '') + (pz.pixel ? ' pixel' : '') + '" src="' + esc(BASE + pz.icon) + '" alt="' + esc(p.title) + ' logo" />'
+      : '<span class="pv-logo pv-logo-glyph mono" aria-hidden="true">' + esc(pz.glyph || p.title.charAt(0)) + '</span>';
+    var shots = p.shots || [];
+    var heroMedia = shots.length
+      ? '<button class="pv-hero-shot window" data-open="0" aria-label="Enlarge screenshot"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div><img src="' + esc(BASE + shots[0].src) + '" alt="' + esc(shots[0].caption) + '" /></button>'
+      : posterHTML(p, true);
+
+    var html =
+      '<section class="pv-hero pv-hero-site" data-paths="flow" data-paths-mirror data-paths-color="' + esc(pz.to || '#888') + '" data-paths-opacity="0.55">' +
+        '<div class="wrap">' +
+          '<a class="back mono" href="' + BASE + 'index.html#work">← all projects</a>' +
+          '<div class="pv-hero-grid">' +
+            '<div class="pv-hero-copy">' + mark +
+              '<p class="eyebrow mono">' + esc(cat) + ' · ' + esc(p.year) + (p.status ? ' <span class="pcard-status">' + esc(p.status) + '</span>' : '') + '</p>' +
+              '<h1 class="pv-title"><span class="decrypt" data-text="' + esc(p.title) + '">' + esc(p.title) + '</span></h1>' +
+              '<p class="pv-tagline">' + esc(p.tagline) + '</p>' +
+              '<ul class="pcard-tags mono">' + p.tags.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+              (links ? '<div class="pv-links">' + links + '</div>' : '') +
+            '</div>' +
+            '<div class="pv-hero-media">' + heroMedia + '</div>' +
+          '</div>' +
+          (p.stats ? '<div class="tk-facts pv-facts">' + p.stats.map(function (s) { return '<div data-reveal><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('') + '</div>' : '') +
+        '</div>' +
+      '</section>';
+
+    // in-page nav for the bigger sites
+    var navItems = [];
+    if (p.story) navItems.push(['story', 'Story']);
+    if (shots.length > 1) navItems.push(['screens', 'Screens']);
+    if (p.highlights || p.features) navItems.push(['highlights', 'Highlights']);
+    if (p.install) navItems.push(['install', 'Install']);
+    if (p.commands) navItems.push(['commands', 'Commands']);
+    if (p.api) navItems.push(['api', 'API reference']);
+    if (p.build) navItems.push(['build', 'Under the hood']);
+    if (navItems.length > 2) {
+      html += '<nav class="pv-subnav mono" aria-label="On this page"><div class="wrap">' +
+        navItems.map(function (n) { return '<a href="#' + n[0] + '">' + n[1] + '</a>'; }).join('') + '</div></nav>';
+    }
+
+    if (p.story) {
+      html += section('story', head('The story', 'Why <em>' + esc(p.title) + '</em>', '') +
+        '<div class="pv-story" data-reveal>' + p.story.map(function (t, i) { return '<p' + (i === 0 ? ' class="lead"' : '') + '>' + esc(t) + '</p>'; }).join('') + '</div>');
+    } else if (p.body) {
+      html += section('story', '<div class="pv-story" data-reveal>' + p.body.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') + '</div>');
+    }
+
+    if (shots.length > 1) {
+      html += section('screens', head('Screens', 'See it <em>running.</em>', 'Real screenshots, captured from the app itself. Click any to enlarge.') +
+        '<div class="pv-shots">' + shots.map(function (s, i) {
+          return '<figure data-reveal><button class="pv-shot-btn" data-open="' + i + '" aria-label="Enlarge: ' + esc(s.caption) + '"><img src="' + esc(BASE + s.src) + '" alt="' + esc(s.caption) + '" loading="lazy" decoding="async" /></button><figcaption class="mono">' + esc(s.caption) + '</figcaption></figure>';
+        }).join('') + '</div>');
+    }
+
+    var hl = p.highlights || (p.features || []).map(function (f) { return { t: f, d: '' }; });
+    if (hl.length) {
+      html += section('highlights', head('Highlights', 'What it <em>does.</em>', '') +
+        '<div class="feature-grid">' + hl.map(function (h, i) {
+          return '<article data-reveal><span class="f-ico">' + (i < 9 ? '0' : '') + (i + 1) + '</span><h3>' + esc(h.t) + '</h3>' + (h.d ? '<p>' + esc(h.d) + '</p>' : '') + '</article>';
+        }).join('') + '</div>');
+    }
+
+    if (p.install) {
+      html += section('install', head('Install', 'Get it <em>running.</em>', '') +
+        '<div class="pv-tabs" data-reveal><div class="pv-tablist mono" role="tablist">' +
+          p.install.map(function (t, i) { return '<button role="tab" aria-selected="' + (i === 0) + '" data-tab="' + i + '">' + esc(t.label) + '</button>'; }).join('') +
+        '</div>' + p.install.map(function (t, i) {
+          return '<div class="pv-code" data-panel="' + i + '"' + (i ? ' hidden' : '') + '><pre class="mono">' + esc(t.code) + '</pre><button class="pv-copy mono" data-copy>copy</button></div>';
+        }).join('') + '</div>');
+    }
+
+    if (p.commands) {
+      html += section('commands', head('Commands', 'Everything it <em>can do.</em>', '') +
+        '<div class="pv-cmds" data-reveal>' + p.commands.map(function (c) {
+          return '<div class="pv-cmd"><code class="mono">' + esc(c.cmd) + '</code><span>' + esc(c.d) + '</span></div>';
+        }).join('') + '</div>');
+    }
+
+    if (p.terminal) {
+      html += '<section class="pv-sec"><div class="wrap"><div class="term pv-term" data-reveal><div class="term-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono term-title">' + esc(p.terminal.title) + '</span></div>' +
+        '<pre class="term-screen pv-term-out mono"><span class="pv-prompt">$ ' + esc(p.terminal.cmd) + '</span>\n\n' + esc(p.terminal.out) + '</pre></div></div></section>';
+    }
+
+    if (p.api) {
+      var total = p.api.reduce(function (n, g) { return n + g.items.length; }, 0);
+      html += section('api', head('API reference', 'The <em>docs.</em>', total + ' public methods across ' + p.api.length + ' groups. Type to filter.') +
+        '<div class="pv-api" data-reveal>' +
+          '<aside class="pv-api-nav mono">' + p.api.map(function (g, i) { return '<a href="#api-' + i + '">' + esc(g.group) + ' <span class="dim">' + g.items.length + '</span></a>'; }).join('') + '</aside>' +
+          '<div class="pv-api-body"><label class="sr" for="apiFilter">Filter methods</label><input id="apiFilter" class="cipher-input pv-api-filter" type="search" placeholder="filter — e.g. upload, token, folder" autocomplete="off" spellcheck="false" />' +
+          p.api.map(function (g, i) {
+            return '<div class="pv-api-group" id="api-' + i + '"><h3 class="mono">' + esc(g.group) + '</h3>' + (g.intro ? '<p class="pv-api-intro">' + esc(g.intro) + '</p>' : '') +
+              g.items.map(function (it) { return '<div class="pv-api-item"><code class="mono">' + esc(it.sig) + '</code><p>' + esc(it.d) + '</p></div>'; }).join('') + '</div>';
+          }).join('') + '<p class="pv-api-empty" hidden>No methods match.</p></div>' +
+        '</div>');
+    }
+
+    if (p.build) {
+      html += section('build', head('Under the hood', 'How it’s <em>built.</em>', '') +
+        '<dl class="pv-build" data-reveal>' + p.build.map(function (b) { return '<div><dt class="mono">' + esc(b[0]) + '</dt><dd>' + esc(b[1]) + '</dd></div>'; }).join('') + '</dl>');
+    }
 
     var prev = PROJECTS[(idx - 1 + PROJECTS.length) % PROJECTS.length];
     var next = PROJECTS[(idx + 1) % PROJECTS.length];
-    var links = (p.links || []).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('');
-    var media = p.image
-      ? '<div class="window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div>' +
-          '<img class="pv-shot" src="' + esc(BASE + p.image) + '" alt="' + esc(p.title) + ' screenshot" /></div>'
-      : posterHTML(p, true);
+    html += '<nav class="wrap pv-pager mono" aria-label="More projects">' +
+      '<a href="' + esc(projectHref(prev)) + '"><span class="dim">← previous</span>' + esc(prev.title) + '</a>' +
+      '<a href="' + esc(projectHref(next)) + '"><span class="dim">next →</span>' + esc(next.title) + '</a>' +
+    '</nav>';
 
-    el.innerHTML =
-      '<section class="pv-hero" data-paths="orbit" data-paths-opacity="0.5">' +
-        '<div class="wrap">' +
-          '<a class="back mono" href="' + BASE + 'index.html#work">← all projects</a>' +
-          '<p class="eyebrow mono">' + esc(CATS[p.category] || p.category) + ' · ' + esc(p.year) +
-            (p.status ? ' <span class="pcard-status">' + esc(p.status) + '</span>' : '') + '</p>' +
-          '<h1 class="pv-title">' + esc(p.title) + '</h1>' +
-          '<p class="pv-tagline">' + esc(p.tagline) + '</p>' +
-          '<ul class="pcard-tags mono">' + p.tags.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
-          (links ? '<div class="pv-links">' + links + '</div>' : '') +
-          (p.stats ? '<div class="pv-stats">' + p.stats.map(function (s) { return '<div><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('') + '</div>' : '') +
-        '</div>' +
-      '</section>' +
-      '<section class="wrap pv-main">' +
-        media +
-        '<div class="pv-text">' +
-          (p.body || []).map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
-          (p.features ? '<ul class="pv-features">' + p.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '') +
-        '</div>' +
-        (p.gallery ? '<div class="pv-gallery">' + p.gallery.map(function (g) { return '<img src="' + esc(BASE + g) + '" alt="" loading="lazy" />'; }).join('') + '</div>' : '') +
-      '</section>' +
-      '<nav class="wrap pv-pager mono" aria-label="More projects">' +
-        '<a href="' + esc(projectHref(prev)) + '"><span class="dim">← previous</span>' + esc(prev.title) + '</a>' +
-        '<a href="' + esc(projectHref(next)) + '"><span class="dim">next →</span>' + esc(next.title) + '</a>' +
-      '</nav>';
+    // lightbox for screenshots
+    if (shots.length) {
+      html += '<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screenshot">' +
+        '<button class="lb-close mono" aria-label="Close">esc ✕</button><button class="lb-nav lb-prev" aria-label="Previous">‹</button>' +
+        '<figure><img alt="" /><figcaption class="mono"></figcaption></figure><button class="lb-nav lb-next" aria-label="Next">›</button></div>';
+    }
+
+    el.innerHTML = html;
+
+    // tabs + copy
+    $$('.pv-tabs', el).forEach(function (box) {
+      $$('[data-tab]', box).forEach(function (b) {
+        b.addEventListener('click', function () {
+          $$('[data-tab]', box).forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+          $$('[data-panel]', box).forEach(function (pn) { pn.hidden = pn.dataset.panel !== b.dataset.tab; });
+        });
+      });
+    });
+    $$('[data-copy]', el).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var txt = b.parentNode.querySelector('pre').textContent;
+        var done = function () { b.textContent = 'copied ✓'; setTimeout(function () { b.textContent = 'copy'; }, 1600); };
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () {}); else done();
+      });
+    });
+
+    // API filter
+    var filter = $('#apiFilter');
+    if (filter) filter.addEventListener('input', function () {
+      var q = filter.value.trim().toLowerCase(), any = false;
+      $$('.pv-api-group', el).forEach(function (g) {
+        var shown = 0;
+        $$('.pv-api-item', g).forEach(function (it) {
+          var hit = !q || it.textContent.toLowerCase().indexOf(q) >= 0;
+          it.hidden = !hit; if (hit) shown++;
+        });
+        g.hidden = shown === 0; if (shown) any = true;
+      });
+      $('.pv-api-empty', el).hidden = any;
+    });
+
+    // lightbox
+    var lb = $('#lightbox');
+    if (lb) {
+      var cur = 0, img = $('img', lb), cap = $('figcaption', lb), opener = null;
+      var show = function (i) {
+        cur = (i + shots.length) % shots.length;
+        img.src = BASE + shots[cur].src; img.alt = shots[cur].caption; cap.textContent = shots[cur].caption + '  ·  ' + (cur + 1) + ' / ' + shots.length;
+      };
+      var open = function (i, from) { opener = from; show(i); lb.hidden = false; document.body.style.overflow = 'hidden'; $('.lb-close', lb).focus(); };
+      var close = function () { lb.hidden = true; document.body.style.overflow = ''; if (opener) opener.focus(); };
+      $$('[data-open]', el).forEach(function (b) { b.addEventListener('click', function () { open(+b.dataset.open, b); }); });
+      $('.lb-close', lb).addEventListener('click', close);
+      $('.lb-prev', lb).addEventListener('click', function () { show(cur - 1); });
+      $('.lb-next', lb).addEventListener('click', function () { show(cur + 1); });
+      lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+      document.addEventListener('keydown', function (e) {
+        if (lb.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(cur - 1);
+        else if (e.key === 'ArrowRight') show(cur + 1);
+      });
+      if (shots.length < 2) $$('.lb-nav', lb).forEach(function (b) { b.hidden = true; });
+    }
   })();
 
   /* ---------------- decrypt text ---------------- */
@@ -249,7 +407,7 @@
     $$('[data-reveal]').forEach(activate);
   }
   // Each hero heading decodes as one sweep, first line flowing into the second.
-  $$('.hero-name, .tk-title').forEach(function (h) {
+  $$('.hero-name, .tk-title, .pv-title').forEach(function (h) {
     decrypt($$('.decrypt', h));
   });
 

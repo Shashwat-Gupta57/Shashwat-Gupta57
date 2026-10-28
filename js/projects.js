@@ -1,24 +1,26 @@
-/* Every project on the site lives here. The home grid and the shared project page
+/* Every project on the site lives here. The home grid and each project's own page
    (projects/view.html?id=…) both read from this list, in this order.
 
-   Fields:
-     id        url-safe slug
-     title     name on the card
-     tagline   one line under the title
-     category  key of window.CATEGORIES
-     year      shown on the card
-     tags      tech chips
-     poster    card artwork: { from, to, ink, icon?, glyph?, bare?, pixel? } — icon is the app's logo
+   Card fields:
+     id, title, tagline, category (key of window.CATEGORIES), year, tags, status?
+     poster    { from, to, ink, icon?, glyph?, bare?, pixel? } — icon is the app's logo
                (bare: no tile behind it; pixel: crisp upscaling), glyph is text when there's no logo
-     image     optional screenshot (project page)
      page      optional: a hand-built page instead of the shared template
-     status    optional badge, e.g. "private beta"
-     links     optional [{ label, href }] — public things only
-     stats     optional [[value, label]] for the project page
-     body      optional paragraphs for the project page
-     features  optional bullet points for the project page
-     gallery   optional extra images for the project page
+     links     optional [{ label, href, internal? }] — public things only
+
+   Project-page fields (all optional; each renders its own section):
+     stats      [[value, label]]
+     shots      [{ src, caption }] — real screenshots, first one is the hero
+     story      paragraphs — the why and the how
+     highlights [{ t, d }] — what it does
+     install    [{ label, code }] — one tab per package manager
+     commands   [{ cmd, d }]
+     terminal   { title, cmd, out } — real console output
+     api        [{ group, intro?, items: [{ sig, d }] }] — reference docs for libraries
+     build      [[label, value]] — under the hood
 */
+var S = 'assets/img/shots/';
+
 window.PROJECTS = [
   /* ---------------- flagships ---------------- */
   {
@@ -30,7 +32,6 @@ window.PROJECTS = [
     status: 'beta',
     tags: ['Java 21', 'JavaFX', 'Kotlin', 'Compose', 'Netty', 'Yggdrasil'],
     poster: { from: '#5450AA', to: '#FF7A5C', ink: '#fff', icon: 'assets/img/icons/talken.png' },
-    image: 'assets/img/talken-main-interface.png',
     page: 'projects/talken.html',
     links: [
       { label: 'Website', href: 'https://talken.in' },
@@ -45,7 +46,6 @@ window.PROJECTS = [
     year: '2026',
     tags: ['Java', 'Android', 'JavaFX', 'PWA', 'Firebase'],
     poster: { from: '#1e1b4b', to: '#6366f1', ink: '#fff', icon: 'assets/img/icons/notesplus.png' },
-    image: 'assets/img/notes-plus/windows-notes.webp',
     page: 'projects/notes-plus.html',
     links: [
       { label: 'Website', href: 'https://notes.talken.in' },
@@ -63,19 +63,23 @@ window.PROJECTS = [
     status: 'private · going public soon',
     tags: ['Kotlin', 'Compose', 'Node.js', 'Express', 'WebSocket', 'SQLite'],
     poster: { from: '#3b0a1e', to: '#be185d', ink: '#fff', icon: 'assets/img/icons/life.png' },
-    stats: [['35,000+', 'lines of Kotlin'], ['182', 'Kotlin files'], ['10+', 'connected spaces']],
-    body: [
-      'Life started as a private app built for two people — not a generic app, a monument. It is about to grow up: account-based, public and commercial.',
-      'Behind it is my own Node.js + Express server with a SQLite database and a WebSocket protocol for live sync, deployed to my own VPS.'
+    stats: [['35,000+', 'lines of Kotlin'], ['182', 'Kotlin files'], ['10+', 'connected spaces'], ['1', 'server of my own']],
+    story: [
+      'Most social apps are built for everyone you have ever met. Life is built for the few people who actually matter — a single, warm, private place to share a day, plan the future and remember the past.',
+      'It started as a private app made for two people: not a generic app, but a monument. It is now growing up — account-based, public and commercial — without losing that intimacy.',
+      'Every space is a screen you swipe between, and everything syncs live. Behind it is my own Node.js and Express server with a SQLite database and a WebSocket protocol for real-time sync, deployed to my own VPS with a one-command deploy script.'
     ],
-    features: [
-      'A real-time chat vault with read receipts, super-reactions and full-screen media',
-      'Snaps — a 24-hour story strip from the built-in camera',
-      'A shared journal, a nostalgia feed and a bucket list',
-      'Challenges, a promise wall and announcements',
-      'An outfit planner with upcoming and past looks',
-      'Home-screen widgets and a lock screen'
-    ]
+    highlights: [
+      { t: 'The vault', d: 'A real-time chat with read receipts, super-reactions, unread dividers and full-screen photo and video viewing.' },
+      { t: 'Snaps', d: 'A 24-hour story strip shot straight from the built-in camera.' },
+      { t: 'Journal & nostalgia', d: 'Write the day down together, and get yesterday handed back to you in a nostalgia feed.' },
+      { t: 'Bucket list', d: 'Every plan you’ve ever made together, in one place, ready to be ticked off.' },
+      { t: 'Challenges & promise wall', d: 'A ledger of dares and the promises you keep to each other.' },
+      { t: 'Wardrobe', d: 'Plan outfits ahead and look back at past looks.' },
+      { t: 'Announcements', d: 'Short one-liners for the big news and the small.' },
+      { t: 'Widgets & lock', d: 'Home-screen widgets keep it close; a lock screen keeps it private.' }
+    ],
+    build: [['App', 'Kotlin · Jetpack Compose · a pager of spaces with sliding overlays'], ['Sync', 'Own WebSocket protocol for live updates'], ['Server', 'Node.js · Express · SQLite (better-sqlite3)'], ['Hosting', 'My own VPS behind nginx, one-command deploy'], ['Variants', 'Compile-time product flavours']]
   },
   {
     id: 'backbench',
@@ -85,18 +89,23 @@ window.PROJECTS = [
     year: '2026',
     tags: ['JavaScript', 'Vite', 'Firebase', 'Kotlin'],
     poster: { from: '#0c1a2e', to: '#2563eb', ink: '#fff', icon: 'assets/img/icons/backbench.png' },
-    stats: [['13,600+', 'lines of code'], ['61', 'commits'], ['3', 'platforms']],
+    stats: [['13,600+', 'lines of code'], ['61', 'commits in 9 days'], ['3', 'platforms'], ['15', 'feature modules']],
     links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Backbench' }],
-    body: [
-      'Backbench is a social network built for a single campus: everything students actually do together, in one place. A Vite web app on Firebase, wrapped for Android and desktop.'
+    story: [
+      'Every college runs on a dozen group chats, a notice board nobody reads and word of mouth. Backbench puts all of it in one place: a social network built for a single campus, where the people around you are the only people on it.',
+      'It is a Vite web app on Firebase, wrapped natively for Android and for the desktop — sixty-one commits in nine days, from an empty folder to three platforms.'
     ],
-    features: [
-      'Posts, friends, profiles and direct messages',
-      'Clubs, events and announcements',
-      'Polls and petitions',
-      'Search and notifications',
-      'An admin console for moderation'
-    ]
+    highlights: [
+      { t: 'Posts & profiles', d: 'A home feed, rich profiles and friends — the social core, scoped to campus.' },
+      { t: 'Messages', d: 'Direct messages between students.' },
+      { t: 'Clubs', d: 'Every society gets a home, with its members and its updates.' },
+      { t: 'Events', d: 'What’s happening, when and where — in one calendar everyone sees.' },
+      { t: 'Polls & petitions', d: 'Ask the campus a question, or gather signatures for something that matters.' },
+      { t: 'Announcements', d: 'Official notices that actually reach people.' },
+      { t: 'Search & notifications', d: 'Find anyone or anything; never miss what concerns you.' },
+      { t: 'Admin console', d: 'Moderation tools to keep it a place people want to be.' }
+    ],
+    build: [['Web', 'Vanilla JavaScript modules, built with Vite'], ['Backend', 'Firebase, guarded by database rules'], ['Android', 'Native Kotlin wrapper'], ['Desktop', 'Packaged desktop app']]
   },
   {
     id: 'expenses',
@@ -106,15 +115,20 @@ window.PROJECTS = [
     year: '2026',
     tags: ['Java', 'Android', 'Google Sign-In'],
     poster: { from: '#052e16', to: '#16a34a', ink: '#fff', icon: 'assets/img/icons/expenses.png' },
-    stats: [['3,800+', 'lines of Java'], ['33', 'source files']],
-    body: ['A native Android app for group trips: create a trip, add members, log who paid for what, and let the app work out who owes whom.'],
-    features: [
-      'Trips with members, dates and descriptions',
-      'Expenses with custom splits, icons and comments',
-      'Live balances, totals and charts',
-      'Settle up and record money transfers',
-      'Google sign-in and usernames'
-    ]
+    stats: [['3,800+', 'lines of Java'], ['33', 'source files'], ['19', 'screens']],
+    story: [
+      'Every trip ends the same way: a long chat full of "who paid for the cab?" Expenses ends that argument. Create a trip, add the people on it, log what each of them paid, and the app works out exactly who owes whom.',
+      'A native Android app in Java with Google sign-in, a screen for every step of a trip, and charts for where the money actually went.'
+    ],
+    highlights: [
+      { t: 'Trips', d: 'Create a trip with its members, dates and description; edit any of them later.' },
+      { t: 'Custom splits', d: 'Split a bill equally or exactly — per person, per expense, with an icon and comments.' },
+      { t: 'Live balances', d: 'Running totals and per-person balances update as you add expenses.' },
+      { t: 'Settle up', d: 'Record money transfers between members and watch the debts close.' },
+      { t: 'Charts', d: 'See where the money went across the whole trip.' },
+      { t: 'Accounts', d: 'Google sign-in and unique usernames.' }
+    ],
+    build: [['Platform', 'Native Android, Java'], ['Sign-in', 'Google Sign-In'], ['Screens', 'Trip dashboard, add expense, balances, totals, charts, settle up, transfers']]
   },
 
   /* ---------------- dev tools & web ---------------- */
@@ -124,20 +138,44 @@ window.PROJECTS = [
     tagline: 'Give AI full understanding of your Java, Kotlin & Python codebase.',
     category: 'tools',
     year: '2026',
-    tags: ['Python', 'CLI'],
+    tags: ['Python', 'CLI', 'PyPI'],
     poster: { from: '#111827', to: '#f59e0b', ink: '#fff', glyph: '{ }' },
-    image: 'assets/img/jctx.gif',
-    stats: [['6★', 'on GitHub'], ['4,600+', 'lines of Python'], ['0', 'dependencies']],
-    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Jctx' }],
-    body: [
-      'Stop pasting files. Jctx turns any Java, Kotlin or Python project into a single AI-ready context.txt (or context.md) in seconds — so the AI answers with the whole architecture in mind.',
-      'No config, no dependencies: just Python and a folder.'
+    stats: [['6★', 'on GitHub'], ['4,600+', 'lines of Python'], ['3', 'languages understood'], ['0', 'dependencies']],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Jctx' }, { label: 'PyPI', href: 'https://pypi.org/project/jctx/' }],
+    shots: [{ src: 'assets/img/jctx.gif', caption: 'One command, one context file' }],
+    story: [
+      'You open an AI chat to get help with your project, and before you can even ask the question you spend ten minutes pasting files and explaining your class structure. Then the AI suggests a class that doesn’t exist.',
+      'Jctx does all of that in one command. It scans the project and writes a clean, structured context.txt — every class, every field, every method signature, every Javadoc, KDoc and docstring, and your build files — then prints a dashboard of token counts, language split and the dependency graph. Paste it, ask your question, and get an answer that names the exact class to change, and why.',
+      'No config, no dependencies: just Python and a folder. It started as a tool for my own Talken codebase and is now on PyPI.'
     ],
-    features: [
-      'One command: Jctx "C:\\projects\\MyApp"',
-      'Understands Java, Kotlin, Python, Maven and Gradle projects',
-      'Plain-text or Markdown output'
-    ]
+    highlights: [
+      { t: 'Whole-project context', d: 'File tree, build files, every class and interface, fields, numbered method signatures and all their docs.' },
+      { t: 'Three languages', d: 'Java, Kotlin and Python — including mixed projects, with per-language percentages.' },
+      { t: 'Token estimates', d: 'A total token count with a per-section breakdown, and which AI models’ context windows it fits.' },
+      { t: 'Dependency graph', d: 'Which of your classes depend on which — from imports and in-body type references, no library noise.' },
+      { t: 'Markdown or text', d: 'Plain context.txt by default, or a clean context.md with --md.' },
+      { t: 'Slim mode', d: '--slim keeps only class names and signatures, to save tokens on huge projects.' },
+      { t: 'Clipboard', d: '--clipboard copies the whole report, ready to paste.' },
+      { t: '.jctxignore', d: 'Build folders are skipped automatically; add your own exclusions in one file.' }
+    ],
+    install: [
+      { label: 'pip', code: 'pip install jctx' },
+      { label: 'Windows (manual)', code: '# download the latest release zip, unzip it, then:\nSetup.bat   # run as administrator' }
+    ],
+    commands: [
+      { cmd: 'Jctx <project_folder>', d: 'Write context.txt into the project and print the dashboard' },
+      { cmd: '--md', d: 'Write a Markdown context.md instead' },
+      { cmd: '--slim', d: 'Only class names and method signatures' },
+      { cmd: '--no-tree', d: 'Skip the file tree section' },
+      { cmd: '--clipboard', d: 'Copy the report to the clipboard' },
+      { cmd: '--print', d: 'Also print the report to the console' }
+    ],
+    terminal: {
+      title: 'Jctx — console dashboard',
+      cmd: 'Jctx "C:\\projects\\Talken"',
+      out: '================================================================\n LANGUAGE PERCENTAGES\n================================================================\n  Java    :  60.2%  ██████████████████████████████░░░░░░░░░░░░░░░░░░░░  (4,120 lines)\n  Kotlin  :  28.1%  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  (1,920 lines)\n  Python  :  11.7%  █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  (800 lines)\n================================================================\n DEPENDENCY GRAPH (project-internal)\n================================================================\n  EncryptionModule → (none)\n  MessagingModule → EncryptionModule, UserProfile\n  TalkenClient → EncryptionModule, MessagingModule, UserProfile\n================================================================\n TOKEN ESTIMATE\n================================================================\n  Total tokens : ~34,767\n\n  Context Window Fit:\n    Y Gemini 3.1 (2M)      Y GPT-5.4 (1M)      Y Claude 4.6 (1M)'
+    },
+    build: [['Language', 'Python 3.8+, standard library only'], ['Distribution', 'PyPI package, plus a Windows release zip'], ['Output', 'context.txt / context.md'], ['License', 'MIT']]
   },
   {
     id: 'codemeter',
@@ -145,18 +183,49 @@ window.PROJECTS = [
     tagline: 'Measure your code. Physically. How many Burj Khalifas tall is your codebase?',
     category: 'tools',
     year: '2026',
-    tags: ['Java', 'CLI', 'GraalVM'],
+    tags: ['Java 21', 'CLI', 'GraalVM', 'Picocli'],
     poster: { from: '#0f172a', to: '#14b8a6', ink: '#fff', glyph: '📏' },
-    stats: [['5,100+', 'lines of Java'], ['29', 'commits'], ['6', 'export formats']],
+    stats: [['5,100+', 'lines of Java'], ['29', 'commits'], ['4', 'package managers'], ['6', 'export formats']],
     links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/CodeMeter' }],
-    body: ['A fast, editorial-grade CLI that doesn’t just count your lines of code — it tells you what they mean in the real world: meters, kilograms, Eiffel Towers, trees.'],
-    features: [
-      'Powered by scc and cloc for lightning-fast analysis',
-      'Achievements and ranks that gamify your codebase',
-      'History tracking to watch a project grow',
-      'PDF, SVG, PNG, JSON, CSV and Markdown reports',
-      'A native GraalVM executable — instant start, no JVM required'
-    ]
+    story: [
+      'Every line counter tells you a number. CodeMeter tells you what the number means. Ten thousand lines of code is a stack of paper nineteen millimetres tall, weighing almost a kilogram — and a big enough codebase is measured in football fields, Eiffel Towers and the trees it would take to print it.',
+      'It is a fast, editorial-grade command-line app in Java 21 — not a TUI, just beautifully typeset output — with achievements, history, comparisons and a year-end "wrapped". It ships as a native GraalVM binary, so it starts instantly with no JVM, and it’s published to Homebrew, Winget, Scoop and Nix.'
+    ],
+    highlights: [
+      { t: 'Physical metrics', d: 'Lines become meters, kilograms, pages, football fields, Eiffel Towers, Burj Khalifas and trees.' },
+      { t: 'Blazing fast', d: 'Powered by scc and cloc underneath for the actual counting.' },
+      { t: 'Achievements & ranks', d: 'Unlockable milestones that turn a growing codebase into a game.' },
+      { t: 'History & compare', d: 'Every scan is remembered; compare your workspace with the last one.' },
+      { t: 'Wrapped', d: 'A crafted end-of-year summary of everything you wrote.' },
+      { t: 'Export anywhere', d: 'PDF, SVG, PNG, JSON, CSV and Markdown reports.' },
+      { t: 'CI-friendly', d: 'Raw, script-friendly stats for pipelines.' },
+      { t: 'Zero dependencies', d: 'A native GraalVM executable — instant start, no Java required.' }
+    ],
+    install: [
+      { label: 'Homebrew', code: 'brew tap Shashwat-Gupta57/homebrew-tap\nbrew install codemeter' },
+      { label: 'Winget', code: 'winget install ShashwatGupta.CodeMeter' },
+      { label: 'Scoop', code: 'scoop bucket add shashwat-gupta57 https://github.com/Shashwat-Gupta57/scoop-bucket\nscoop install shashwat-gupta57/codemeter' },
+      { label: 'Nix', code: 'nix run github:Shashwat-Gupta57/CodeMeter' },
+      { label: 'JAR', code: 'java -jar codemeter.jar' }
+    ],
+    commands: [
+      { cmd: 'codemeter scan .', d: 'Scan a project — the story mode' },
+      { cmd: 'codemeter wrapped', d: 'Your end-of-year summary' },
+      { cmd: 'codemeter history', d: 'Every scan, across every project' },
+      { cmd: 'codemeter compare', d: 'This workspace against the last scan' },
+      { cmd: 'codemeter milestones', d: 'Progress towards your next rank' },
+      { cmd: 'codemeter stats', d: 'Raw metrics for CI/CD' },
+      { cmd: 'codemeter export -f png -o report.png', d: 'Export to json, pdf, png, svg, csv or md' },
+      { cmd: 'codemeter config', d: 'Tune the physical assumptions, like paper thickness' },
+      { cmd: 'codemeter doctor', d: 'System diagnostics' },
+      { cmd: 'codemeter benchmark', d: 'Measure parsing performance' }
+    ],
+    terminal: {
+      title: 'codemeter-report.md — a real scan of CodeMeter itself',
+      cmd: 'codemeter scan . && codemeter export -f md',
+      out: 'Overview\n  Files ............. 103        Languages ........ 14\n  Code lines ........ 8,420      Comment lines .... 745\n  Blank lines ....... 1,274      Total lines ...... 10,439\n\nPhysical metrics\n  Stack height ...... 0.019 m    Pages ............ 190\n  Weight ............ 0.950 kg\n\nLanguage breakdown\n  Java ......... 50 files   4,300 code   51.1%\n  HTML ......... 18 files   2,290 code   27.2%\n  Bourne Shell .  3 files     305 code    3.6%\n  Markdown .....  1 file      269 code    3.2%\n  JSON .........  4 files     256 code    3.0%'
+    },
+    build: [['Language', 'Java 21'], ['CLI', 'Picocli'], ['Data', 'Gson · Toml4j'], ['Rendering', 'Apache PDFBox · Batik'], ['Binary', 'GraalVM native image'], ['Ships via', 'Homebrew · Winget · Scoop · Nix · GitHub Releases']]
   },
   {
     id: 'nglobe',
@@ -166,16 +235,22 @@ window.PROJECTS = [
     year: '2026',
     tags: ['Python', 'FastAPI', 'mitmproxy', 'React', 'Deck.gl'],
     poster: { from: '#020617', to: '#0891b2', ink: '#fff', icon: 'assets/img/icons/nglobe.svg', bare: true },
-    stats: [['14,000+', 'lines of code'], ['60fps', '3D rendering']],
+    stats: [['14,000+', 'lines of code'], ['60fps', '3D rendering'], ['1', 'command to start']],
     links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/NGlobe' }],
-    body: ['Tools like Wireshark show traffic as endless rows of text. NGlobe intercepts your local traffic and maps every request geographically in real time — packets fly across the globe like lasers.'],
-    features: [
-      'Interactive 3D globe on Deck.gl and MapLibre',
-      'Every request becomes a particle flying to its server',
-      'HTTP and decrypted HTTPS capture through mitmproxy',
-      'IPs, ASNs, hostnames and transfer volumes in a live sidebar',
-      'Zero-config: one command sets up certificates, proxy and GeoIP'
-    ]
+    story: [
+      'Wireshark and Fiddler are incredibly powerful, but they show your traffic as endless rows of text. They have no sense of place. When your laptop quietly talks to a server on another continent, you never feel it.',
+      'NGlobe makes it visible. It intercepts your machine’s traffic, looks up where every request is going, and flies it across an interactive 3D globe in real time — so tracking requests routed to faraway data centres stop being invisible.'
+    ],
+    highlights: [
+      { t: 'Interactive 3D globe', d: 'Built on Deck.gl and MapLibre for smooth 60 fps rendering.' },
+      { t: 'Packets as particles', d: 'Every request becomes a particle flying to its destination server.' },
+      { t: 'HTTPS too', d: 'mitmproxy captures both HTTP and decrypted HTTPS traffic.' },
+      { t: 'Rich analytics', d: 'Exact IPs, autonomous systems, hostnames and transfer volumes in a live sidebar.' },
+      { t: 'Zero configuration', d: 'nglobe start — a wizard handles certificates, proxy settings and GeoIP databases.' },
+      { t: 'History', d: 'Every event is written asynchronously to SQLite, so you can look back.' }
+    ],
+    install: [{ label: 'From source', code: 'git clone https://github.com/Shashwat-Gupta57/NGlobe\ncd NGlobe && pip install .\nnglobe start' }],
+    build: [['Capture', 'mitmproxy as a local proxy'], ['Pipeline', 'Python 3.11 · FastAPI event pipeline'], ['Geo', 'MaxMind GeoLite2 lookups'], ['Transport', 'WebSocket batches to the browser'], ['Frontend', 'React · TypeScript · Tailwind · Zustand'], ['Visuals', 'Deck.gl · MapLibre GL · Framer Motion'], ['Storage', 'SQLite via SQLModel']]
   },
   {
     id: 'workdesk',
@@ -183,44 +258,168 @@ window.PROJECTS = [
     tagline: 'A workspace where every file is an artifact with an unbreakable history.',
     category: 'web',
     year: '2026',
-    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Tailwind'],
+    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Tailwind', 'shadcn'],
     poster: { from: '#18181b', to: '#a855f7', ink: '#fff', glyph: '▦' },
     stats: [['10,700+', 'lines of TypeScript'], ['3', 'database-enforced invariants']],
     links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/WorkDesk' }],
-    body: [
-      'WorkDesk treats every piece of work as a first-class artifact. Sharing passes a reference, never a copy, and every version is append-only — enforced by the database itself, not just the code.'
+    story: [
+      'Shared drives copy files around until nobody knows which version is real. WorkDesk starts from three rules that never bend: every piece of work is a first-class artifact; sharing passes a reference, never a copy; and history is append-only.',
+      'The rules aren’t conventions in the code — they are enforced by PostgreSQL itself. A trigger rejects any attempt to rewrite a version, restoring an old version clones it forward as a new one, and there is simply no API to edit history.'
     ],
-    features: [
-      'Hand-rolled authentication with bcrypt sessions',
-      'An archive explorer with set trees, grid and list views',
-      'An artifact editor with auto-save, commit and restore',
-      'Append-only versioning guarded by PostgreSQL triggers'
-    ]
+    highlights: [
+      { t: 'Artifacts, first-class', d: 'Every artifact is its own row with its own identity; nothing embeds another’s data.' },
+      { t: 'Reference, not copy', d: 'Sharing and publishing point at the artifact — no duplicated files, ever.' },
+      { t: 'Append-only history', d: 'Save, commit and restore all add versions; a database trigger rejects edits.' },
+      { t: 'Archive explorer', d: 'Set trees, grid and list views, context menus and a details panel.' },
+      { t: 'Artifact editor', d: 'Auto-save, commit, restore and a metadata panel.' },
+      { t: 'Own auth', d: 'Hand-rolled bcrypt sessions, login, register and password reset.' }
+    ],
+    build: [['Framework', 'Next.js · React 19 · TypeScript (strict)'], ['Database', 'PostgreSQL via Kysely, with a migration runner'], ['UI', 'Tailwind · shadcn'], ['Integrity', 'Triggers enforce append-only versions']]
   },
 
   /* ---------------- talken ecosystem ---------------- */
+  {
+    id: 'drive-handler',
+    title: 'Drive Handler',
+    tagline: 'The Google Drive library that lets Talken keep your files in your own storage.',
+    category: 'talken',
+    year: '2025 – now',
+    tags: ['Java 21', 'Android', 'Gradle', 'Google Drive API', 'OAuth 2'],
+    poster: { from: '#0f2a1d', to: '#22c55e', ink: '#fff', glyph: '⇅' },
+    stats: [['4,100+', 'lines of code'], ['v2.10', 'current version'], ['2', 'platforms'], ['45+', 'public methods']],
+    story: [
+      'Talken sends four-gigabyte videos without owning a single file server. The trick is that your files never leave your own Google Drive — and this library is how. It is a standalone module that handles sign-in, folders, uploads, downloads, sharing and quotas on the user’s own Drive.',
+      'Its best idea is about failure. "Your Drive is full" and "you are going too fast" are both HTTP 403 — so a naive client either hammers Google forever or gives up on a temporary hiccup. Drive Handler classifies every failure into a reason, knows which ones are worth retrying and which need the user, and has a sentence ready that a person can actually read.',
+      'There are two siblings: DriveHandler for the JavaFX desktop app, and DriveAndroid — a deliberate standalone copy for Android with PKCE sign-in and resumable, cancellable streaming transfers.'
+    ],
+    highlights: [
+      { t: 'OAuth, every way', d: 'Desktop consent flow, cancel detection, an embedded web view, and "Continue with Google" identity claims.' },
+      { t: 'Folders by path', d: 'ensureFolderPath creates only the missing parts of a path and returns its id.' },
+      { t: 'Update in place', d: 'Write into a folder by name, replacing an existing file without creating duplicates.' },
+      { t: 'Progress everywhere', d: 'Uploads and downloads report progress straight into a JavaFX ProgressIndicator.' },
+      { t: 'Failures with reasons', d: 'DriveException tells "Drive full" from "rate limited", with retryable / needs-user flags.' },
+      { t: 'Retries that know when to stop', d: 'DriveRetry backs off exponentially — and refuses to retry what waiting can’t fix.' },
+      { t: 'Android with PKCE', d: 'Code verifier, S256 challenge and token exchange, no client secret on the phone.' },
+      { t: 'Resumable & cancellable', d: 'Android streams uploads with the resumable protocol and can stop mid-transfer.' }
+    ],
+    api: [
+      {
+        group: 'DriveHandler · auth',
+        intro: 'Desktop (JavaFX, JPMS module). Tokens are plain strings, so the app decides where to keep them.',
+        items: [
+          { sig: 'static void setScope(String scope)', d: 'Sets the single OAuth scope for Drive access (one of the DriveScopes constants).' },
+          { sig: 'static String[] createNewRefreshToken()', d: 'Runs the OAuth consent flow and returns a new refresh token.' },
+          { sig: 'static String[] createNewRefreshTokenWithCancelDetection()', d: 'The same consent flow, noticing when the user closes it.' },
+          { sig: 'static String[] createNewRefreshTokenWithIdentity()', d: 'Consent flow that also returns the user’s OpenID identity — for “Continue with Google”.' },
+          { sig: 'static String[] createNewRefreshTokenWithWebView()', d: 'Consent inside an embedded web view instead of the browser.' },
+          { sig: 'static String getNewAccessToken(String refreshToken)', d: 'Trades a refresh token for a fresh one-hour access token.' },
+          { sig: 'static boolean checkAccessToken(String accessToken)', d: 'Whether an access token is still valid.' }
+        ]
+      },
+      {
+        group: 'DriveHandler · folders & listing',
+        items: [
+          { sig: 'static String ensureFolderPath(String accessToken, String... pathSegments)', d: 'Returns the id of a folder path, creating only the parts that don’t exist yet.' },
+          { sig: 'static String findChild(String accessToken, String parentId, String name, boolean folders)', d: 'Finds a child by exact name inside a folder, or null.' },
+          { sig: 'static List<DriveEntry> listFolder(String accessToken, String folderId)', d: 'Everything directly inside a folder, as entries with id, name, MIME type and isFolder().' },
+          { sig: 'static String createFolderInsideAppData(String accessToken, String folderName)', d: 'Creates a folder in the hidden app-data space.' },
+          { sig: 'static String createFolderInsideOtherFolder(String accessToken, String parentFolderId, String newFolderName)', d: 'Creates a folder inside an existing one.' },
+          { sig: 'static List<String> listAppDataFiles(String accessToken)', d: 'All files in the app-data folder, with their ids.' },
+          { sig: 'static ArrayList<String> listOnlyIDOfAllFilesInsideAFolder(String accessToken, String folderId)', d: 'Just the ids of every file in a folder.' },
+          { sig: 'static boolean checkExistence(String accessToken, String fileId)', d: 'Whether a file exists and isn’t trashed.' }
+        ]
+      },
+      {
+        group: 'DriveHandler · upload',
+        items: [
+          { sig: 'static String uploadFile(String accessToken, String filePath)', d: 'Uploads a file and returns its id.' },
+          { sig: 'static String uploadFile(String accessToken, String filePath, ProgressIndicator progressIndicator)', d: 'Uploads into app data, updating a JavaFX progress indicator as it goes.' },
+          { sig: 'static String uploadFileToFolder(String accessToken, String filePath, String folderId, ProgressIndicator progressIndicator)', d: 'Uploads into a specific folder, with progress.' },
+          { sig: 'static String uploadOrUpdateInFolder(String accessToken, String filePath, String folderId, ProgressIndicator progressIndicator)', d: 'Uploads into a folder, replacing any file of the same name in place.' },
+          { sig: 'static String uploadFileViaStreams(String accessToken, InputStream inputStream, long fileLength, String filePath)', d: 'Uploads from a stream of known length.' },
+          { sig: 'static boolean updateFile(String accessToken, String fileID, File newFile)', d: 'Replaces a file’s content, keeping its id.' }
+        ]
+      },
+      {
+        group: 'DriveHandler · download & share',
+        items: [
+          { sig: 'static byte[] downloadBytes(String accessToken, String fileId)', d: 'A private file’s bytes, authenticated.' },
+          { sig: 'static byte[] downloadByName(String accessToken, String folderId, String name)', d: 'Finds a file by name in a folder and returns its bytes, or null.' },
+          { sig: 'static boolean downloadFileToPath(String accessToken, String fileId, String filePath, String newFileName)', d: 'Downloads a file to disk under a new name.' },
+          { sig: 'static boolean downloadFileFromFileIDAndSaveToPath(String fileId, String targetDir, String newFileName, ProgressIndicator progressIndicator)', d: 'Downloads a shared file by id alone, with progress — the share link is built for you.' },
+          { sig: 'static boolean downloadFileFromShareLinkAndSaveToPath(String shareLink, String filePath, String newFileName)', d: 'Downloads straight from a share link.' },
+          { sig: 'static String getFileShareLink(String accessToken, String fileId)', d: 'A read-only “anyone with the link” URL.' },
+          { sig: 'static boolean elevateAccess(String accessToken, String fileId)', d: 'Makes a file readable by anyone with its id — so Talken can pass just a file id in a message.' },
+          { sig: 'static String extractFileIdFromShareLink(String shareLink)', d: 'Pulls the file id out of any Drive share link.' },
+          { sig: 'static boolean deleteFile(String accessToken, String fileId)', d: 'Deletes a file.' }
+        ]
+      },
+      {
+        group: 'DriveHandler · storage',
+        items: [
+          { sig: 'static String getStorageOccupiedFormatted(String accessToken)', d: 'Drive space used, as text like “15.2 GB”.' },
+          { sig: 'static double getStorageOccupied(String accessToken, boolean inGigaBytes)', d: 'Drive space used, as a number.' },
+          { sig: 'static String getTotalStorageFormatted(String accessToken)', d: 'Total Drive space, as text.' },
+          { sig: 'static double getTotalStorage(String accessToken, boolean inGigaBytes)', d: 'Total Drive space, as a number.' },
+          { sig: 'static String getStorageUsedByApp(String accessToken)', d: 'How much of it this app is using.' }
+        ]
+      },
+      {
+        group: 'DriveException · DriveRetry',
+        intro: 'A failure with a reason, not just a number — and a retry loop that knows when to give up.',
+        items: [
+          { sig: 'Reason getReason()', d: 'Why it failed — e.g. Drive full vs. rate limited, which are both HTTP 403.' },
+          { sig: 'boolean isRetryable()', d: 'Whether trying again later could succeed without the user doing anything.' },
+          { sig: 'boolean needsUserAction()', d: 'Whether the user must act first (sign in again, free up space).' },
+          { sig: 'String userMessage()', d: 'A sentence fit for a person: no codes, no jargon, never alarming about the wrong thing.' },
+          { sig: 'static DriveException from(HttpURLConnection conn, int code, String what)', d: 'Classifies a failed connection, reading its error body.' },
+          { sig: 'static DriveException network(IOException e, String what)', d: 'Wraps a plain network failure.' },
+          { sig: 'static <T> T DriveRetry.run(String what, DriveCall<T> call)', d: 'Runs a call, retrying only retryable failures with exponential backoff.' }
+        ]
+      },
+      {
+        group: 'DriveAndroid',
+        intro: 'The Android sibling: no desktop OAuth client, PKCE instead of a secret, streams instead of files.',
+        items: [
+          { sig: 'static String codeVerifier()', d: 'A fresh PKCE verifier — 32 random bytes, URL-safe Base64.' },
+          { sig: 'static String codeChallenge(String verifier)', d: 'The S256 challenge for a verifier.' },
+          { sig: 'static String authUrl(String clientId, String redirectUri, String codeChallenge)', d: 'The consent URL to open in a browser or Custom Tab.' },
+          { sig: 'static Tokens exchangeCode(String clientId, String code, String redirectUri, String codeVerifier)', d: 'Redeems the authorisation code from the redirect.' },
+          { sig: 'static String refreshAccessToken(String clientId, String refreshToken)', d: 'A fresh access token from a stored refresh token.' },
+          { sig: 'static String upload(String accessToken, InputStream in, long length, String fileName, String mimeType, Progress progress, Cancellation cancel)', d: 'A resumable, stoppable streaming upload; returns the new file id.' },
+          { sig: 'static void download(String accessToken, String fileId, OutputStream out, Progress progress, Cancellation cancel)', d: 'Streams a file into any output, with progress, stoppable.' },
+          { sig: 'static boolean makePublic(String accessToken, String fileId)', d: 'Grants anyone-with-the-link read access, so a peer on another account can fetch it.' },
+          { sig: 'static String uploadOrUpdateInFolder(String accessToken, String folderId, String name, byte[] content)', d: 'Writes bytes under a name, replacing an existing file in place.' },
+          { sig: 'static long storageUsedBytes(String accessToken)', d: 'Bytes used across the account, or -1.' },
+          { sig: 'static String accountEmail(String accessToken)', d: 'Which Google account a token belongs to.' },
+          { sig: 'static <T> T retry(String what, DriveCall<T> call)', d: 'Runs a Drive call, retrying only where retrying can help.' }
+        ]
+      }
+    ],
+    build: [['Desktop', 'Java 21 JPMS module · JavaFX · Gradle'], ['Android', 'DriveAndroid — standalone, HttpURLConnection, PKCE'], ['APIs', 'Google API Client · Drive v3 · OAuth client'], ['Used by', 'Talken desktop & Android']]
+  },
   {
     id: 'talken-rest-api',
     title: 'Talken REST API',
     tagline: 'The phone book and post office behind Talken — never a vault.',
     category: 'talken',
     year: '2025 – now',
-    tags: ['Java 21', 'Spring Boot', 'MapDB'],
-    poster: { from: '#26234a', to: '#5450AA', ink: '#fff', glyph: 'API' },
-    stats: [['11,600+', 'lines of Java'], ['90', 'source files']],
-    body: ['Talken’s only central piece, written from scratch in Spring Boot. It lets people find each other, recover their key with their password, and holds messages for friends who are offline. It never routes a live conversation.'],
-    features: ['User discovery', 'Account-key recovery', 'Offline message delivery — up to 1,000 messages, kept 3 years', 'Ships its own client library for the apps']
-  },
-  {
-    id: 'drive-handler',
-    title: 'Drive Handler',
-    tagline: 'The Google Drive library that lets Talken keep your files in your own storage.',
-    category: 'talken',
-    year: '2025',
-    tags: ['Java', 'Kotlin', 'Gradle', 'Google Drive API'],
-    poster: { from: '#0f2a1d', to: '#22c55e', ink: '#fff', glyph: '⇅' },
-    stats: [['4,100+', 'lines of code'], ['2', 'platforms']],
-    body: ['A standalone library for desktop and Android that handles sign-in, uploads, downloads and sharing on the user’s own Google Drive — the reason Talken can send multi-gigabyte files without a file server.']
+    tags: ['Java 21', 'Spring Boot 3', 'MapDB'],
+    poster: { from: '#26234a', to: '#5450AA', ink: '#fff', icon: 'assets/img/icons/talken.png' },
+    stats: [['11,600+', 'lines of Java'], ['90', 'source files'], ['1,000', 'offline messages held per user'], ['3 yrs', 'offline retention']],
+    story: [
+      'A peer-to-peer messenger still needs a way for two strangers to find each other. Talken’s REST API is the smallest possible answer: a phone book, a key-recovery desk and a post-office box — and nothing else. It never routes a live conversation and never holds a readable message.',
+      'Written from scratch in Spring Boot, it ships its own client library that both the desktop and Android apps use, and every request that changes anything is authenticated by a proof derived from the user’s own key.'
+    ],
+    highlights: [
+      { t: 'Discovery', d: 'Find a person and their current mesh address — the public user directory.' },
+      { t: 'Key recovery', d: 'Your private key, sealed on your own device before it ever arrives, recoverable with your password.' },
+      { t: 'Offline mailbox', d: 'Holds up to 1,000 sealed messages per person for three years and hands them over on sign-in.' },
+      { t: 'Groups & channels', d: 'Membership, roles and channel metadata, enforced on every change.' },
+      { t: 'Own client library', d: 'A typed Java client shipped into both apps.' },
+      { t: 'Proof, not passwords', d: 'Mutations carry an Argon2-derived identity proof, never the key itself.' }
+    ],
+    build: [['Framework', 'Spring Boot 3 · Java 21'], ['Storage', 'MapDB'], ['Client', 'talken-rest-client, used by desktop and Android'], ['Deploy', 'Push to main → api.talken.in']]
   },
   {
     id: 'talken-toolkit',
@@ -230,7 +429,9 @@ window.PROJECTS = [
     year: '2025',
     tags: ['Java', 'JavaFX'],
     poster: { from: '#2a1f3d', to: '#8580C8', ink: '#fff', icon: 'assets/img/icons/talken.png' },
-    body: ['A small JavaFX utility that checks for the latest Talken version and downloads new builds into your Talken directory.']
+    story: ['A small JavaFX utility from Talken’s early days: it checks for the latest Talken version, then downloads the new build into your Talken directory — before the app learned to update itself.'],
+    highlights: [{ t: 'Version check', d: 'Reads the latest published Talken version.' }, { t: 'One-click download', d: 'Fetches the build into the Talken folder you choose, with progress.' }],
+    build: [['UI', 'JavaFX with FXML'], ['Downloads', 'Its own file downloader']]
   },
 
   /* ---------------- desktop apps ---------------- */
@@ -242,10 +443,25 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing'],
     poster: { from: '#1f2937', to: '#ef4444', ink: '#fff', icon: 'assets/img/icons/sgpaint.png', bare: true },
-    image: 'assets/img/sg-paint.png',
-    stats: [['3,500+', 'lines of Java']],
-    body: ['A desktop painting application built from scratch in Java — brushes, shapes, colours and a full tool palette, reimagining what MS Paint could be.'],
-    features: ['Brushes, shapes and an eraser', 'A built-in colour picker', 'Open, save and create new canvases', 'Resize images']
+    stats: [['3,500+', 'lines of Java'], ['84', 'compiled classes'], ['20+', 'tools & swatches']],
+    shots: [
+      { src: S + 'sgpaint-2.webp', caption: 'Ellipses, rectangles and freehand strokes on the canvas' },
+      { src: S + 'sgpaint-1.webp', caption: 'The full tool bar: swatches, stroke widths, shapes, pencil, fill, eraser, resize' },
+      { src: 'assets/img/sg-paint.png', caption: 'A fresh canvas' }
+    ],
+    story: [
+      'Every Windows kid has drawn in MS Paint. SG Paint is what happened when I decided to build my own — from an empty JFrame to a full painting program, with its own canvas, its own tools and its own file handling.',
+      'Everything you see is hand-drawn in Swing: the swatch grid, the custom colour picker, the shape tools, the resize panel with its arrow nudges, and native open/save dialogs.'
+    ],
+    highlights: [
+      { t: 'Shapes', d: 'Rectangles, rounded rectangles, ellipses, triangles and lines — outlined or filled.' },
+      { t: 'Pencil, fill & eraser', d: 'Freehand drawing, flood fill and an eraser.' },
+      { t: 'Colour', d: 'A swatch grid plus a full built-in colour picker for any custom colour.' },
+      { t: 'Stroke widths', d: 'Pick how thick every line and outline is.' },
+      { t: 'Resize', d: 'Set the canvas width and height precisely, or nudge it with arrows.' },
+      { t: 'Files', d: 'New, open and save-as images through native file dialogs.' }
+    ],
+    build: [['UI', 'Java Swing, custom-painted canvas'], ['Dialogs', 'Native file chooser via JNA'], ['Classes', '84 compiled classes']]
   },
   {
     id: 'photos-utility',
@@ -255,9 +471,15 @@ window.PROJECTS = [
     year: '2026',
     tags: ['Java', 'JavaFX', 'VLC'],
     poster: { from: '#0b1324', to: '#38bdf8', ink: '#fff', icon: 'assets/img/icons/photos.jpg' },
-    stats: [['2,100+', 'lines of Java']],
-    body: ['Point it at any folder and browse every photo and video inside, with real thumbnails — the way a phone gallery feels, on Windows.'],
-    features: ['Folder and media tiles with Windows-native thumbnails', 'Video thumbnails and playback through VLC', 'A full-screen media viewer', 'Recent folders']
+    stats: [['2,100+', 'lines of Java'], ['11', 'classes']],
+    story: ['Windows Explorer is a bad way to look at photos. Photos Utility points at any folder and shows every photo and video inside as real thumbnails — the way a phone gallery feels, on the desktop — with videos that actually play.'],
+    highlights: [
+      { t: 'Folder & media tiles', d: 'Subfolders and media side by side, with Windows-native thumbnails.' },
+      { t: 'Video', d: 'Video thumbnails and full playback through VLC.' },
+      { t: 'Viewer', d: 'A full-screen viewer for stepping through a folder.' },
+      { t: 'Recents', d: 'Re-open the folders you looked at last.' }
+    ],
+    build: [['UI', 'JavaFX'], ['Thumbnails', 'Windows shell thumbnailer + its own thumbnail service'], ['Video', 'VLC integration']]
   },
   {
     id: 'notes',
@@ -265,12 +487,27 @@ window.PROJECTS = [
     tagline: 'An advanced text editor that goes beyond Windows Notepad.',
     category: 'desktop',
     year: '2024',
-    tags: ['Java', 'Swing'],
+    tags: ['Java', 'Swing', 'Encryption'],
     poster: { from: '#292524', to: '#eab308', ink: '#fff', icon: 'assets/img/icons/notes.png', bare: true },
-    image: 'assets/img/notes-app.png',
-    stats: [['2,500+', 'lines of Java']],
-    body: ['A desktop text editor that started as a Notepad clone and kept going — the ancestor of what later became Notes+.'],
-    features: ['Per-file and universal text and background colours', 'Fonts and styles', 'Automatic backups to a folder you choose', 'File encryption and decryption']
+    stats: [['2,500+', 'lines of Java'], ['8', 'source files']],
+    shots: [
+      { src: S + 'notes-1.webp', caption: 'A note, with the status bar tracking line, column and font size' },
+      { src: S + 'notes-2.webp', caption: 'The Design menu: per-file and universal colours, image backgrounds, fonts' },
+      { src: S + 'notes-3.webp', caption: 'A file with its own background colour' }
+    ],
+    story: [
+      'Notepad hasn’t really changed in thirty years. Notes started as my Notepad clone and kept going: themes per file and for everything at once, image backgrounds, fonts, automatic backups — and its own encryption, so a text file can be locked.',
+      'It’s the direct ancestor of Notes+: the same instinct, years earlier, in Swing.'
+    ],
+    highlights: [
+      { t: 'Per-file design', d: 'Give any single file its own background and text colour.' },
+      { t: 'Universal themes', d: 'Or change the background and text colour of every file at once.' },
+      { t: 'Image backgrounds', d: 'Set a picture as the background behind your text.' },
+      { t: 'Fonts', d: 'Change the font, its size and style.' },
+      { t: 'Backups', d: 'Automatic backups into a folder you choose.' },
+      { t: 'Encryption', d: 'Encrypt a file, decrypt it back — built into the editor’s Privacy menu.' }
+    ],
+    build: [['UI', 'Java Swing'], ['Crypto', 'Its own Encrypter / Decrypter classes'], ['Dialogs', 'Native file chooser via JNA']]
   },
   {
     id: 'color-picker',
@@ -280,17 +517,35 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing', 'JavaFX'],
     poster: { from: '#7c3aed', to: '#f97316', ink: '#fff', icon: 'assets/img/icons/colorpicker.png', bare: true },
-    body: ['A tiny utility I built twice: first in Swing, then rebuilt from scratch in JavaFX. Pick a colour and copy its RGB, HEX or HSB code in one click.']
+    shots: [
+      { src: S + 'colorpicker-2.webp', caption: 'After picking a colour: the whole window takes it on' },
+      { src: S + 'colorpicker-1.webp', caption: 'RGB, HEX and HSB, each one click from the clipboard' }
+    ],
+    story: ['A tiny tool I built twice: first in Swing, then again from scratch in JavaFX. Pick a colour and the whole window becomes it, with its RGB, HEX and HSB codes one click away from the clipboard — the thing I kept needing while designing my other apps.'],
+    highlights: [
+      { t: 'Three formats', d: 'RGB, HEX and HSB side by side.' },
+      { t: 'One-click copy', d: 'Each format has its own copy button.' },
+      { t: 'Live preview', d: 'The window itself turns into the colour you picked.' },
+      { t: 'Built twice', d: 'The Swing original, then a JavaFX rebuild.' }
+    ],
+    build: [['v1', 'Java Swing with JColorChooser'], ['v2', 'JavaFX rebuild (Maven)']]
   },
   {
     id: 'floating-keyboard',
     title: 'Floating Keyboard',
-    tagline: 'An on-screen keyboard that floats above everything.',
+    tagline: 'A full on-screen keyboard that floats above everything.',
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing'],
     poster: { from: '#111827', to: '#64748b', ink: '#fff', icon: 'assets/img/icons/keyboard.jpg' },
-    body: ['A floating, always-on-top virtual keyboard for typing without a physical one.']
+    shots: [{ src: S + 'keyboard-1.webp', caption: 'A complete layout — function row, arrows, modifiers' }],
+    story: ['A complete virtual keyboard — function row, number row, modifiers and arrows — in an always-on-top window that floats over whatever you’re doing, and types into it.'],
+    highlights: [
+      { t: 'Full layout', d: 'Esc and F1–F12, numbers, letters, punctuation, Shift, Ctrl, Win, Alt, Space and arrows.' },
+      { t: 'Always on top', d: 'It floats above every other window.' },
+      { t: 'Types for real', d: 'Each key press is sent to the app you’re using.' }
+    ],
+    build: [['UI', 'Java Swing'], ['Input', 'Key actions dispatched to the focused app']]
   },
   {
     id: 'jre-installer',
@@ -300,17 +555,14 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing', 'Windows'],
     poster: { from: '#1c1917', to: '#f97316', ink: '#fff', glyph: '☕' },
-    body: ['Sharing Java apps with friends meant first explaining Java. So I wrote an installer that sets up a Java runtime on Windows with a single button — no admin rights needed.']
-  },
-  {
-    id: 'memo',
-    title: 'Memo',
-    tagline: 'A quick, lightweight memo pad for the desktop.',
-    category: 'desktop',
-    year: '2024',
-    tags: ['Java', 'Swing'],
-    poster: { from: '#422006', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/memo.png' },
-    body: ['A small desktop memo app for jotting things down fast.']
+    shots: [{ src: S + 'jre-1.webp', caption: 'One button' }],
+    story: ['Sharing my Java apps with friends meant first explaining what Java is. So I wrote an installer: one button copies a bundled OpenJDK runtime into the user’s own app-data folder — no admin rights, no setup wizard — and every one of my apps can run.'],
+    highlights: [
+      { t: 'One button', d: '“Start Installing JRE” is the whole interface.' },
+      { t: 'No admin rights', d: 'Installs into the user’s own LOCALAPPDATA folder.' },
+      { t: 'Progress', d: 'A loader while it copies, then a confirmation.' }
+    ],
+    build: [['UI', 'Java Swing'], ['Install', 'Recursive copy of a bundled OpenJDK (Adoptium) runtime']]
   },
   {
     id: 'cps-tester',
@@ -320,7 +572,10 @@ window.PROJECTS = [
     year: '2023',
     tags: ['Java', 'Swing'],
     poster: { from: '#18181b', to: '#22d3ee', ink: '#fff', icon: 'assets/img/icons/cps.png' },
-    body: ['The first app I ever built with a window instead of a terminal: a clicks-per-second test with a countdown, a score and a restart button.']
+    shots: [{ src: S + 'cps-1.webp', caption: 'Clicks Per Second Test' }],
+    story: ['The first app I ever built with a window instead of a terminal. Click start, then click as fast as you can — it counts, times and tells you your clicks per second. Small, but it’s where everything after it began.'],
+    highlights: [{ t: 'Countdown', d: 'Get ready, then GO!' }, { t: 'Your CPS', d: 'Clicks counted and divided by the seconds.' }, { t: 'Restart', d: 'Try again, instantly.' }],
+    build: [['UI', 'Java Swing, custom fonts']]
   },
 
   /* ---------------- widgets ---------------- */
@@ -330,10 +585,12 @@ window.PROJECTS = [
     tagline: 'Live weather in a clean, translucent desktop widget.',
     category: 'widget',
     year: '2024',
-    tags: ['Java', 'Swing', 'REST'],
+    tags: ['Java', 'Swing', 'REST', 'JSON'],
     poster: { from: '#1e3a8a', to: '#60a5fa', ink: '#fff', glyph: '☀' },
-    image: 'assets/img/weather-widget.png',
-    body: ['Real-time weather pulled from a public weather API, rendered in a small rounded, translucent window that lives on the desktop.']
+    shots: [{ src: S + 'weather-1.webp', caption: 'Live conditions, captured while writing this page' }, { src: 'assets/img/weather-widget.png', caption: 'On the desktop' }],
+    story: ['Real-time weather pulled from a public weather API and parsed from JSON, drawn in a rounded, translucent window that lives on the desktop — conditions, temperature, wind speed and direction, pressure and humidity, refreshed in the background.'],
+    highlights: [{ t: 'Live data', d: 'Conditions, temperature, wind, pressure and humidity.' }, { t: 'Translucent', d: 'A rounded, see-through panel that sits on the desktop.' }, { t: 'Editable', d: 'Change the location from the widget itself.' }],
+    build: [['UI', 'Java Swing, custom rounded panels'], ['Data', 'WeatherAPI over HTTP, parsed with org.json']]
   },
   {
     id: 'clock-widget',
@@ -343,17 +600,23 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing', 'JavaFX'],
     poster: { from: '#0a0a0a', to: '#525252', ink: '#fff', icon: 'assets/img/icons/clock.jpg' },
-    body: ['A clock that floats on the desktop with no window around it. Rebuilt with a control panel to change its colour, move it and resize it, plus 24-hour and JavaFX versions.']
+    shots: [{ src: S + 'clock-1.webp', caption: 'The clock, with no window around it' }],
+    story: ['A clock that floats on the desktop with no window around it. I rebuilt it with a control panel — change its colour, move it, resize it, add or remove it — and wrote 24-hour and JavaFX versions along the way.'],
+    highlights: [{ t: 'Transparent', d: 'Just the digits, floating on your wallpaper.' }, { t: 'Control panel', d: 'Recolour, move, resize, add and remove the widget.' }, { t: 'Variants', d: '12-hour, 24-hour and a JavaFX port.' }],
+    build: [['UI', 'Java Swing (plus a JavaFX version)']]
   },
   {
     id: 'mix-widget',
     title: 'MixWidget',
-    tagline: 'Clock and weather, together in one translucent widget.',
+    tagline: 'Clock, date and weather, together in one widget.',
     category: 'widget',
     year: '2024',
-    tags: ['Java', 'Swing', 'REST'],
-    poster: { from: '#0c4a6e', to: '#fbbf24', ink: '#fff', icon: 'assets/img/icons/mix.png' },
-    body: ['The clock and weather widgets merged into one: time, date and live conditions with their own weather art, on a see-through panel.']
+    tags: ['Java', 'Swing', 'REST', 'JSON'],
+    poster: { from: '#0c4a6e', to: '#fbbf24', ink: '#fff', icon: 'assets/img/icons/mix.png', bare: true },
+    shots: [{ src: S + 'mix-1.webp', caption: 'Time, date and live weather' }],
+    story: ['The clock and the weather widget merged into one: the time, the date and live conditions on a single translucent panel, with its own weather art for sun, cloud, rain, fog, snow, dust and storms.'],
+    highlights: [{ t: 'All-in-one', d: 'Time, date and weather together.' }, { t: 'Weather art', d: 'Its own illustrations for every condition.' }, { t: 'Custom font', d: 'A bundled display font.' }],
+    build: [['UI', 'Java Swing'], ['Data', 'WeatherAPI, parsed with org.json']]
   },
 
   /* ---------------- games ---------------- */
@@ -363,12 +626,28 @@ window.PROJECTS = [
     tagline: 'My first game. An endless runner inspired by Chrome Dino and Geometry Dash.',
     category: 'game',
     year: '2024',
-    tags: ['Java', 'Swing', '2D'],
+    tags: ['Java', 'Swing', '2D', 'Game loop'],
     poster: { from: '#3f3f46', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/rexrun.png', bare: true, pixel: true },
-    image: 'assets/img/rex-run-game.png',
-    stats: [['6,300+', 'lines of Java']],
-    body: ['The first game I ever built, right after the terminal stopped being enough. An endless runner that borrows the simplicity of Chrome’s dinosaur and the rhythm of Geometry Dash.'],
-    features: ['Coins, lives and jump pillars', 'A shop and avatar editor', 'Saved progress and settings', 'Pause, resume and restart']
+    stats: [['6,300+', 'lines of Java'], ['8', 'game classes'], ['∞', 'runs']],
+    shots: [
+      { src: S + 'rexrun-1.webp', caption: 'Title screen — his name is Rex' },
+      { src: S + 'rexrun-3.webp', caption: 'Mid-run: score, lives and coins' },
+      { src: S + 'rexrun-4.webp', caption: 'Dodging stone blocks and jump pillars' },
+      { src: S + 'rexrun-2.webp', caption: 'Pause menu with the custom avatar' }
+    ],
+    story: [
+      'The first game I ever built, right after the terminal stopped being enough. Rex Run borrows the simplicity of Chrome’s offline dinosaur and the rhythm of Geometry Dash — and then adds everything I wished those games had.',
+      'There’s an economy (collect coins, spend them in the shop), lives you can pick up mid-run, an avatar editor, settings and saved progress, all on a game loop I wrote myself.'
+    ],
+    highlights: [
+      { t: 'Endless running', d: 'Stone blocks, pillars to jump and obstacles that never stop coming.' },
+      { t: 'Coins & lives', d: 'Collect coins and hearts as you run.' },
+      { t: 'The shop', d: 'Spend your coins.' },
+      { t: 'Avatar editor', d: 'Make Rex your own.' },
+      { t: 'Saves', d: 'Progress is saved between sessions.' },
+      { t: 'Pause anytime', d: 'Resume, shop, settings or exit from the pause menu.' }
+    ],
+    build: [['Engine', 'Hand-written game loop in Swing'], ['Objects', 'Blocks, coins, lives, jump pillars as their own classes'], ['Saves', 'Plain-text save file']]
   },
   {
     id: 'flying-dual',
@@ -376,10 +655,24 @@ window.PROJECTS = [
     tagline: 'A local two-player dogfight on one keyboard.',
     category: 'game',
     year: '2024',
-    tags: ['Java', 'Swing', '2D'],
+    tags: ['Java', 'Swing', '2D', 'Multiplayer'],
     poster: { from: '#052e16', to: '#dc2626', ink: '#fff', icon: 'assets/img/icons/flyingdual.png' },
-    image: 'assets/img/flying-dual.png',
-    body: ['Two players, one keyboard, one sky. A local multiplayer shooter on a hand-rolled game loop, with difficulty levels and a round timer.']
+    stats: [['1,200+', 'lines of Java'], ['2', 'players, 1 keyboard']],
+    shots: [
+      { src: S + 'flyingdual-2.webp', caption: 'Red vs green, health bars up top, the round timer counting down' },
+      { src: S + 'flyingdual-3.webp', caption: 'Bullets in flight' },
+      { src: S + 'flyingdual-1.webp', caption: 'The start screen' },
+      { src: 'assets/img/flying-dual.png', caption: 'Another round' }
+    ],
+    story: ['Two players, one keyboard, one sky. Name your pilots, pick a difficulty, and fly against each other with health bars draining and a round timer counting down — a local multiplayer shooter on a game loop I wrote from scratch.'],
+    highlights: [
+      { t: 'Two players', d: 'Both on one keyboard, each with their own controls.' },
+      { t: 'Health bars', d: 'Every hit drains the bar at the top of the screen.' },
+      { t: 'Round timer', d: 'Win before time is up.' },
+      { t: 'Difficulty', d: 'Pick how hard the round is.' },
+      { t: 'Pilots', d: 'Enter both players’ names before take-off.' }
+    ],
+    build: [['Engine', 'Swing game loop'], ['Entities', 'Players, bullets and an idle state as classes']]
   },
   {
     id: 'ping-pong',
@@ -389,7 +682,13 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
     poster: { from: '#0f172a', to: '#06b6d4', ink: '#fff', icon: 'assets/img/icons/pingpong.png' },
-    body: ['Classic two-player pong — with a settings screen to recolour the ball, both paddles and the background.']
+    shots: [
+      { src: S + 'pingpong-2.webp', caption: 'A rally in progress' },
+      { src: S + 'pingpong-1.webp', caption: 'Name both players' }
+    ],
+    story: ['Classic two-player pong — named players, a score for each side, a game-over screen that knows a draw from a win, and a settings screen to recolour the ball, both paddles and the background.'],
+    highlights: [{ t: 'Two players', d: 'Each paddle on its own keys.' }, { t: 'Your colours', d: 'Recolour the ball, both paddles and the background.' }, { t: 'Pause & resume', d: 'Stop and pick up where you left off.' }],
+    build: [['Engine', 'Swing game loop']]
   },
   {
     id: 'flappy-bird',
@@ -399,17 +698,45 @@ window.PROJECTS = [
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
     poster: { from: '#065f46', to: '#38bdf8', ink: '#fff', icon: 'assets/img/icons/flappy.png' },
-    body: ['My take on the one-button classic, built from scratch in Swing with my own physics and pipe generator.']
+    shots: [
+      { src: S + 'flappy-1.webp', caption: 'Mid-flight between the pipes, high score in the corner' },
+      { src: S + 'flappy-2.webp', caption: 'Press space to jump' }
+    ],
+    story: ['My take on the one-button classic, built from scratch in Swing — my own gravity and flap physics, a pipe generator, a scrolling city skyline and a high score that survives restarts.'],
+    highlights: [{ t: 'One button', d: 'Space to flap.' }, { t: 'Real physics', d: 'Gravity and flap impulse, written by hand.' }, { t: 'High score', d: 'Your best run, remembered.' }],
+    build: [['Engine', 'Swing game loop'], ['Objects', 'Bird, pipes and inverted pipes as classes']]
   },
   {
     id: 'tic-tac-toe',
     title: 'Tic Tac Toe',
-    tagline: 'The classic, with a running scoreboard.',
+    tagline: 'The classic, with a ten-round scoreboard.',
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing'],
     poster: { from: '#312e81', to: '#f472b6', ink: '#fff', icon: 'assets/img/icons/tictactoe.png' },
-    body: ['Two-player tic-tac-toe with a scoreboard that keeps count across rounds.']
+    shots: [
+      { src: S + 'tictactoe-2.webp', caption: 'A game in progress, scoreboard on the left' },
+      { src: S + 'tictactoe-1.webp', caption: 'Round one to X' }
+    ],
+    story: ['Two-player tic-tac-toe with a scoreboard that keeps count across ten rounds, plus restart for the board and reset for the whole match.'],
+    highlights: [{ t: 'Scoreboard', d: 'Ten rounds of wins for X and O.' }, { t: 'Restart & reset', d: 'A new board, or a whole new match.' }],
+    build: [['UI', 'Java Swing']]
+  },
+  {
+    id: 'memo',
+    title: 'Memo',
+    tagline: 'A colour-sequence memory game. How long a pattern can you remember?',
+    category: 'game',
+    year: '2024',
+    tags: ['Java', 'Swing'],
+    poster: { from: '#422006', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/memo.png' },
+    shots: [
+      { src: S + 'memo-2.webp', caption: 'The sequence playing — watch which colour lights up' },
+      { src: S + 'memo-1.webp', caption: 'Start, with the high score' }
+    ],
+    story: ['Four colours light up in a sequence; repeat it back. Every round adds one more step, until your memory gives out. A Simon-style game with a running score and a high score to beat.'],
+    highlights: [{ t: 'Growing sequences', d: 'One more colour every round.' }, { t: 'Score & high score', d: 'Shown right in the centre.' }],
+    build: [['UI', 'Java Swing']]
   },
   {
     id: 'terminal-game',
@@ -420,11 +747,18 @@ window.PROJECTS = [
     tags: ['Java', 'Terminal'],
     poster: { from: '#0a0a0b', to: '#ff6a3d', ink: '#fff', glyph: '(^_^)' },
     links: [{ label: 'Play it', href: 'index.html#walker', internal: true }],
-    stats: [['3,279', 'lines'], ['Nov 2023', 'written']],
-    body: [
+    stats: [['3,279', 'lines'], ['Nov 2023', 'written'], ['1', 'character who started it all']],
+    story: [
       'Until my 9th-grade half-yearlies I thought coding was pointless. Then I wondered whether I could make a character move across a terminal from user input — and this happened.',
       'A title screen, a settings menu with animation speed and loading-screen options, a loading bar, a gamer tag, a pause screen and secret hash-codes — and a (^_^) who falls from the sky and walks wherever you tell him. The walker at the top of this site is drawn from its original sprites.'
-    ]
+    ],
+    highlights: [
+      { t: 'Spawn animation', d: 'The player falls from the top of the terminal and lands arms-up.' },
+      { t: 'Walk cycle', d: 'Four frames, three columns per step, redrawn every 200 ms.' },
+      { t: 'Menus', d: 'Title, settings, info and pause screens — all typed commands.' },
+      { t: 'Hash-codes', d: '#action#, #normal# and #addPlayer# for secret modes.' }
+    ],
+    build: [['Runtime', 'Plain Java, System.out and Thread.sleep'], ['Frames', 'Hand-placed ASCII sprites']]
   }
 ];
 
