@@ -27,6 +27,11 @@ jobs:
       #   - run: npm ci && npm run build
       # and change `path` below to ./dist
 
+      # The custom domain's cache holds CSS/JS for hours; stamp each deploy's
+      # asset URLs with the commit so browsers never mix new HTML with old CSS.
+      - name: Cache-bust asset URLs
+        run: find . -name '*.html' -not -path './.git/*' -exec sed -i "s/?v=dev/?v=${GITHUB_SHA::7}/g" {} +
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
