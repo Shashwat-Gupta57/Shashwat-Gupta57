@@ -442,6 +442,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/SG-Paint' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/SG-Paint/releases/latest' }],
     poster: { from: '#1f2937', to: '#ef4444', ink: '#fff', icon: 'assets/img/icons/sgpaint.png', bare: true },
     stats: [['3,500+', 'lines of Java'], ['84', 'compiled classes'], ['20+', 'tools & swatches']],
     shots: [
@@ -488,6 +489,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing', 'Encryption'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Notes' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Notes/releases/latest' }],
     poster: { from: '#292524', to: '#eab308', ink: '#fff', icon: 'assets/img/icons/notes.png', bare: true },
     stats: [['2,500+', 'lines of Java'], ['8', 'source files']],
     shots: [
@@ -516,6 +518,7 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing', 'JavaFX'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Color-Picker' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Color-Picker/releases/latest' }],
     poster: { from: '#7c3aed', to: '#f97316', ink: '#fff', icon: 'assets/img/icons/colorpicker.png', bare: true },
     shots: [
       { src: S + 'colorpicker-2.webp', caption: 'After picking a colour: the whole window takes it on' },
@@ -554,15 +557,24 @@ window.PROJECTS = [
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing', 'Windows'],
-    poster: { from: '#1c1917', to: '#f97316', ink: '#fff', glyph: '☕' },
-    shots: [{ src: S + 'jre-1.webp', caption: 'One button' }],
-    story: ['Sharing my Java apps with friends meant first explaining what Java is. So I wrote an installer: one button copies a bundled OpenJDK runtime into the user’s own app-data folder — no admin rights, no setup wizard — and every one of my apps can run.'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/JRE-Installer' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/JRE-Installer/releases/latest' }],
+    poster: { from: '#1c1917', to: '#f97316', ink: '#fff', icon: 'assets/img/icons/jre.png' },
+    stats: [['1', 'button'], ['0', 'admin rights needed'], ['21 LTS', 'Eclipse Temurin bundled'], ['12', 'apps that use it']],
+    shots: [{ src: S + 'jre-2.webp', caption: 'Version 1.0.0 — one button, no admin rights' }, { src: S + 'jre-1.webp', caption: 'The original 2024 installer' }],
+    story: [
+      'Sharing my Java apps with friends meant first explaining what Java is. So I wrote an installer: one button copies a bundled Java runtime into the user’s own app-data folder — no admin rights, no setup wizard — and every one of my apps can run.',
+      'Version 1.0.0 fixes the bug that made the original spin forever: it looked for the bundled runtime wherever it happened to be launched from, so the copy silently failed. Now it finds the runtime next to its own exe, copies it in the background with a live percentage, and swaps it in only once the copy is complete.',
+      'It is the foundation of all my published desktop apps: each one’s exe looks for Java in exactly the folder this installs to, then falls back to JAVA_HOME.'
+    ],
     highlights: [
       { t: 'One button', d: '“Start Installing JRE” is the whole interface.' },
-      { t: 'No admin rights', d: 'Installs into the user’s own LOCALAPPDATA folder.' },
-      { t: 'Progress', d: 'A loader while it copies, then a confirmation.' }
+      { t: 'No admin rights', d: 'Installs into %LOCALAPPDATA%\\OpenJDK Adoptium JRE - SG\\JRE, inside the user’s own profile.' },
+      { t: 'Bundled & verified', d: 'Ships Eclipse Temurin 21 LTS, checked against Adoptium’s published SHA-256.' },
+      { t: 'Live progress', d: 'A timer-driven spinner and a percentage — the window never freezes.' },
+      { t: 'Safe reinstall', d: 'Copies into a fresh folder and swaps it in only when complete, so Java versions never get mixed.' },
+      { t: 'Clear errors', d: 'A readable message and Retry if the runtime is missing or the copy fails.' }
     ],
-    build: [['UI', 'Java Swing'], ['Install', 'Recursive copy of a bundled OpenJDK (Adoptium) runtime']]
+    build: [['UI', 'Java Swing'], ['Runtime', 'Eclipse Temurin 21.0.12.1 LTS (bundled)'], ['Install', 'Background SwingWorker copy into a staging folder, then an atomic swap'], ['Packaging', 'Launch4j exe that runs on its own bundled JRE']]
   },
   {
     id: 'cps-tester',
@@ -580,43 +592,39 @@ window.PROJECTS = [
 
   /* ---------------- widgets ---------------- */
   {
-    id: 'weather-widget',
-    title: 'Weather Widget',
-    tagline: 'Live weather in a clean, translucent desktop widget.',
+    id: 'widgets',
+    title: 'Widgets',
+    tagline: 'Three desktop widgets — weather, a transparent clock, and both at once.',
     category: 'widget',
     year: '2024',
     tags: ['Java', 'Swing', 'REST', 'JSON'],
-    poster: { from: '#1e3a8a', to: '#60a5fa', ink: '#fff', glyph: '☀' },
-    shots: [{ src: S + 'weather-1.webp', caption: 'Live conditions, captured while writing this page' }, { src: 'assets/img/weather-widget.png', caption: 'On the desktop' }],
-    story: ['Real-time weather pulled from a public weather API and parsed from JSON, drawn in a rounded, translucent window that lives on the desktop — conditions, temperature, wind speed and direction, pressure and humidity, refreshed in the background.'],
-    highlights: [{ t: 'Live data', d: 'Conditions, temperature, wind, pressure and humidity.' }, { t: 'Translucent', d: 'A rounded, see-through panel that sits on the desktop.' }, { t: 'Editable', d: 'Change the location from the widget itself.' }],
-    build: [['UI', 'Java Swing, custom rounded panels'], ['Data', 'WeatherAPI over HTTP, parsed with org.json']]
-  },
-  {
-    id: 'clock-widget',
-    title: 'Clock Widget',
-    tagline: 'A transparent desktop clock you can recolour, move and resize.',
-    category: 'widget',
-    year: '2024',
-    tags: ['Java', 'Swing', 'JavaFX'],
-    poster: { from: '#0a0a0a', to: '#525252', ink: '#fff', icon: 'assets/img/icons/clock.jpg' },
-    shots: [{ src: S + 'clock-1.webp', caption: 'The clock, with no window around it' }],
-    story: ['A clock that floats on the desktop with no window around it. I rebuilt it with a control panel — change its colour, move it, resize it, add or remove it — and wrote 24-hour and JavaFX versions along the way.'],
-    highlights: [{ t: 'Transparent', d: 'Just the digits, floating on your wallpaper.' }, { t: 'Control panel', d: 'Recolour, move, resize, add and remove the widget.' }, { t: 'Variants', d: '12-hour, 24-hour and a JavaFX port.' }],
-    build: [['UI', 'Java Swing (plus a JavaFX version)']]
-  },
-  {
-    id: 'mix-widget',
-    title: 'MixWidget',
-    tagline: 'Clock, date and weather, together in one widget.',
-    category: 'widget',
-    year: '2024',
-    tags: ['Java', 'Swing', 'REST', 'JSON'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Widgets' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Widgets/releases/latest' }],
     poster: { from: '#0c4a6e', to: '#fbbf24', ink: '#fff', icon: 'assets/img/icons/mix.png', bare: true },
-    shots: [{ src: S + 'mix-1.webp', caption: 'Time, date and live weather' }],
-    story: ['The clock and the weather widget merged into one: the time, the date and live conditions on a single translucent panel, with its own weather art for sun, cloud, rain, fog, snow, dust and storms.'],
-    highlights: [{ t: 'All-in-one', d: 'Time, date and weather together.' }, { t: 'Weather art', d: 'Its own illustrations for every condition.' }, { t: 'Custom font', d: 'A bundled display font.' }],
-    build: [['UI', 'Java Swing'], ['Data', 'WeatherAPI, parsed with org.json']]
+    stats: [['3', 'widgets'], ['3', 'branches, one repo'], ['5 min', 'weather refresh']],
+    shots: [
+      { src: S + 'mix-1.webp', caption: 'MixWidget — time, date and live weather on one panel' },
+      { src: S + 'weather-1.webp', caption: 'Weather Widget — conditions, temperature, wind, pressure, humidity' },
+      { src: S + 'clock-1.webp', caption: 'Clock Widget — just the digits, floating on the wallpaper' },
+      { src: 'assets/img/weather-widget.png', caption: 'The Weather Widget on the desktop' }
+    ],
+    story: [
+      'Windows took its desktop gadgets away years ago. These bring them back: small, borderless, translucent windows that sit on the wallpaper and stay out of your way — each one draggable, and each one remembering where you left it.',
+      'There are three, each on its own branch of the repo: a Weather Widget that pulls live conditions from WeatherAPI, a transparent Clock Widget with a control panel to recolour, move and resize it, and MixWidget, which puts the time, the date and the weather on one panel with its own weather art.'
+    ],
+    highlights: [
+      { t: 'Weather Widget', d: 'Live conditions, temperature, wind speed and direction, pressure and humidity — refreshed every five minutes.' },
+      { t: 'Clock Widget', d: 'A transparent clock with a control panel: recolour it, move it, resize it, add or remove it. Plus 24-hour and JavaFX versions.' },
+      { t: 'MixWidget', d: 'Time, date and weather together, with its own illustrations for sun, cloud, rain, fog, snow, dust and storms.' },
+      { t: 'Borderless & translucent', d: 'Rounded, see-through panels with no window chrome.' },
+      { t: 'Drag anywhere', d: 'Each widget remembers its position between launches.' },
+      { t: 'Your own key', d: 'The WeatherAPI key and city live in weather.properties beside the app — never in the code.' }
+    ],
+    install: [
+      { label: 'Download', code: '1. Install Java once with the JRE Installer (no admin rights)\n2. Download a widget from the Widgets releases page\n3. Unzip it anywhere and run the .exe' },
+      { label: 'Branches', code: 'git clone -b weather https://github.com/Shashwat-Gupta57/Widgets\ngit clone -b clock   https://github.com/Shashwat-Gupta57/Widgets\ngit clone -b mix     https://github.com/Shashwat-Gupta57/Widgets' },
+      { label: 'weather.properties', code: 'apiKey=YOUR_FREE_WEATHERAPI_KEY\ncity=Prayagraj' }
+    ],
+    build: [['UI', 'Java Swing, custom rounded panels, undecorated windows'], ['Weather', 'WeatherAPI over HTTP, parsed with org.json'], ['Settings', 'widget.properties (position) · weather.properties (key, city)'], ['Repo', 'One repo, a branch per widget']]
   },
 
   /* ---------------- games ---------------- */
@@ -627,6 +635,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D', 'Game loop'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Rex-Run' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Rex-Run/releases/latest' }],
     poster: { from: '#3f3f46', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/rexrun.png', bare: true, pixel: true },
     stats: [['6,300+', 'lines of Java'], ['8', 'game classes'], ['∞', 'runs']],
     shots: [
@@ -656,6 +665,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D', 'Multiplayer'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Flying-Dual' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Flying-Dual/releases/latest' }],
     poster: { from: '#052e16', to: '#dc2626', ink: '#fff', icon: 'assets/img/icons/flyingdual.png' },
     stats: [['1,200+', 'lines of Java'], ['2', 'players, 1 keyboard']],
     shots: [
@@ -681,6 +691,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Ping-Pong' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Ping-Pong/releases/latest' }],
     poster: { from: '#0f172a', to: '#06b6d4', ink: '#fff', icon: 'assets/img/icons/pingpong.png' },
     shots: [
       { src: S + 'pingpong-2.webp', caption: 'A rally in progress' },
@@ -697,6 +708,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing', '2D'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Flappy-Bird' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Flappy-Bird/releases/latest' }],
     poster: { from: '#065f46', to: '#38bdf8', ink: '#fff', icon: 'assets/img/icons/flappy.png' },
     shots: [
       { src: S + 'flappy-1.webp', caption: 'Mid-flight between the pipes, high score in the corner' },
@@ -713,6 +725,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Tic-Tac-Toe' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Tic-Tac-Toe/releases/latest' }],
     poster: { from: '#312e81', to: '#f472b6', ink: '#fff', icon: 'assets/img/icons/tictactoe.png' },
     shots: [
       { src: S + 'tictactoe-2.webp', caption: 'A game in progress, scoreboard on the left' },
@@ -729,6 +742,7 @@ window.PROJECTS = [
     category: 'game',
     year: '2024',
     tags: ['Java', 'Swing'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Memo' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Memo/releases/latest' }],
     poster: { from: '#422006', to: '#facc15', ink: '#fff', icon: 'assets/img/icons/memo.png' },
     shots: [
       { src: S + 'memo-2.webp', caption: 'The sequence playing — watch which colour lights up' },
@@ -741,25 +755,43 @@ window.PROJECTS = [
   {
     id: 'terminal-game',
     title: 'Terminal Game',
-    tagline: 'The 3,279-line program that made me fall for code.',
+    tagline: 'A 9th grader, a school textbook, two lines from outside — and 3,279 lines of Java.',
     category: 'game',
-    year: '2023',
-    tags: ['Java', 'Terminal'],
-    poster: { from: '#0a0a0b', to: '#ff6a3d', ink: '#fff', glyph: '(^_^)' },
-    links: [{ label: 'Play it', href: 'index.html#walker', internal: true }],
-    stats: [['3,279', 'lines'], ['Nov 2023', 'written'], ['1', 'character who started it all']],
+    year: 'Nov 2023',
+    tags: ['Java', 'BlueJ', 'Terminal', 'Class 9'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Terminal-Game' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Terminal-Game/releases/latest' }, { label: 'Play it on the home page', href: 'index.html#walker', internal: true }],
+    poster: { from: '#0a0a0b', to: '#ff6a3d', ink: '#fff', icon: 'assets/img/icons/terminal.png' },
+    stats: [['3,279', 'lines, in one main()'], ['263', 'do-while loops'], ['942', 'print statements'], ['55', 'screen clears']],
     story: [
-      'Until my 9th-grade half-yearlies I thought coding was pointless. Then I wondered whether I could make a character move across a terminal from user input — and this happened.',
-      'A title screen, a settings menu with animation speed and loading-screen options, a loading bar, a gamer tag, a pause screen and secret hash-codes — and a (^_^) who falls from the sky and walks wherever you tell him. The walker at the top of this site is drawn from its original sprites.'
+      'In the half-yearly exams of 9th grade I genuinely disliked coding. It seemed pointless. Then one evening I wondered whether I could make a character walk across the BlueJ terminal from what I typed — and a month later I had written this.',
+      'It is built from exactly what the 9th-grade Computer Applications syllabus teaches: variables, Scanner input, if-else, for loops, String comparisons and printing. Only two things came from outside the classroom — the code that clears the terminal, and the do-while loop. That was the whole toolkit.',
+      'With it I built a game engine by hand. There are no arrays of sprites, no classes, no methods besides main: every frame of every animation is drawn line by line, character by character, out of nested loops that print spaces and slashes into exactly the right column — 942 print statements choreographed so that a little (^_^) falls from the top of the screen, lands with his arms up, and walks wherever you tell him.',
+      'A title screen, a settings menu that changes the animation speed and turns the loading screen off, a percentage loading bar, a gamer tag, a pause screen, typed commands and secret hash-codes that switch on an action mode and summon a second player. It is the most anyone could squeeze out of a school textbook — and it is the reason everything I have built since exists.'
     ],
+    showcase: '<section class="section pv-sec" id="toolkit"><div class="wrap"><header class="sec-head" data-reveal><span class="sec-num mono">✦</span><div><p class="eyebrow mono">The entire toolkit</p><h2 class="sec-title">Everything it’s <em>made of.</em></h2></div><p class="sec-sub">Counted from the source file itself.</p></header>'
+      + '<div class="kit" data-reveal><div class="kit-col"><h3 class="mono">from the 9th-grade syllabus</h3><ul>'
+      + '<li><b>155</b> for loops</li><li><b>56</b> if statements, <b>29</b> else branches</li><li><b>942</b> System.out.print calls</li><li><b>24</b> int, String, boolean and long variables</li><li><b>24</b> String comparisons with .equals()</li><li><b>10</b> Scanner reads</li><li><b>1</b> class, <b>1</b> method — main()</li></ul></div>'
+      + '<div class="kit-col kit-outside"><h3 class="mono">from outside the classroom</h3><ul><li><b>55</b> × <code>System.out.print("\\u000C")</code><span>clears the BlueJ terminal so the next frame can be drawn</span></li><li><b>263</b> × <code>do { … } while (…);</code><span>the loop every frame is built from</span></li></ul><p class="kit-note">That’s it. Two ideas, used 318 times.</p></div></div>'
+      + '<div class="kit-frames" data-reveal><figure><pre class="mono">\\(^_^)/\n \\-|-/\n   |\n   |\n  |+|\n  | |</pre><figcaption class="mono">landing</figcaption></figure><figure><pre class="mono"> (^_^)\n  /|\\\n / | \\\n   |\n  I+I\n  I I</pre><figcaption class="mono">standing</figcaption></figure><figure><pre class="mono">   |>\n  /|\\\n | | |\n   |\n  /|\n / |</pre><figcaption class="mono">walk · frame 2</figcaption></figure><figure><pre class="mono">   |>\n  /|\\\n / | \\\n   |\n  /\\\n /  \\</pre><figcaption class="mono">walk · frame 3</figcaption></figure></div>'
+      + '</div></section>',
     highlights: [
-      { t: 'Spawn animation', d: 'The player falls from the top of the terminal and lands arms-up.' },
-      { t: 'Walk cycle', d: 'Four frames, three columns per step, redrawn every 200 ms.' },
-      { t: 'Menus', d: 'Title, settings, info and pause screens — all typed commands.' },
-      { t: 'Hash-codes', d: '#action#, #normal# and #addPlayer# for secret modes.' }
+      { t: 'Spawn animation', d: 'The player falls from the top of the terminal, frame by frame, and lands arms-up.' },
+      { t: 'Walk cycle', d: 'Four hand-placed frames, three columns per step, redrawn on a timer.' },
+      { t: 'Title screen', d: 'Type play, settings or exit — the whole UI is typed commands.' },
+      { t: 'Settings', d: 'Animation speed at 0.5×, 1× or 2×, and a switch for the loading screen.' },
+      { t: 'Loading bar', d: 'A percentage loading screen drawn in ASCII.' },
+      { t: 'Gamer tag', d: 'Your name, asked for and remembered for the session.' },
+      { t: 'Pause screen', d: 'Type pause at any time.' },
+      { t: 'Hash-codes', d: '#action# switches on action mode, #normal# turns it off, #addPlayer# summons a second player.' }
     ],
-    build: [['Runtime', 'Plain Java, System.out and Thread.sleep'], ['Frames', 'Hand-placed ASCII sprites']]
-  }
+    install: [
+      { label: 'Windows exe', code: '1. Install Java once with the JRE Installer (no admin rights)\n2. Download Terminal-Game from the releases page\n3. Run Terminal Game.exe — best in Windows Terminal' },
+      { label: 'BlueJ (original)', code: 'Open Terminal_game2_basic.java in BlueJ\nRight-click the class → void main(String[] args)' },
+      { label: 'Any JDK', code: 'javac Terminal_game2_basic.java\njava Terminal_game2_basic' }
+    ],
+    installNote: 'It was written for the BlueJ terminal, where \\u000C clears the screen. The exe adds a tiny launcher that turns that character into a standard clear-screen code — the game’s own code is untouched.',
+    build: [['Written in', 'BlueJ, November 2023'], ['Structure', 'One class, one main() method'], ['Rendering', 'Nested do-while and for loops printing spaces and slashes'], ['Timing', 'Thread.sleep between frames'], ['Clearing', 'System.out.print("\\u000C")']]
+  },
 ];
 
 window.CATEGORIES = {
