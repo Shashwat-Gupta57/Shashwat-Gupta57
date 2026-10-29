@@ -1,5 +1,5 @@
-/* The privacy notice every visitor accepts once before entering.
-   It explains what this site does with their data (nothing) and who built it.
+/* The "sign here" notice every visitor accepts once before entering.
+   Half joke, half Talken flex: this site collects nothing, and the person who built it builds Talken.
    The acceptance is remembered in localStorage ("sg-privacy"), never sent anywhere.
    No JavaScript, no gate — the site is fully usable either way. */
 (function () {
@@ -15,26 +15,26 @@
   gate.setAttribute('aria-labelledby', 'gateTitle');
   gate.innerHTML =
     '<div class="gate-card">' +
-      '<p class="gate-kicker mono"><span class="pulse" aria-hidden="true"></span> privacy notice · read before entering</p>' +
-      '<h2 id="gateTitle" class="gate-title">Before you <em>enter.</em></h2>' +
-      '<p class="gate-lede">You’re about to see the work of <b>Shashwat Gupta</b> — the developer of <b>Talken</b>, a messenger built so that no one can watch who you talk to. He takes everyone’s identity seriously, including yours. So this site keeps a promise:</p>' +
+      '<p class="gate-kicker mono"><span class="pulse" aria-hidden="true"></span> classified · eyes only (yours)</p>' +
+      '<h2 id="gateTitle" class="gate-title">Sign here, <em>agent.</em></h2>' +
+      '<p class="gate-lede">Hey, I’m <b>Shashwat</b>. I built <b>Talken</b>, the chat app that makes surveillance agencies cry a little. So yeah, even my portfolio has no clue who you are. Quick rules before you go in:</p>' +
       '<ul class="gate-list">' +
-        '<li><b>No cookies.</b> Not one.</li>' +
-        '<li><b>No trackers, analytics or ads.</b> Your visit isn’t counted, profiled or sold.</li>' +
-        '<li><b>No third parties.</b> Even the fonts are served from here, so no other company learns you came.</li>' +
-        '<li><b>Nothing leaves your browser.</b> Only your theme and this acceptance are remembered — on your device.</li>' +
+        '<li><b>Triple-wrapped.</b> Every Talken message gets locked three times over before it leaves your device. Three layers, zero peeks.</li>' +
+        '<li><b>More private than Tor.</b> Tor bounces you through three strangers’ computers. Talken skips the strangers: straight from you to your friend, no relay, no middleman.</li>' +
+        '<li><b>Nothing to raid.</b> No message server, no phone number, your key is your account. Dear governments, you can knock, but there’s no door.</li>' +
+        '<li><b>Same rules here.</b> No cookies, no trackers, not even Google Fonts. I genuinely don’t know you’re reading this.</li>' +
       '</ul>' +
       '<a class="gate-talken" href="' + base + 'projects/talken.html">' +
         '<img src="' + base + 'assets/img/icons/talken.png" alt="" />' +
-        '<span><b>Talken</b> — talk like no one’s watching. No message server, no phone number, your key is your account. A messenger in a league of its own.</span>' +
+        '<span><b>Talken</b>: the most private messenger on the planet. Yeah, I said it. A league of its own.</span>' +
         '<i aria-hidden="true">→</i>' +
       '</a>' +
-      '<label class="gate-check"><input type="checkbox" id="gateAgree" /> <span>I’ve read the <a class="ink-link" href="' + base + 'privacy.html" target="_blank">privacy notice</a> and I’m happy to continue.</span></label>' +
+      '<label class="gate-check"><input type="checkbox" id="gateAgree" /> <span>I agree my identity is nobody’s business. Especially not the government’s.</span></label>' +
       '<div class="gate-actions">' +
-        '<button type="button" class="btn btn-solid" id="gateEnter" disabled>Enter the portfolio <span aria-hidden="true">→</span></button>' +
-        '<a class="btn btn-ghost" href="' + base + 'privacy.html">Read the full policy</a>' +
+        '<button type="button" class="btn btn-solid" id="gateEnter" disabled>Let me in <span aria-hidden="true">→</span></button>' +
+        '<a class="btn btn-ghost" href="' + base + 'privacy.html">The fine print</a>' +
       '</div>' +
-      '<p class="gate-fine mono">shown once · stored only in your browser · no JavaScript, no gate</p>' +
+      '<p class="gate-fine mono">signed once · remembered only on your device · no spies were harmed (they just got bored)</p>' +
     '</div>';
 
   function open() {
