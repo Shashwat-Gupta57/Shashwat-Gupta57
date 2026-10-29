@@ -11,7 +11,7 @@
   var PROJECTS = window.PROJECTS || [];
   var CATS = window.CATEGORIES || {};
 
-  var R = window.SiteRender(BASE, PROJECTS, CATS);
+  var R = window.SiteRender(BASE, PROJECTS, CATS, window.DOCS, window.STRUCTURE, window.RELEASES);
   var esc = R.esc;
 
   /* ---------------- theme ---------------- */
@@ -62,32 +62,80 @@
   var year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 
-  /* ---------------- project grid (home) ---------------- */
-  (function grid() {
-    var gridEl = $('#pgrid'), filtersEl = $('#filters');
-    if (!gridEl) return;
-    gridEl.innerHTML = PROJECTS.map(R.cardHTML).join('');
-    $$('.pcard', gridEl).forEach(function (c) { c.setAttribute('data-reveal', ''); });
+  /* ---------------- the work: flagship stack, the ls -la archive, posters ---------------- */
+  // Flagships pin and stack as you scroll; everything else is a terminal-style index whose rows
+  // float a preview next to the cursor.
+  var FLAGSHIPS = ['talken', 'notes-plus', 'life', 'backbench', 'jctx', 'codemeter', 'drive-handler'];
+  (function work() {
+    var stackEl = $('#stack'), lsEl = $('#lsList'), gridEl = $('#pgrid'), filtersEl = $('#filters');
+    if (stackEl) {
+      var flag = FLAGSHIPS.map(function (id) { return PROJECTS.filter(function (p) { return p.id === id; })[0]; }).filter(Boolean);
+      stackEl.innerHTML = flag.map(function (p, i) { return R.stackCard(p, i, flag.length); }).join('');
+    }
+    var listed = PROJECTS.filter(function (p) { return !(lsEl && lsEl.hasAttribute('data-exclude-flagships') && FLAGSHIPS.indexOf(p.id) >= 0); });
+    if (lsEl) lsEl.innerHTML = listed.map(R.lsRow).join('');
+    if (gridEl) {
+      gridEl.innerHTML = PROJECTS.map(R.cardHTML).join('');
+      $$('.pcard', gridEl).forEach(function (c) { c.setAttribute('data-reveal', ''); });
+    }
 
-    if (!filtersEl) return;
-    var used = PROJECTS.reduce(function (acc, p) { if (acc.indexOf(p.category) < 0) acc.push(p.category); return acc; }, []);
-    var opts = [['all', 'All', PROJECTS.length]].concat(used.map(function (c) {
-      return [c, CATS[c] || c, PROJECTS.filter(function (p) { return p.category === c; }).length];
-    }));
-    filtersEl.innerHTML = opts.map(function (o, i) {
-      return '<button role="tab" aria-selected="' + (i === 0) + '" data-filter="' + o[0] + '">' + esc(o[1]) + ' <span class="dim">' + o[2] + '</span></button>';
-    }).join('');
-    filtersEl.addEventListener('click', function (e) {
-      var b = e.target.closest('button');
-      if (!b) return;
-      var f = b.dataset.filter;
-      $$('button', filtersEl).forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
-      $$('.pcard', gridEl).forEach(function (c) {
-        var show = f === 'all' || c.dataset.cat === f;
-        c.hidden = !show;
-        if (show) c.classList.add('in');
+    if (filtersEl) {
+      var used = PROJECTS.reduce(function (acc, p) { if (acc.indexOf(p.category) < 0) acc.push(p.category); return acc; }, []);
+      var opts = [['all', 'All', PROJECTS.length]].concat(used.map(function (c) {
+        return [c, CATS[c] || c, PROJECTS.filter(function (p) { return p.category === c; }).length];
+      }));
+      filtersEl.innerHTML = opts.map(function (o, i) {
+        return '<button role="tab" aria-selected="' + (i === 0) + '" data-filter="' + o[0] + '">' + esc(o[1]) + ' <span class="dim">' + o[2] + '</span></button>';
+      }).join('');
+      filtersEl.addEventListener('click', function (e) {
+        var b = e.target.closest('button');
+        if (!b) return;
+        var f = b.dataset.filter;
+        $$('button', filtersEl).forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+        $$('.pcard, .ls-row').forEach(function (c) {
+          var show = f === 'all' || c.dataset.cat === f;
+          c.hidden = !show;
+          if (show) c.classList.add('in');
+        });
+      });
+    }
+
+    // list / posters toggle (work page)
+    $$('.view-toggle button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        $$('.view-toggle button').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+        $$('[data-view-panel]').forEach(function (pn) { pn.hidden = pn.dataset.viewPanel !== b.dataset.view; });
+        $$('[data-view-panel="' + b.dataset.view + '"] [data-reveal]').forEach(function (x) { x.classList.add('in'); });
       });
     });
+
+    // floating preview that follows the cursor over the archive (mouse only)
+    var pv = $('#lsPreview');
+    if (pv && lsEl && window.matchMedia('(hover: hover)').matches) {
+      var pimg = $('img', pv), plabel = $('span', pv), tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+      var follow = function () {
+        x += (tx - x) * 0.22; y += (ty - y) * 0.22;
+        pv.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(follow) : 0;
+      };
+      lsEl.addEventListener('mouseover', function (e) {
+        var row = e.target.closest('.ls-row');
+        if (!row) return;
+        var src = row.dataset.preview || row.dataset.icon;
+        pv.classList.toggle('icon-only', !row.dataset.preview);
+        pv.style.setProperty('--p-to', row.style.getPropertyValue('--p-to'));
+        pv.style.setProperty('--p-from', row.style.getPropertyValue('--p-from'));
+        if (src) { pimg.src = src; pimg.hidden = false; } else { pimg.hidden = true; }
+        plabel.textContent = $('b', row).textContent;
+        pv.classList.add('on');
+      });
+      lsEl.addEventListener('mouseleave', function () { pv.classList.remove('on'); });
+      lsEl.addEventListener('mousemove', function (e) {
+        tx = e.clientX + 28; ty = e.clientY - 120;
+        if (tx + 340 > innerWidth) tx = e.clientX - 368;
+        if (!raf) raf = requestAnimationFrame(follow);
+      });
+    }
   })();
 
   /* ---------------- project pages (projects/<id>.html) ---------------- */

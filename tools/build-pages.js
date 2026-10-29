@@ -52,9 +52,7 @@ const shell = (p, page, body) => {
   <meta name="theme-color" content="#0c0c0e" />
   <link rel="icon" href="../../${esc(pz.icon && !pz.icon.endsWith('.svg') ? pz.icon : 'assets/favicon.svg')}" />
   <script>document.documentElement.classList.remove("no-js");(function(){try{var t=localStorage.getItem('sg-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css" />
   <link rel="stylesheet" href="../../css/style.css?v=dev" />
 </head>
 <body class="pv-site ms-site"${accent}>
@@ -64,15 +62,15 @@ const shell = (p, page, body) => {
     <div class="wrap foot-inner mono">
       <span>${esc(p.title)} · © <span id="year">2026</span> Shashwat Gupta · Flex Studios</span>
       <span class="ms-foot-links"><a href="index.html">Overview</a> · <a href="docs.html">Docs</a> · <a href="download.html">Download</a></span>
-      <a href="../../index.html#work">← all projects</a>
+      <a href="../../work.html">← all projects</a>
     </div>
   </footer>
 
   <script src="../../js/projects.js?v=dev"></script>
   <script src="../../js/render.js?v=dev"></script>
   <script src="../../js/paths.js?v=dev" defer></script>
-  <script src="../../js/ascii.js?v=dev" defer></script>
   <script src="../../js/main.js?v=dev" defer></script>
+  <script src="../../js/gate.js?v=dev" defer></script>
 </body>
 </html>
 `;

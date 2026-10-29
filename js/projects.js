@@ -33,6 +33,9 @@ window.PROJECTS = [
     tags: ['Java 21', 'JavaFX', 'Kotlin', 'Compose', 'Netty', 'Yggdrasil'],
     poster: { from: '#5450AA', to: '#FF7A5C', ink: '#fff', icon: 'assets/img/icons/talken.png' },
     page: 'projects/talken.html',
+    cover: 'assets/img/talken-main-interface.png',
+    stats: [['140,000+', 'lines of code'], ['705', 'source files'], ['0', 'servers that see a live message']],
+    blurb: 'No message server, no phone number, no middleman. Messages travel device to device over an encrypted mesh, files stay in your own Drive, and your account is a key only you hold. I built every layer of it myself — the wire protocol, the calling stack, the offline mailbox and the backend.',
     links: [
       { label: 'Website', href: 'https://talken.in' },
       { label: 'Download', href: 'https://talken.in/downloads.html' }
@@ -47,6 +50,9 @@ window.PROJECTS = [
     tags: ['Java', 'Android', 'JavaFX', 'PWA', 'Firebase'],
     poster: { from: '#1e1b4b', to: '#6366f1', ink: '#fff', icon: 'assets/img/icons/notesplus.png' },
     page: 'projects/notes-plus.html',
+    cover: 'assets/img/notes-plus/windows-notes.webp',
+    stats: [['0', 'servers of its own'], ['3', 'apps, one account'], ['65,000+', 'lines']],
+    blurb: 'What my old Notes app grew into. Android, Windows and the web on one account, with Backend Zero — no servers of its own — and two hidden, encrypted vaults beneath a perfectly ordinary notes app.',
     links: [
       { label: 'Website', href: 'https://notes.talken.in' },
       { label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Notes-Plus' }
@@ -485,11 +491,11 @@ window.PROJECTS = [
   {
     id: 'notes',
     title: 'Notes',
-    tagline: 'An advanced text editor that goes beyond Windows Notepad.',
+    tagline: 'An advanced text editor beyond Notepad — and the app that grew into Notes+.',
     category: 'desktop',
     year: '2024',
     tags: ['Java', 'Swing', 'Encryption'],
-    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Notes' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Notes/releases/latest' }],
+    links: [{ label: 'GitHub', href: 'https://github.com/Shashwat-Gupta57/Notes' }, { label: 'Download', href: 'https://github.com/Shashwat-Gupta57/Notes/releases/latest' }, { label: 'Its successor: Notes+', href: 'projects/notes-plus.html', internal: true }],
     poster: { from: '#292524', to: '#eab308', ink: '#fff', icon: 'assets/img/icons/notes.png', bare: true },
     stats: [['2,500+', 'lines of Java'], ['8', 'source files']],
     shots: [
@@ -499,7 +505,7 @@ window.PROJECTS = [
     ],
     story: [
       'Notepad hasn’t really changed in thirty years. Notes started as my Notepad clone and kept going: themes per file and for everything at once, image backgrounds, fonts, automatic backups — and its own encryption, so a text file can be locked.',
-      'It’s the direct ancestor of Notes+: the same instinct, years earlier, in Swing.'
+      'It’s where Notes+ began. In 2026 I redesigned Notes from the ground up and extended everything it could do — it grew into Notes+: six kinds of note instead of one, Android and the web alongside the desktop, live sync on one account, real AES-256-GCM encryption in place of my old cipher, and hidden vaults underneath. Notes is the first chapter; Notes+ is what it became.'
     ],
     highlights: [
       { t: 'Per-file design', d: 'Give any single file its own background and text colour.' },
@@ -507,7 +513,8 @@ window.PROJECTS = [
       { t: 'Image backgrounds', d: 'Set a picture as the background behind your text.' },
       { t: 'Fonts', d: 'Change the font, its size and style.' },
       { t: 'Backups', d: 'Automatic backups into a folder you choose.' },
-      { t: 'Encryption', d: 'Encrypt a file, decrypt it back — built into the editor’s Privacy menu.' }
+      { t: 'Encryption', d: 'Encrypt a file, decrypt it back — built into the editor’s Privacy menu.' },
+      { t: 'It became Notes+', d: 'Redesigned and extended into Notes+ — six kinds of note, three platforms, live sync, AES-256-GCM and hidden vaults.' }
     ],
     build: [['UI', 'Java Swing'], ['Crypto', 'Its own Encrypter / Decrypter classes'], ['Dialogs', 'Native file chooser via JNA']]
   },

@@ -204,7 +204,7 @@
         '<a class="ms-brand" href="index.html">' + mark(p, 'ms-logo') + '<span>' + esc(p.title) + '</span></a>' +
         '<nav class="ms-tabs mono" aria-label="' + esc(p.title) + '">' + tab('index.html', 'Overview', 'home') + tab('docs.html', 'Docs', 'docs') + tab('download.html', 'Download', 'download') +
           (gh ? '<a href="' + esc(gh) + '" target="_blank" rel="noopener">GitHub ↗</a>' : '') + '</nav>' +
-        '<a class="ms-home mono" href="' + BASE + 'index.html#work" title="Shashwat Gupta — all projects"><span class="brand-mark">SG</span><span class="ms-home-label">all projects</span></a>' +
+        '<a class="ms-home mono" href="' + BASE + 'work.html" title="Shashwat Gupta — all projects"><span class="brand-mark">SG</span><span class="ms-home-label">all projects</span></a>' +
         '<button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></button>' +
       '</div></header>';
     }
@@ -255,11 +255,8 @@
           (gh ? '<a class="btn btn-ghost" href="' + esc(gh) + '" target="_blank" rel="noopener">GitHub ↗</a>' : '') +
           (p.links || []).filter(function (l) { return l.internal; }).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('') +
         '</div>';
-      // the hero screenshot is shown as voxel ASCII art that decodes into the real thing on hover
       var media = shots.length
-        ? '<figure class="pv-hero-shot window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + ' · hover to decode</span></div>' +
-            '<div class="ascii-host" data-ascii data-ascii-reveal data-ascii-src="' + esc(BASE + shots[0].src) + '" data-ascii-tint="' + esc(pz.to || '#1e6fff') + '">' +
-            '<img src="' + esc(BASE + shots[0].src) + '" alt="' + esc(shots[0].caption) + '" /></div></figure>'
+        ? '<button class="pv-hero-shot window" data-open="0" aria-label="Enlarge screenshot"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div><img src="' + esc(BASE + shots[0].src) + '" alt="' + esc(shots[0].caption) + '" /></button>'
         : posterHTML(p, true);
       var html = heroFor(p, p.title, esc(p.tagline), actions, media);
 
@@ -440,8 +437,61 @@
       return siteNav(p, 'download') + '<main id="main"><div id="pview" data-project="' + esc(p.id) + '">' + html + pager(p) + '</div></main>';
     }
 
+
+    /* ================= portfolio showcase: stacked flagship cards + the ls -la archive ================= */
+    function heroImage(p) {
+      return p.cover || (p.shots && p.shots[0] && p.shots[0].src) || null;
+    }
+    function locOf(p) {
+      var st = STRUCTURE[p.id];
+      if (st && st.length) return st.reduce(function (n, e) { return n + e.lines; }, 0);
+      var s = (p.stats || []).filter(function (x) { return /line/.test(x[1]); })[0];
+      return s ? parseInt(String(s[0]).replace(/[^\d]/g, ''), 10) || 0 : 0;
+    }
+
+    // a flagship: a near-full-screen card that pins and stacks over the previous one as you scroll
+    function stackCard(p, i, total) {
+      var pz = p.poster || {}, img = heroImage(p), gh = ghLink(p), rel = RELEASES[p.id];
+      var blurb = p.blurb || (p.story && p.story[0]) || p.tagline;
+      var media = img
+        ? '<div class="stack-media window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div><img src="' + esc(BASE + img) + '" alt="' + esc(p.title) + '" loading="lazy" decoding="async" /></div>'
+        : posterHTML(p, true);
+      return '<article class="stack-card" style="--i:' + i + ';--p-to:' + esc(pz.to || '#888') + ';--p-from:' + esc(pz.from || '#222') + '">' +
+        '<div class="stack-copy">' +
+          '<p class="stack-count mono"><span>' + (i < 9 ? '0' : '') + (i + 1) + '</span> / ' + (total < 10 ? '0' : '') + total + ' · ' + esc(CATS[p.category] || p.category) + ' · ' + esc(p.year) + '</p>' +
+          '<h3 class="stack-title"><a href="' + esc(projectHref(p)) + '">' + esc(p.title) + '</a></h3>' +
+          '<p class="stack-tagline">' + esc(p.tagline) + '</p>' +
+          '<p class="stack-blurb">' + esc(blurb) + '</p>' +
+          (p.stats ? '<dl class="stack-stats">' + p.stats.slice(0, 3).map(function (s) { return '<div><dt>' + esc(s[0]) + '</dt><dd>' + esc(s[1]) + '</dd></div>'; }).join('') + '</dl>' : '') +
+          '<div class="stack-actions"><a class="btn btn-solid" href="' + esc(projectHref(p)) + '">Explore ' + esc(p.title) + ' <span aria-hidden="true">→</span></a>' +
+            (rel ? '<a class="btn btn-ghost" href="' + esc(BASE + 'projects/' + p.id + '/download.html') + '">Download</a>' : '') +
+            (gh ? '<a class="btn btn-ghost" href="' + esc(gh) + '" target="_blank" rel="noopener">GitHub ↗</a>' : '') +
+            (p.page ? (p.links || []).slice(0, 1).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('') : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="stack-visual">' + media + '</div>' +
+      '</article>';
+    }
+
+    // one line of the archive, styled like `ls -la`; hovering shows a floating preview
+    function lsRow(p) {
+      var pz = p.poster || {}, img = heroImage(p), loc = locOf(p);
+      var perms = (RELEASES[p.id] ? '-rwx' : '-rw-') + (ghLink(p) ? 'r-x' : '---') + 'r--';
+      return '<a class="ls-row" href="' + esc(projectHref(p)) + '" data-cat="' + esc(p.category) + '"' +
+        ' data-preview="' + esc(img ? BASE + img : '') + '" data-icon="' + esc(pz.icon ? BASE + pz.icon : '') + '" style="--p-to:' + esc(pz.to || '#888') + ';--p-from:' + esc(pz.from || '#222') + '">' +
+        '<span class="ls-perm mono">' + perms + '</span>' +
+        '<span class="ls-year mono">' + esc(String(p.year).replace(/ – now/, '→')) + '</span>' +
+        '<span class="ls-cat mono">' + esc(CATS[p.category] || p.category) + '</span>' +
+        '<span class="ls-loc mono">' + (loc ? loc.toLocaleString('en-US') : '—') + '</span>' +
+        '<span class="ls-name">' + (pz.icon ? '<img class="ls-icon' + (pz.bare ? ' bare' : '') + (pz.pixel ? ' pixel' : '') + '" src="' + esc(BASE + pz.icon) + '" alt="" loading="lazy" />' : '<span class="ls-icon ls-glyph mono">' + esc(pz.glyph || p.title.charAt(0)) + '</span>') +
+          '<b>' + esc(p.title) + '</b><em>' + esc(p.tagline) + '</em></span>' +
+        '<span class="ls-go mono" aria-hidden="true">cd →</span>' +
+      '</a>';
+    }
+
     return { esc: esc, projectHref: projectHref, linkHTML: linkHTML, posterHTML: posterHTML, cardHTML: cardHTML, renderProject: renderProject,
-             renderLanding: renderLanding, renderDocs: renderDocs, renderDownload: renderDownload };
+             renderLanding: renderLanding, renderDocs: renderDocs, renderDownload: renderDownload,
+             stackCard: stackCard, lsRow: lsRow, locOf: locOf };
   }
 
   root.SiteRender = SiteRender;
