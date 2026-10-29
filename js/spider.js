@@ -87,7 +87,8 @@
     var T = CFG.tint;
 
     function fit() {
-      var r = host.getBoundingClientRect();
+      // layout size, not on-screen size: the spider can live inside a zoomed map
+      var r = { width: host.clientWidth, height: host.clientHeight };
       if (!r.width || !r.height) return;
       dpr = Math.min(2, window.devicePixelRatio || 1);
       W = Math.round(r.width); H = Math.round(r.height);

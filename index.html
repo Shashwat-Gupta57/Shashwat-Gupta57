@@ -138,46 +138,28 @@
       </div>
     </section>
 
-    <!-- ============ FLAGSHIPS ============ -->
-    <section class="section web" id="work">
-      <div class="wrap web-grid">
-        <aside class="web-side">
-          <div class="spider-box" data-spider aria-label="An animated ASCII spider"></div>
-          <div class="web-caption" data-reveal>
-            <p class="eyebrow mono">01 — The web</p>
-            <h2 class="sec-title"><span class="decrypt" data-text="Everything">Everything</span> <em>is connected.</em></h2>
-            <p class="sec-sub">Every project here is a thread in one web — the games that taught me loops, the tools that taught me systems, and the products they all led to. Scroll through the flagships.</p>
-            <a class="ink-link mono" href="work.html">ls -la ~/projects →</a>
-          </div>
-        </aside>
-        <div class="flagstack" id="stack"><noscript><p>See <a href="work.html">all my work</a>.</p></noscript></div>
-      </div>
-    </section>
-
-    <!-- ============ ARCHIVE ============ -->
-    <section class="section archive" id="archive">
+    <!-- ============ THE WEB: every project on one map ============ -->
+    <section class="section cn-section" id="work">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">02</span>
+          <span class="sec-num mono">01</span>
           <div>
-            <p class="eyebrow mono">The archive</p>
-            <h2 class="sec-title"><span class="decrypt" data-text="Everything else">Everything else</span> <em>I’ve built.</em></h2>
+            <p class="eyebrow mono">The web</p>
+            <h2 class="sec-title"><span class="decrypt" data-text="Everything">Everything</span> <em>is connected.</em></h2>
           </div>
-          <p class="sec-sub">Desktop apps, widgets, games, libraries and tools — each with its own site, docs and downloads. Hover a line to peek, click to open.</p>
+          <p class="sec-sub">Every project I’ve built, on one map. The spider sits in the middle and the threads are real: what grew into what, what powers what. Drag around, zoom into a cluster, or light up a language.</p>
         </header>
-        <div class="ls" data-reveal>
-          <p class="ls-prompt mono"><span class="hl">shashwat@flex</span>:<span class="dim">~</span>$ ls -la projects/ <span class="ls-caret">▋</span></p>
-          <div class="ls-head mono"><span>perms</span><span>year</span><span>kind</span><span>lines</span><span>name</span></div>
-          <div id="lsList" data-exclude-flagships></div>
-        </div>
-        <p class="archive-more"><a class="btn btn-ghost" href="work.html">Open the full archive <span aria-hidden="true">→</span></a></p>
       </div>
+      <div class="cn" data-constellation>
+        <div class="spider-box" data-spider aria-label="An animated ASCII spider"></div>
+        <noscript><p class="wrap">See <a href="work.html">all my work</a>.</p></noscript>
+      </div>
+      <p class="wrap cn-after mono"><a class="ink-link" href="work.html#list">prefer a list? ls -la ~/projects →</a></p>
     </section>
 
-    <!-- ============ ABOUT TEASER ============ -->
     <section class="section teaser">
       <div class="wrap teaser-grid" data-reveal>
-        <p class="eyebrow mono">03 — The story</p>
+        <p class="eyebrow mono">02 — The story</p>
         <h2 class="teaser-title">In October 2023 I thought coding was <em>pointless.</em></h2>
         <p class="teaser-lede">Then I wondered if I could make a character walk across a terminal. Two years, twenty Java apps and 140,000 lines of Talken later, here we are.</p>
         <a class="btn btn-solid" href="about.html">Read the whole story <span aria-hidden="true">→</span></a>
@@ -187,7 +169,7 @@
     <!-- ============ CONTACT ============ -->
     <section class="section contact" id="contact" data-paths="ribbon" data-paths-opacity="0.45">
       <div class="wrap">
-        <p class="eyebrow mono" data-reveal>04 — Get in touch</p>
+        <p class="eyebrow mono" data-reveal>03 — Get in touch</p>
         <h2 class="contact-title" data-reveal>Let's build something <em>that respects people.</em></h2>
         <p class="contact-lede" data-reveal>Open to opportunities, collaborations, freelance work and conversations about privacy, cryptography and software.</p>
         <a class="mail" href="mailto:connect@talken.in" data-reveal>
@@ -201,7 +183,6 @@
         </ul>
       </div>
     </section>
-  <div class="ls-preview" id="lsPreview" aria-hidden="true"><img alt="" /><span class="mono"></span></div>
   </main>
 
   <footer class="foot">
@@ -218,6 +199,7 @@
   <script src="js/releases.js?v=dev"></script>
   <script src="js/paths.js?v=dev" defer></script>
   <script src="js/spider.js?v=dev" defer></script>
+  <script src="js/constellation.js?v=dev" defer></script>
   <script src="js/main.js?v=dev" defer></script>
   <script src="js/gate.js?v=dev" defer></script>
 </body>

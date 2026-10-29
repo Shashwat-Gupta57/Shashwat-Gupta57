@@ -43,7 +43,7 @@
       <div class="wrap">
         <p class="kicker" data-reveal><span class="pulse" aria-hidden="true"></span> Work · <span data-count="projects">0</span> projects</p>
         <h1 class="hero-name work-title"><span class="decrypt" data-text="The">The</span><em class="decrypt" data-text="archive.">archive.</em></h1>
-        <p class="hero-lede">Everything I’ve built, from a 3,279-line terminal game in 9th grade to Talken. Every project has its own site with docs and downloads — filter, peek, open.</p>
+        <p class="hero-lede">Everything I’ve built, from a 3,279-line terminal game in 9th grade to Talken. Every project has its own site with docs and downloads. Drag the map, filter it, or switch to the list.</p>
       </div>
     </section>
 
@@ -52,23 +52,27 @@
         <div class="work-bar">
           <div class="filters mono" id="filters" role="tablist" aria-label="Filter projects"></div>
           <div class="view-toggle mono" role="tablist" aria-label="View">
-            <button role="tab" aria-selected="true" data-view="index">ls -la</button>
-            <button role="tab" aria-selected="false" data-view="posters">posters</button>
+            <button role="tab" aria-selected="true" data-view="map">map</button>
+            <button role="tab" aria-selected="false" data-view="index">ls -la</button>
           </div>
         </div>
-        <div class="ls" data-view-panel="index">
+      </div>
+      <div class="cn" data-constellation data-view-panel="map">
+        <div class="spider-box" data-spider aria-label="An animated ASCII spider"></div>
+      </div>
+      <div class="wrap">
+        <div class="ls" data-view-panel="index" hidden>
           <p class="ls-prompt mono"><span class="hl">shashwat@flex</span>:<span class="dim">~</span>$ ls -la projects/ <span class="ls-caret">▋</span></p>
           <div class="ls-head mono"><span>perms</span><span>year</span><span>kind</span><span>lines</span><span>name</span></div>
           <div id="lsList"></div>
         </div>
-        <div class="pgrid" id="pgrid" data-view-panel="posters" hidden></div>
       </div>
     </section>
 
     <!-- ============ CONTACT ============ -->
     <section class="section contact" id="contact" data-paths="ribbon" data-paths-opacity="0.45">
       <div class="wrap">
-        <p class="eyebrow mono" data-reveal>04 — Get in touch</p>
+        <p class="eyebrow mono" data-reveal>02 — Get in touch</p>
         <h2 class="contact-title" data-reveal>Let's build something <em>that respects people.</em></h2>
         <p class="contact-lede" data-reveal>Open to opportunities, collaborations, freelance work and conversations about privacy, cryptography and software.</p>
         <a class="mail" href="mailto:connect@talken.in" data-reveal>
@@ -98,6 +102,8 @@
   <script src="js/structure.js?v=dev"></script>
   <script src="js/releases.js?v=dev"></script>
   <script src="js/paths.js?v=dev" defer></script>
+  <script src="js/spider.js?v=dev" defer></script>
+  <script src="js/constellation.js?v=dev" defer></script>
   <script src="js/main.js?v=dev" defer></script>
   <script src="js/gate.js?v=dev" defer></script>
 </body>

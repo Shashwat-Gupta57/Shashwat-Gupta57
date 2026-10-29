@@ -62,22 +62,13 @@
   var year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 
-  /* ---------------- the work: flagship stack, the ls -la archive, posters ---------------- */
-  // Flagships pin and stack as you scroll; everything else is a terminal-style index whose rows
-  // float a preview next to the cursor.
-  var FLAGSHIPS = ['talken', 'notes-plus', 'life', 'backbench', 'jctx', 'codemeter', 'drive-handler'];
+  /* ---------------- the work: the constellation map, and the ls -la archive ---------------- */
+  // Every project is a card on one draggable map (js/constellation.js); the work page can also
+  // show them as a terminal-style index whose rows float a preview next to the cursor.
   (function work() {
-    var stackEl = $('#stack'), lsEl = $('#lsList'), gridEl = $('#pgrid'), filtersEl = $('#filters');
-    if (stackEl) {
-      var flag = FLAGSHIPS.map(function (id) { return PROJECTS.filter(function (p) { return p.id === id; })[0]; }).filter(Boolean);
-      stackEl.innerHTML = flag.map(function (p, i) { return R.stackCard(p, i, flag.length); }).join('');
-    }
-    var listed = PROJECTS.filter(function (p) { return !(lsEl && lsEl.hasAttribute('data-exclude-flagships') && FLAGSHIPS.indexOf(p.id) >= 0); });
-    if (lsEl) lsEl.innerHTML = listed.map(R.lsRow).join('');
-    if (gridEl) {
-      gridEl.innerHTML = PROJECTS.map(R.cardHTML).join('');
-      $$('.pcard', gridEl).forEach(function (c) { c.setAttribute('data-reveal', ''); });
-    }
+    var lsEl = $('#lsList'), filtersEl = $('#filters'), mapEl = $('[data-constellation]');
+    var map = mapEl && window.SiteMap ? window.SiteMap.mount(mapEl, { projects: PROJECTS, base: BASE, esc: esc, href: R.projectHref }) : null;
+    if (lsEl) lsEl.innerHTML = PROJECTS.map(R.lsRow).join('');
 
     if (filtersEl) {
       var used = PROJECTS.reduce(function (acc, p) { if (acc.indexOf(p.category) < 0) acc.push(p.category); return acc; }, []);
@@ -92,22 +83,19 @@
         if (!b) return;
         var f = b.dataset.filter;
         $$('button', filtersEl).forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
-        $$('.pcard, .ls-row').forEach(function (c) {
-          var show = f === 'all' || c.dataset.cat === f;
-          c.hidden = !show;
-          if (show) c.classList.add('in');
-        });
+        $$('.ls-row').forEach(function (c) { c.hidden = !(f === 'all' || c.dataset.cat === f); });
+        if (map) { if (f === 'all') map.clear(); else map.query({ cat: f }); }
       });
     }
 
-    // list / posters toggle (work page)
-    $$('.view-toggle button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        $$('.view-toggle button').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
-        $$('[data-view-panel]').forEach(function (pn) { pn.hidden = pn.dataset.viewPanel !== b.dataset.view; });
-        $$('[data-view-panel="' + b.dataset.view + '"] [data-reveal]').forEach(function (x) { x.classList.add('in'); });
-      });
-    });
+    // map / list toggle (work page); #list opens straight on the list
+    function showView(v) {
+      $$('.view-toggle button').forEach(function (x) { x.setAttribute('aria-selected', x.dataset.view === v ? 'true' : 'false'); });
+      $$('[data-view-panel]').forEach(function (pn) { pn.hidden = pn.dataset.viewPanel !== v; });
+      if (v === 'map' && map) map.refresh();
+    }
+    $$('.view-toggle button').forEach(function (b) { b.addEventListener('click', function () { showView(b.dataset.view); }); });
+    if (location.hash === '#list' && $('.view-toggle')) showView('index');
 
     // floating preview that follows the cursor over the archive (mouse only)
     var pv = $('#lsPreview');

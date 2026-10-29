@@ -438,7 +438,7 @@
     }
 
 
-    /* ================= portfolio showcase: stacked flagship cards + the ls -la archive ================= */
+    /* ================= portfolio showcase: the ls -la archive ================= */
     function heroImage(p) {
       return p.cover || (p.shots && p.shots[0] && p.shots[0].src) || null;
     }
@@ -447,30 +447,6 @@
       if (st && st.length) return st.reduce(function (n, e) { return n + e.lines; }, 0);
       var s = (p.stats || []).filter(function (x) { return /line/.test(x[1]); })[0];
       return s ? parseInt(String(s[0]).replace(/[^\d]/g, ''), 10) || 0 : 0;
-    }
-
-    // a flagship: a near-full-screen card that pins and stacks over the previous one as you scroll
-    function stackCard(p, i, total) {
-      var pz = p.poster || {}, img = heroImage(p), gh = ghLink(p), rel = RELEASES[p.id];
-      var blurb = p.blurb || (p.story && p.story[0]) || p.tagline;
-      var media = img
-        ? '<div class="stack-media window"><div class="window-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">' + esc(p.title) + '</span></div><img src="' + esc(BASE + img) + '" alt="' + esc(p.title) + '" loading="lazy" decoding="async" /></div>'
-        : posterHTML(p, true);
-      return '<article class="stack-card" style="--i:' + i + ';--p-to:' + esc(pz.to || '#888') + ';--p-from:' + esc(pz.from || '#222') + '">' +
-        '<div class="stack-copy">' +
-          '<p class="stack-count mono"><span>' + (i < 9 ? '0' : '') + (i + 1) + '</span> / ' + (total < 10 ? '0' : '') + total + ' · ' + esc(CATS[p.category] || p.category) + ' · ' + esc(p.year) + '</p>' +
-          '<h3 class="stack-title"><a href="' + esc(projectHref(p)) + '">' + esc(p.title) + '</a></h3>' +
-          '<p class="stack-tagline">' + esc(p.tagline) + '</p>' +
-          '<p class="stack-blurb">' + esc(blurb) + '</p>' +
-          (p.stats ? '<dl class="stack-stats">' + p.stats.slice(0, 3).map(function (s) { return '<div><dt>' + esc(s[0]) + '</dt><dd>' + esc(s[1]) + '</dd></div>'; }).join('') + '</dl>' : '') +
-          '<div class="stack-actions"><a class="btn btn-solid" href="' + esc(projectHref(p)) + '">Explore ' + esc(p.title) + ' <span aria-hidden="true">→</span></a>' +
-            (rel ? '<a class="btn btn-ghost" href="' + esc(BASE + 'projects/' + p.id + '/download.html') + '">Download</a>' : '') +
-            (gh ? '<a class="btn btn-ghost" href="' + esc(gh) + '" target="_blank" rel="noopener">GitHub ↗</a>' : '') +
-            (p.page ? (p.links || []).slice(0, 1).map(function (l) { return linkHTML(l, 'btn btn-ghost'); }).join('') : '') +
-          '</div>' +
-        '</div>' +
-        '<div class="stack-visual">' + media + '</div>' +
-      '</article>';
     }
 
     // one line of the archive, styled like `ls -la`; hovering shows a floating preview
@@ -491,7 +467,7 @@
 
     return { esc: esc, projectHref: projectHref, linkHTML: linkHTML, posterHTML: posterHTML, cardHTML: cardHTML, renderProject: renderProject,
              renderLanding: renderLanding, renderDocs: renderDocs, renderDownload: renderDownload,
-             stackCard: stackCard, lsRow: lsRow, locOf: locOf };
+             lsRow: lsRow, locOf: locOf };
   }
 
   root.SiteRender = SiteRender;
