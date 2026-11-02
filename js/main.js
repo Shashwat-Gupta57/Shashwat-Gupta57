@@ -62,43 +62,6 @@
   var year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 
-  /* ---------------- the cinematic opening (about page) ---------------- */
-  // Splits the name into letters that rise in, starts the scene once fonts are in, runs a 24 fps
-  // timecode, and feeds scroll progress (--p) and pointer position (--mx/--my) to the CSS parallax.
-  (function cinema() {
-    var cine = $('[data-cine]');
-    if (!cine) return;
-    $$('.cine-l1, .cine-l2', cine).forEach(function (el, line) {
-      el.innerHTML = el.textContent.split('').map(function (c, i) {
-        return '<span class="ch" style="--i:' + (i + line * 6) + '">' + esc(c) + '</span>';
-      }).join('');
-    });
-    var go = function () { cine.classList.add('go'); setTimeout(function () { cine.classList.add('settled'); }, 1700); };
-    if (reduceMotion) go();
-    else (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () { requestAnimationFrame(go); });
-
-    var tc = $('[data-timecode]', cine), t0 = performance.now(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    if (tc && !reduceMotion) setInterval(function () {
-      var f = Math.floor((performance.now() - t0) / (1000 / 24));
-      tc.textContent = pad(Math.floor(f / 86400)) + ':' + pad(Math.floor(f / 1440) % 60) + ':' + pad(Math.floor(f / 24) % 60) + ':' + pad(f % 24);
-    }, 1000 / 24);
-    if (reduceMotion) return;
-
-    var queued = 0, mx = 0, my = 0;
-    function paint() {
-      queued = 0;
-      var p = Math.min(1, Math.max(0, window.scrollY / cine.offsetHeight));
-      cine.style.setProperty('--p', p.toFixed(4));
-      cine.style.setProperty('--mx', mx.toFixed(3));
-      cine.style.setProperty('--my', my.toFixed(3));
-    }
-    var ask = function () { if (!queued) queued = requestAnimationFrame(paint); };
-    window.addEventListener('scroll', ask, { passive: true });
-    if (window.matchMedia('(hover: hover)').matches) cine.addEventListener('pointermove', function (e) {
-      mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; ask();
-    });
-  })();
-
   /* ---------------- the journey: vertical scroll drives a sideways timeline ---------------- */
   // The section is made as tall as the strip is wide; while it's pinned, scrolling slides the strip
   // left, the accent line grows to just past the middle of the screen, and each milestone draws in
