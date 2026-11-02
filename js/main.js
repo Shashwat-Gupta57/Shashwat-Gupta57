@@ -62,6 +62,40 @@
   var year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 
+  /* ---------------- the journey: vertical scroll drives a sideways timeline ---------------- */
+  // The section is made as tall as the strip is wide; while it's pinned, scrolling slides the strip
+  // left, the accent line grows to just past the middle of the screen, and each milestone draws in
+  // as the line reaches it (and draws back out if you scroll back).
+  (function journey() {
+    var sec = $('[data-hscroll]');
+    if (!sec) return;
+    var track = $('.hz-track', sec), rail = $('.hz-rail', sec), items = $$('.hz-item', sec);
+    var dist = 0, railX = 0, railW = 0, xs = [], queued = 0;
+    function measure() {
+      sec.classList.add('hz-on');
+      track.style.transform = '';
+      dist = Math.max(0, track.scrollWidth - document.documentElement.clientWidth);
+      if (!dist) { sec.classList.remove('hz-on'); return; }
+      sec.style.setProperty('--hz-h', (dist + window.innerHeight) + 'px');
+      railX = rail.offsetLeft; railW = rail.offsetWidth;
+      xs = items.map(function (li) { return railX + li.offsetLeft + $('.hz-list', sec).offsetLeft; });
+      update();
+    }
+    function update() {
+      queued = 0;
+      if (!dist) return;
+      var p = Math.min(1, Math.max(0, -sec.getBoundingClientRect().top / dist)), x = p * dist;
+      var head = x + innerWidth * (innerWidth < 600 ? .7 : .62);
+      track.style.transform = 'translate3d(' + (-x) + 'px,0,0)';
+      sec.style.setProperty('--hz-line', Math.min(railW, Math.max(0, head - railX)) + 'px');
+      items.forEach(function (li, i) { li.classList.toggle('on', reduceMotion || xs[i] < head); });
+    }
+    window.addEventListener('scroll', function () { if (!queued) queued = requestAnimationFrame(update); }, { passive: true });
+    window.addEventListener('resize', measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    measure();
+  })();
+
   /* ---------------- the work: the constellation map, and the ls -la archive ---------------- */
   // Every project is a card on one draggable map (js/constellation.js); the work page can also
   // show them as a terminal-style index whose rows float a preview next to the cursor.
