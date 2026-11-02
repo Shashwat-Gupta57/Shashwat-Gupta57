@@ -39,18 +39,27 @@
 
   <main id="main">
     <!-- ============ HERO ============ -->
-    <section class="hero hero-min" id="top">
-      <div class="wrap">
-        <p class="hm-id"><img class="hm-avatar" src="assets/img/developer.jpg" alt="" width="40" height="40" /><span class="mono">Founder, Flex Studios · Prayagraj, India</span></p>
-        <h1 class="hm-name">Shashwat Gupta</h1>
-        <p class="hm-line">Self-taught developer building privacy-first software from first principles, like <a href="projects/talken.html">Talken</a>, a messenger with no server in the middle, and <a href="projects/notes-plus.html">Notes+</a>, a notes app with no backend at all.</p>
-        <nav class="hm-index mono" aria-label="On this page">
-          <a href="#talken" data-hue="talken"><b>01</b> talken</a>
-          <a href="#work" data-hue="work"><b>02</b> work</a>
-          <a href="#journey" data-hue="story"><b>03</b> story</a>
-          <a href="#toolkit" data-hue="kit"><b>04</b> toolkit</a>
-          <a href="#contact" data-hue="contact"><b>05</b> contact</a>
-          <a class="ext" href="https://github.com/Shashwat-Gupta57" target="_blank" rel="noopener">github ↗</a>
+    <section class="hero hero-min flow" id="top">
+      <div class="wrap hm-grid">
+        <div class="hm-main">
+          <p class="hm-id"><img class="hm-avatar" src="assets/img/developer.jpg" alt="" width="40" height="40" /><span class="mono">Founder, Flex Studios · Prayagraj, India</span></p>
+          <h1 class="hm-name">Shashwat Gupta</h1>
+          <span class="hm-bar" aria-hidden="true"><i data-hue="talken"></i><i data-hue="work"></i><i data-hue="story"></i><i data-hue="kit"></i><i data-hue="contact"></i></span>
+          <p class="hm-line">Self-taught developer building privacy-first software from first principles, like <a href="projects/talken.html" data-hue="talken">Talken</a>, a messenger with no server in the middle, and <a href="projects/notes-plus.html" data-hue="work">Notes+</a>, a notes app with no backend at all.</p>
+          <p class="hm-links mono">
+            <a href="https://github.com/Shashwat-Gupta57" target="_blank" rel="noopener">github ↗</a>
+            <a href="https://www.linkedin.com/in/shashwat-gupta57" target="_blank" rel="noopener">linkedin ↗</a>
+            <a href="mailto:connect@talken.in">connect@talken.in</a>
+          </p>
+        </div>
+
+        <nav class="hm-chapters" aria-label="On this page">
+          <p class="hm-ch-head mono"><span>contents</span><span>05 chapters</span></p>
+          <a class="hm-ch" href="#talken" data-hue="talken"><b class="mono">01</b><span class="hm-ch-t">Talken<em>a messenger with no middle</em></span><span class="hm-ch-v mono">beta live</span></a>
+          <a class="hm-ch" href="#work" data-hue="work"><b class="mono">02</b><span class="hm-ch-t">Work<em>every project on one map</em></span><span class="hm-ch-v mono"><span data-count="projects">27</span> projects</span></a>
+          <a class="hm-ch" href="#journey" data-hue="story"><b class="mono">03</b><span class="hm-ch-t">Story<em>from “boring” to decentralized</em></span><span class="hm-ch-v mono">2023 → 2027</span></a>
+          <a class="hm-ch" href="#toolkit" data-hue="kit"><b class="mono">04</b><span class="hm-ch-t">Toolkit<em>what I build with</em></span><span class="hm-ch-v mono">25 certs</span></a>
+          <a class="hm-ch" href="#contact" data-hue="contact"><b class="mono">05</b><span class="hm-ch-t">Contact<em>let’s build something</em></span><span class="hm-ch-v mono">say hi</span></a>
         </nav>
       </div>
 
@@ -76,7 +85,7 @@
     </section>
 
     <!-- ============ STATS ============ -->
-    <section class="stats" aria-label="By the numbers">
+    <section class="stats flow" aria-label="By the numbers">
       <div class="wrap stats-row">
         <div class="stat" data-hue="talken" data-reveal><b data-count="140000" data-suffix="+">0</b><span>lines of code in Talken</span></div>
         <div class="stat" data-hue="talken" data-reveal><b data-count="705">0</b><span>source files in Talken</span></div>

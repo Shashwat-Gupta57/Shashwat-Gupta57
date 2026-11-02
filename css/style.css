@@ -1287,6 +1287,50 @@ kbd {
   .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
+/* hero: the cover of the system. The five hues are introduced here (the bar under the name,
+   the contents card, the glow) and the spine starts here, at a node that holds all five. */
+.hero-min.flow { padding-top: clamp(110px, 16vh, 180px);
+  background: radial-gradient(420px 320px at 78% 22%, color-mix(in srgb, var(--h-talken) 14%, transparent), transparent 70%),
+              radial-gradient(380px 300px at 94% 48%, color-mix(in srgb, var(--h-work) 11%, transparent), transparent 70%),
+              radial-gradient(400px 300px at 70% 62%, color-mix(in srgb, var(--h-story) 10%, transparent), transparent 70%),
+              radial-gradient(360px 280px at 88% 82%, color-mix(in srgb, var(--h-kit) 8%, transparent), transparent 70%); }
+.hm-grid { display: grid; grid-template-columns: 1.25fr .9fr; gap: clamp(40px, 6vw, 96px); align-items: center; margin-bottom: clamp(64px, 10vh, 104px); }
+.hm-main { position: relative; }
+.hm-name { margin-bottom: 22px; }
+.hm-bar { display: flex; gap: 5px; width: 230px; margin-bottom: 28px; }
+.hm-bar i { flex: 1; height: 4px; border-radius: 4px; background: var(--hue); }
+.hm-line { margin-bottom: 26px; }
+.hm-links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 12.5px; }
+.hm-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+.hm-links a:hover { color: var(--text); }
+
+/* the contents card: each chapter in its own colour, a fact on the right, a link to the section */
+.hm-chapters { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: var(--shadow); }
+.hm-ch-head { display: flex; justify-content: space-between; padding: 2px 4px 10px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.hm-ch { position: relative; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 12px 14px 12px 12px; border-radius: 10px;
+  color: var(--text); text-decoration: none; background: color-mix(in srgb, var(--hue) 6%, transparent); transition: background .25s, transform .25s; }
+.hm-ch::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--hue); }
+.hm-ch b { font-size: 12px; color: var(--hue); padding-left: 6px; }
+.hm-ch-t { display: flex; flex-direction: column; font: 400 22px/1.05 var(--serif); }
+.hm-ch-t em { font: 400 12.5px/1.3 var(--sans); font-style: normal; color: var(--muted); margin-top: 3px; }
+.hm-ch-v { font-size: 11.5px; color: var(--hue); white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: color-mix(in srgb, var(--hue) 12%, transparent); }
+.hm-ch:hover, .hm-ch:focus-visible { background: color-mix(in srgb, var(--hue) 14%, transparent); transform: translateX(4px); outline: none; }
+
+/* the spine starts in the hero, at a node holding all five hues, and flows into Talken's violet */
+@media (min-width: 1300px) {
+  .hero-min.flow::before { top: clamp(130px, 18vh, 200px); background: linear-gradient(var(--h-talken), var(--h-work), var(--h-story), var(--h-kit), var(--h-contact), var(--h-talken)); opacity: .45; }
+  .hero-min .hm-main::before { content: ""; position: absolute; left: calc(-44px - 6.5px); top: 13px; width: 13px; height: 13px; border-radius: 50%;
+    background: conic-gradient(var(--h-talken), var(--h-work), var(--h-story), var(--h-kit), var(--h-contact), var(--h-talken));
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--text) 6%, transparent), 0 0 22px color-mix(in srgb, var(--h-work) 60%, transparent); }
+  .stats.flow::before { background: color-mix(in srgb, var(--h-talken) 45%, transparent); }
+}
+.stats.flow { background: none; }
+@media (max-width: 960px) {
+  .hm-grid { grid-template-columns: 1fr; }
+  .hm-chapters { max-width: 520px; }
+}
+
 /* ---------- reveal ---------- */
 [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
 [data-reveal].in { opacity: 1; transform: none; }
