@@ -39,27 +39,41 @@
   </header>
 
   <main id="main">
-    <section class="hero about-hero" data-paths="flow" data-paths-mirror data-paths-opacity="0.6">
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="kicker"><span class="pulse" aria-hidden="true"></span> About · Prayagraj, India</p>
-          <h1 class="hero-name"><span class="decrypt" data-text="The">The</span><em class="decrypt" data-text="developer.">developer.</em></h1>
-          <p class="hero-lede">I’m <strong>Shashwat Gupta</strong> — a self-taught student developer and the founder of <strong>Flex Studios</strong>. I build privacy-first software from first principles: I would rather understand exactly how something works than reach for a framework that hides it.</p>
-          <p class="hero-lede">That instinct is why <a class="ink-link" href="projects/talken.html">Talken</a> has no message server, why <a class="ink-link" href="projects/notes-plus.html">Notes+</a> has no backend at all, and why almost everything on this site was written line by line.</p>
-          <div class="hero-actions"><a class="btn btn-solid" href="#journey">The journey <span aria-hidden="true">↓</span></a><a class="btn btn-ghost" href="work.html">See the work</a></div>
-        </div>
-        <figure class="hero-photo">
-          <div class="photo-frame">
-            <img src="assets/img/developer.jpg" alt="Shashwat Gupta in a dark suit, standing in front of a historic building" width="400" height="400" />
-            <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-          </div>
-          <figcaption class="mono"><span>fig.01 — the developer</span><span class="status"><i></i> building Talken</span></figcaption>
-        </figure>
+    <section class="cine" id="top" data-cine>
+      <h1 class="sr-only">Shashwat Gupta — the developer</h1>
+      <span class="cine-leak" aria-hidden="true"></span>
+      <figure class="cine-photo">
+        <img src="assets/img/developer.jpg" alt="Shashwat Gupta in a dark suit, standing in front of a historic building" width="400" height="400" />
+      </figure>
+      <div class="cine-name" aria-hidden="true">
+        <span class="cine-line"><span class="cine-l1">Shashwat</span></span>
+        <span class="cine-line"><span class="cine-l2">Gupta.</span></span>
+      </div>
+      <p class="cine-hud cine-tl mono">Flex Studios <i>presents</i></p>
+      <p class="cine-hud cine-tr mono"><span class="cine-rec"><i></i> rec</span> <span data-timecode>00:00:00:00</span><br /><span class="cine-dim">sc.01 — the developer · 2.39:1</span></p>
+      <div class="cine-copy">
+        <p class="cine-kicker mono">a self-taught developer · Prayagraj, India</p>
+        <p class="cine-lede">I’m <strong>Shashwat Gupta</strong>, a self-taught student developer and the founder of <strong>Flex Studios</strong>. I build privacy-first software from first principles: I’d rather understand exactly how something works than reach for a framework that hides it.</p>
+        <div class="hero-actions"><a class="btn btn-solid" href="#journey">The journey <span aria-hidden="true">↓</span></a><a class="btn btn-ghost cine-ghost" href="work.html">See the work</a></div>
+      </div>
+      <dl class="cine-credits mono">
+        <div><dt>written &amp; engineered by</dt><dd>Shashwat Gupta</dd></div>
+        <div><dt>studio</dt><dd>Flex Studios</dd></div>
+        <div><dt>now showing</dt><dd><a href="projects/talken.html">Talken</a> <span class="cine-dim">— in beta</span></dd></div>
+      </dl>
+      <span class="cine-bar cine-bar-top" aria-hidden="true"></span><span class="cine-bar cine-bar-bottom" aria-hidden="true"></span>
+      <span class="cine-grain" aria-hidden="true"></span>
+      <a class="cine-scroll mono" href="#stats-anchor" aria-hidden="true" tabindex="-1">scroll</a>
+    </section>
+
+    <section class="section cine-quote">
+      <div class="wrap">
+        <p class="cine-q" data-reveal>That instinct is why <a class="ink-link" href="projects/talken.html">Talken</a> has no message server, why <a class="ink-link" href="projects/notes-plus.html">Notes+</a> has no backend at all, and why almost everything on this site was written <em>line by line.</em></p>
       </div>
     </section>
 
     <!-- ============ STATS ============ -->
-    <section class="stats" aria-label="By the numbers">
+    <section class="stats" id="stats-anchor" aria-label="By the numbers">
       <div class="wrap stats-row">
         <div class="stat" data-reveal><b data-count="140000" data-suffix="+">0</b><span>lines of code in Talken</span></div>
         <div class="stat" data-reveal><b data-count="705">0</b><span>source files in Talken</span></div>
