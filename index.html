@@ -44,7 +44,14 @@
         <p class="hm-id"><img class="hm-avatar" src="assets/img/developer.jpg" alt="" width="40" height="40" /><span class="mono">Founder, Flex Studios · Prayagraj, India</span></p>
         <h1 class="hm-name">Shashwat Gupta</h1>
         <p class="hm-line">Self-taught developer building privacy-first software from first principles, like <a href="projects/talken.html">Talken</a>, a messenger with no server in the middle, and <a href="projects/notes-plus.html">Notes+</a>, a notes app with no backend at all.</p>
-        <p class="hm-links mono"><a href="#work">work</a><a href="#journey">story</a><a href="#contact">contact</a><a href="https://github.com/Shashwat-Gupta57" target="_blank" rel="noopener">github ↗</a></p>
+        <nav class="hm-index mono" aria-label="On this page">
+          <a href="#talken" data-hue="talken"><b>01</b> talken</a>
+          <a href="#work" data-hue="work"><b>02</b> work</a>
+          <a href="#journey" data-hue="story"><b>03</b> story</a>
+          <a href="#toolkit" data-hue="kit"><b>04</b> toolkit</a>
+          <a href="#contact" data-hue="contact"><b>05</b> contact</a>
+          <a class="ext" href="https://github.com/Shashwat-Gupta57" target="_blank" rel="noopener">github ↗</a>
+        </nav>
       </div>
 
       <!-- The very first program, Nov 2023, redrawn from its own sprites -->
@@ -71,23 +78,23 @@
     <!-- ============ STATS ============ -->
     <section class="stats" aria-label="By the numbers">
       <div class="wrap stats-row">
-        <div class="stat" data-reveal><b data-count="140000" data-suffix="+">0</b><span>lines of code in Talken</span></div>
-        <div class="stat" data-reveal><b data-count="705">0</b><span>source files in Talken</span></div>
-        <div class="stat" data-reveal><b data-count="projects">0</b><span>projects on this page</span></div>
-        <div class="stat" data-reveal><b data-count="20">0</b><span>Java GUI apps (JavaFX &amp; Swing)</span></div>
-        <div class="stat" data-reveal><b data-count="294">0</b><span>Java classes written while learning</span></div>
-        <div class="stat" data-reveal><b data-count="25">0</b><span>coding certifications</span></div>
-        <div class="stat" data-reveal><b data-count="3000" data-suffix="+">0</b><span>LinkedIn followers</span></div>
-        <div class="stat" data-reveal><b data-count="95" data-suffix="%">0</b><span>board exam score</span></div>
+        <div class="stat" data-hue="talken" data-reveal><b data-count="140000" data-suffix="+">0</b><span>lines of code in Talken</span></div>
+        <div class="stat" data-hue="talken" data-reveal><b data-count="705">0</b><span>source files in Talken</span></div>
+        <div class="stat" data-hue="work" data-reveal><b data-count="projects">0</b><span>projects on this page</span></div>
+        <div class="stat" data-hue="work" data-reveal><b data-count="20">0</b><span>Java GUI apps (JavaFX &amp; Swing)</span></div>
+        <div class="stat" data-hue="story" data-reveal><b data-count="294">0</b><span>Java classes written while learning</span></div>
+        <div class="stat" data-hue="kit" data-reveal><b data-count="25">0</b><span>coding certifications</span></div>
+        <div class="stat" data-hue="contact" data-reveal><b data-count="3000" data-suffix="+">0</b><span>LinkedIn followers</span></div>
+        <div class="stat" data-hue="story" data-reveal><b data-count="95" data-suffix="%">0</b><span>board exam score</span></div>
       </div>
     </section>
 
     <!-- ============ TALKEN SPOTLIGHT ============ -->
-    <section class="spotlight" id="talken" data-paths="flow" data-paths-mirror data-paths-color="#FF7A5C,#5450AA" data-paths-opacity="0.6">
+    <section class="spotlight flow" id="talken" data-hue="talken" data-paths="flow" data-paths-mirror data-paths-color="#9b8cff,#5450AA" data-paths-opacity="0.45">
       <div class="wrap">
         <div class="spot-grid">
           <div class="spot-copy" data-reveal>
-            <p class="eyebrow mono">From the developer of</p>
+            <p class="eyebrow mono"><span class="sec-num">01</span> From the developer of</p>
             <h2 class="spot-title"><img class="spot-logo" src="assets/img/icons/talken.png" alt="" />Talken</h2>
             <p class="spot-tag">A messenger in a league of its own.</p>
             <p class="spot-lede">Every other chat app has a middle — a server that knows who you talk to, when, and from where. Talken has no middle. Messages travel device to device over an encrypted mesh, your files stay in your own Drive, and your account is a key that only you hold.</p>
@@ -110,10 +117,10 @@
     </section>
 
     <!-- ============ THE WEB: every project on one map ============ -->
-    <section class="section cn-section" id="work">
+    <section class="section cn-section flow" id="work" data-hue="work">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">01</span>
+          <span class="sec-num mono">02</span>
           <div>
             <p class="eyebrow mono">The web</p>
             <h2 class="sec-title"><span class="decrypt" data-text="Everything">Everything</span> <em>is connected.</em></h2>
@@ -129,11 +136,11 @@
     </section>
 
     <!-- ============ JOURNEY: scroll down, travel sideways ============ -->
-    <section class="journey" id="journey" data-hscroll>
+    <section class="journey flow" id="journey" data-hue="story" data-hscroll>
       <div class="hz-pin">
         <div class="hz-track">
           <div class="hz-intro">
-            <p class="eyebrow mono"><span class="sec-num">02</span> Origin</p>
+            <p class="eyebrow mono"><span class="sec-num">03</span> Origin</p>
             <h2 class="sec-title"><span class="decrypt" data-text="From “boring”">From “boring”</span> <em>to decentralized.</em></h2>
             <p class="sec-sub">Until my 9th-grade half-yearlies I genuinely disliked coding. Two years later, I had a peer-to-peer messenger in beta.</p>
             <p class="hz-period mono">Oct 2023 <span>→</span> Apr 2027</p>
@@ -194,10 +201,10 @@
     </section>
 
     <!-- ============ TOOLKIT ============ -->
-    <section class="section" id="toolkit">
+    <section class="section flow" id="toolkit" data-hue="kit">
       <div class="wrap">
         <header class="sec-head" data-reveal>
-          <span class="sec-num mono">03</span>
+          <span class="sec-num mono">04</span>
           <div>
             <p class="eyebrow mono">Toolkit</p>
             <h2 class="sec-title"><span class="decrypt" data-text="What I build with">What I build with</span></h2>
@@ -253,9 +260,9 @@
     </section>
 
     <!-- ============ CONTACT ============ -->
-    <section class="section contact" id="contact" data-paths="ribbon" data-paths-opacity="0.45">
+    <section class="section contact flow" id="contact" data-hue="contact" data-paths="ribbon" data-paths-opacity="0.45">
       <div class="wrap">
-        <p class="eyebrow mono" data-reveal>04 — Get in touch</p>
+        <p class="eyebrow mono contact-head" data-reveal><span class="sec-num">05</span> Get in touch</p>
         <h2 class="contact-title" data-reveal>Let's build something <em>that respects people.</em></h2>
         <p class="contact-lede" data-reveal>Open to opportunities, collaborations, freelance work and conversations about privacy, cryptography and software.</p>
         <a class="mail" href="mailto:connect@talken.in" data-reveal>

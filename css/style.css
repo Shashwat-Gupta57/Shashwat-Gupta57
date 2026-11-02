@@ -225,9 +225,6 @@ kbd {
 .hm-line { max-width: 24em; font-size: clamp(19px, 2.1vw, 27px); line-height: 1.45; color: var(--muted); margin-bottom: 30px; }
 .hm-line a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 4px; transition: text-decoration-color .2s; }
 .hm-line a:hover { text-decoration-color: var(--accent); }
-.hm-links { display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: 13px; margin-bottom: clamp(56px, 9vh, 96px); }
-.hm-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
-.hm-links a:hover { color: var(--accent); }
 
 /* ---------- walker terminal ---------- */
 .term {
@@ -1197,6 +1194,97 @@ kbd {
   .ls-name em { display: none; }
   .spot-row { grid-template-columns: 1fr 1fr; }
   .spot-row span:first-child { grid-column: 1 / -1; color: var(--text); }
+}
+
+/* ==========================================================
+   The system: one colour per section, one header pattern, one spine.
+   Each section carries data-hue; inside it --accent becomes that hue, so every
+   button, bar, chip, line and highlight in the section speaks the same colour.
+   The hero's index, the stats and the spine all use the same five hues, so the
+   page reads as one planned thing: 01 talken · 02 work · 03 story · 04 toolkit · 05 contact.
+   ========================================================== */
+:root { --h-talken: #9b8cff; --h-work: #5b9bff; --h-story: #ff6a3d; --h-kit: #3ddc84; --h-contact: #ffc247; --hue: var(--accent); }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) { --h-talken: #6d5ce8; --h-work: #2563eb; --h-story: #d9481a; --h-kit: #15803d; --h-contact: #a16207; }
+}
+:root[data-theme="light"] { --h-talken: #6d5ce8; --h-work: #2563eb; --h-story: #d9481a; --h-kit: #15803d; --h-contact: #a16207; }
+[data-hue="talken"] { --hue: var(--h-talken); }
+[data-hue="work"] { --hue: var(--h-work); }
+[data-hue="story"] { --hue: var(--h-story); }
+[data-hue="kit"] { --hue: var(--h-kit); }
+[data-hue="contact"] { --hue: var(--h-contact); }
+[data-hue] { --accent: var(--hue); --accent-soft: color-mix(in srgb, var(--hue) 13%, transparent); }
+
+/* rhythm: generous space between sections, tight inside them */
+.section, .spotlight { padding: clamp(110px, 13vw, 176px) 0; }
+.sec-head { grid-template-columns: 56px 1fr 1fr; padding-bottom: 20px; margin-bottom: 36px;
+  border-bottom: 0; background: linear-gradient(90deg, var(--hue), var(--line) 30%) bottom / 100% 1px no-repeat; }
+.sec-num { color: var(--hue); font-weight: 700; padding-top: 6px; }
+.eyebrow { color: var(--hue); }
+.sec-title { font-size: clamp(38px, 5vw, 64px); }
+.sec-title em { color: var(--hue); }
+.sec-sub { font-size: 15.5px; }
+
+/* the spine: a hairline down the left edge, coloured by whichever section it passes through */
+.flow { position: relative; isolation: isolate;
+  background: radial-gradient(520px 380px at var(--spine-x) 340px, color-mix(in srgb, var(--hue) 9%, transparent), transparent 70%); }
+:root { --spine-x: calc(max(0px, (100vw - var(--maxw)) / 2) + var(--gutter) - 44px); }
+@media (min-width: 1300px) {
+  .flow::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: var(--spine-x); width: 1px;
+    background: linear-gradient(color-mix(in srgb, var(--hue) 10%, var(--line)), color-mix(in srgb, var(--hue) 55%, transparent) 220px, color-mix(in srgb, var(--hue) 18%, var(--line))); }
+  .flow .sec-head, .flow .spot-copy, .flow .contact-head { position: relative; }
+  .flow .sec-head::before, .flow .spot-copy::before, .flow .contact-head::before { content: ""; position: absolute; left: calc(-44px - 4.5px); top: 10px;
+    width: 9px; height: 9px; border-radius: 50%; background: var(--hue); box-shadow: 0 0 0 5px color-mix(in srgb, var(--hue) 16%, transparent), 0 0 18px var(--hue); }
+}
+
+/* hero: the index is the legend for the whole page */
+.hm-index { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: clamp(64px, 10vh, 104px); font-size: 12.5px; }
+.hm-index a { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px 7px 11px; border: 1px solid var(--line); border-radius: 999px;
+  color: var(--muted); text-decoration: none; transition: border-color .2s, color .2s, background .2s; }
+.hm-index a::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--hue); }
+.hm-index b { color: var(--hue); font-weight: 700; }
+.hm-index a:hover { color: var(--text); border-color: var(--hue); background: color-mix(in srgb, var(--hue) 9%, transparent); }
+.hm-index .ext::before { background: transparent; border: 1px solid var(--dim); }
+.hm-line a { text-decoration-color: color-mix(in srgb, var(--hue) 60%, transparent); }
+
+/* stats: each number in the colour of the section it belongs to */
+.stats { background: transparent; border: 0; padding: 8px 0; }
+.stats-row { gap: 12px; background: none; }
+.stat { padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); gap: 4px; position: relative; overflow: hidden; }
+.stat::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 2px; background: var(--hue); opacity: .85; }
+.stat b { color: var(--hue); font-size: clamp(30px, 3.2vw, 40px); }
+.stat span { font-size: 12.5px; }
+
+/* Talken: the violet chapter */
+.spotlight { border: 0; background: radial-gradient(ellipse 55% 75% at 12% 45%, color-mix(in srgb, var(--hue) 14%, transparent), transparent 70%); }
+.spot-title { font-size: clamp(56px, 8vw, 112px); }
+.spot-title em, .spot-head span:last-child { color: var(--hue); }
+.spot-tag { font-size: clamp(22px, 2.4vw, 30px); color: var(--hue); }
+.spot-row { padding: 12px 18px; font-size: 14px; }
+.spot-row .yes::before { color: var(--hue); }
+
+/* toolkit: compact cards in green */
+.toolkit { gap: 14px; }
+.tk-col { padding: 22px; }
+.tk-col h3, .certs h3 { margin-bottom: 14px; color: var(--hue); }
+.chips li { padding: 5px 11px; font-size: 13px; }
+.certs { padding: 22px; margin-top: 14px; border-color: color-mix(in srgb, var(--hue) 30%, var(--line)); background: color-mix(in srgb, var(--hue) 5%, transparent); }
+.certs b { font-size: 38px; }
+.principles { margin-top: 44px; border-top-color: color-mix(in srgb, var(--hue) 40%, var(--line)); }
+.principles h3 { font-size: 24px; }
+
+/* contact: amber, same header pattern as everything else */
+.contact { border-top: 0; }
+.contact-title { font-size: clamp(42px, 6.5vw, 88px); }
+.mail { margin: 32px 0 30px; border-bottom-color: color-mix(in srgb, var(--hue) 40%, var(--line)); }
+.socials a:hover { border-color: var(--hue); }
+
+/* journey: its intro follows the same pattern */
+.journey.flow { background: radial-gradient(520px 380px at var(--spine-x) 340px, color-mix(in srgb, var(--hue) 8%, transparent), transparent 70%); }
+.hz-intro .sec-title { font-size: clamp(40px, 4.4vw, 64px); }
+.hz-intro .eyebrow .sec-num { color: var(--hue); }
+@media (max-width: 860px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
 /* ---------- reveal ---------- */
