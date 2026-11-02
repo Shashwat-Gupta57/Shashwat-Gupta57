@@ -217,15 +217,6 @@ kbd {
 .status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
 .status i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
 
-/* ---------- minimal hero ---------- */
-.hero-min { padding-top: clamp(120px, 20vh, 220px); }
-.hm-id { display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--muted); margin-bottom: 28px; }
-.hm-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; filter: grayscale(1); }
-.hm-name { font: 400 clamp(56px, 9vw, 136px)/.95 var(--serif); letter-spacing: -.03em; margin-bottom: 26px; }
-.hm-line { max-width: 24em; font-size: clamp(19px, 2.1vw, 27px); line-height: 1.45; color: var(--muted); margin-bottom: 30px; }
-.hm-line a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 4px; transition: text-decoration-color .2s; }
-.hm-line a:hover { text-decoration-color: var(--accent); }
-
 /* ---------- walker terminal ---------- */
 .term {
   margin-top: clamp(48px, 7vw, 84px);
@@ -1237,16 +1228,6 @@ kbd {
     width: 9px; height: 9px; border-radius: 50%; background: var(--hue); box-shadow: 0 0 0 5px color-mix(in srgb, var(--hue) 16%, transparent), 0 0 18px var(--hue); }
 }
 
-/* hero: the index is the legend for the whole page */
-.hm-index { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: clamp(64px, 10vh, 104px); font-size: 12.5px; }
-.hm-index a { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px 7px 11px; border: 1px solid var(--line); border-radius: 999px;
-  color: var(--muted); text-decoration: none; transition: border-color .2s, color .2s, background .2s; }
-.hm-index a::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--hue); }
-.hm-index b { color: var(--hue); font-weight: 700; }
-.hm-index a:hover { color: var(--text); border-color: var(--hue); background: color-mix(in srgb, var(--hue) 9%, transparent); }
-.hm-index .ext::before { background: transparent; border: 1px solid var(--dim); }
-.hm-line a { text-decoration-color: color-mix(in srgb, var(--hue) 60%, transparent); }
-
 /* stats: each number in the colour of the section it belongs to */
 .stats { background: transparent; border: 0; padding: 8px 0; }
 .stats-row { gap: 12px; background: none; }
@@ -1287,49 +1268,58 @@ kbd {
   .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
-/* hero: the cover of the system. The five hues are introduced here (the bar under the name,
-   the contents card, the glow) and the spine starts here, at a node that holds all five. */
-.hero-min.flow { padding-top: clamp(110px, 16vh, 180px);
-  background: radial-gradient(420px 320px at 78% 22%, color-mix(in srgb, var(--h-talken) 14%, transparent), transparent 70%),
-              radial-gradient(380px 300px at 94% 48%, color-mix(in srgb, var(--h-work) 11%, transparent), transparent 70%),
-              radial-gradient(400px 300px at 70% 62%, color-mix(in srgb, var(--h-story) 10%, transparent), transparent 70%),
-              radial-gradient(360px 280px at 88% 82%, color-mix(in srgb, var(--h-kit) 8%, transparent), transparent 70%); }
-.hm-grid { display: grid; grid-template-columns: 1.25fr .9fr; gap: clamp(40px, 6vw, 96px); align-items: center; margin-bottom: clamp(64px, 10vh, 104px); }
-.hm-main { position: relative; }
-.hm-name { margin-bottom: 22px; }
-.hm-bar { display: flex; gap: 5px; width: 230px; margin-bottom: 28px; }
-.hm-bar i { flex: 1; height: 4px; border-radius: 4px; background: var(--hue); }
-.hm-line { margin-bottom: 26px; }
-.hm-links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 12.5px; }
-.hm-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
-.hm-links a:hover { color: var(--text); }
+/* hero: the original layout (name left, photo right), dressed in the site's five hues.
+   A slow five-hue aura turns behind the portrait, the frame's corners take one hue each,
+   and small tags float around the photo, each linking to its chapter of the page. */
+.hero-v { overflow-x: clip; }
+.hero-v.flow { background: none; }
+.hero-v .hero-name em { background: linear-gradient(100deg, var(--h-story), var(--h-contact) 32%, var(--h-talken) 68%, var(--h-work)); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: hv-shift 12s ease-in-out infinite alternate; }
+@keyframes hv-shift { to { background-position: 100% 0; } }
+.hero-v .hero-meta li[data-hue] .mono { color: var(--hue); }
+.hero-v .hero-meta b { font-weight: 500; }
 
-/* the contents card: each chapter in its own colour, a fact on the right, a link to the section */
-.hm-chapters { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: var(--shadow); }
-.hm-ch-head { display: flex; justify-content: space-between; padding: 2px 4px 10px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
-.hm-ch { position: relative; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 12px 14px 12px 12px; border-radius: 10px;
-  color: var(--text); text-decoration: none; background: color-mix(in srgb, var(--hue) 6%, transparent); transition: background .25s, transform .25s; }
-.hm-ch::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--hue); }
-.hm-ch b { font-size: 12px; color: var(--hue); padding-left: 6px; }
-.hm-ch-t { display: flex; flex-direction: column; font: 400 22px/1.05 var(--serif); }
-.hm-ch-t em { font: 400 12.5px/1.3 var(--sans); font-style: normal; color: var(--muted); margin-top: 3px; }
-.hm-ch-v { font-size: 11.5px; color: var(--hue); white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: color-mix(in srgb, var(--hue) 12%, transparent); }
-.hm-ch:hover, .hm-ch:focus-visible { background: color-mix(in srgb, var(--hue) 14%, transparent); transform: translateX(4px); outline: none; }
+.hero-v .hero-photo { position: relative; isolation: isolate; }
+.hero-aura { position: absolute; z-index: -1; inset: 4% 0 14%; border-radius: 42%; opacity: .55; filter: blur(64px);
+  background: conic-gradient(from 0deg, var(--h-talken), var(--h-work), var(--h-kit), var(--h-contact), var(--h-story), var(--h-talken));
+  animation: hv-spin 18s linear infinite; }
+@keyframes hv-spin { to { transform: rotate(1turn); } }
+:root[data-theme="light"] .hero-aura { opacity: .32; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .hero-aura { opacity: .32; } }
+.hero-v .photo-frame img { border-radius: 14px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 40px 90px -40px rgba(0, 0, 0, .9); }
+.hero-v .corner.tl { border-color: var(--h-talken); }
+.hero-v .corner.tr { border-color: var(--h-work); }
+.hero-v .corner.bl { border-color: var(--h-story); }
+.hero-v .corner.br { border-color: var(--h-kit); }
 
-/* the spine starts in the hero, at a node holding all five hues, and flows into Talken's violet */
+.orbit { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px 7px 11px; border-radius: 999px;
+  font: 500 12px var(--mono); color: var(--muted); text-decoration: none; white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--hue) 38%, var(--line)); background: color-mix(in srgb, var(--surface) 80%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 14px 34px -16px rgba(0, 0, 0, .7);
+  animation: hv-float 6s ease-in-out infinite; transition: color .2s, border-color .2s; }
+.orbit i { width: 7px; height: 7px; border-radius: 50%; background: var(--hue); box-shadow: 0 0 10px var(--hue); }
+.orbit b { color: var(--hue); font-weight: 700; }
+.orbit:hover { color: var(--text); border-color: var(--hue); }
+.orbit.o1 { top: 7%; left: -13%; }
+.orbit.o2 { top: 33%; right: -9%; animation-delay: -1.5s; }
+.orbit.o3 { bottom: 27%; left: -17%; animation-delay: -3s; }
+.orbit.o4 { bottom: 9%; right: -5%; animation-delay: -4.5s; }
+@keyframes hv-float { 50% { transform: translateY(-7px); } }
+
+/* the spine starts here, at a node holding all five hues, and flows into Talken's violet */
 @media (min-width: 1300px) {
-  .hero-min.flow::before { top: clamp(130px, 18vh, 200px); background: linear-gradient(var(--h-talken), var(--h-work), var(--h-story), var(--h-kit), var(--h-contact), var(--h-talken)); opacity: .45; }
-  .hero-min .hm-main::before { content: ""; position: absolute; left: calc(-44px - 6.5px); top: 13px; width: 13px; height: 13px; border-radius: 50%;
+  .hero-v.flow::before { top: clamp(60px, 9vw, 120px); background: linear-gradient(var(--h-talken), var(--h-work), var(--h-story), var(--h-kit), var(--h-contact), var(--h-talken)); opacity: .45; }
+  .hero-v .hero-copy { position: relative; }
+  .hero-v .hero-copy::before { content: ""; position: absolute; left: calc(-44px - 6.5px); top: 10px; width: 13px; height: 13px; border-radius: 50%;
     background: conic-gradient(var(--h-talken), var(--h-work), var(--h-story), var(--h-kit), var(--h-contact), var(--h-talken));
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--text) 6%, transparent), 0 0 22px color-mix(in srgb, var(--h-work) 60%, transparent); }
   .stats.flow::before { background: color-mix(in srgb, var(--h-talken) 45%, transparent); }
 }
 .stats.flow { background: none; }
 @media (max-width: 960px) {
-  .hm-grid { grid-template-columns: 1fr; }
-  .hm-chapters { max-width: 520px; }
+  .orbit.o1 { left: -2%; } .orbit.o3 { left: -4%; } .orbit.o2, .orbit.o4 { right: -2%; }
 }
+@media (prefers-reduced-motion: reduce) { .hero-aura, .orbit, .hero-v .hero-name em { animation: none; } }
 
 /* ---------- reveal ---------- */
 [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
