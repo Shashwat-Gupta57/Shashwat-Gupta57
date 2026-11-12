@@ -19,7 +19,7 @@
   function currentTheme() {
     var t = root.getAttribute('data-theme');
     if (t) return t;
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    return 'dark';   // dark unless the visitor picks light with the toggle
   }
   // A vanilla port of Magic UI's AnimatedThemeToggler: the new theme is revealed by a circle
   // growing out of the button, via the View Transitions API (plain swap where unsupported).

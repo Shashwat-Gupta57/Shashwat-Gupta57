@@ -46,7 +46,7 @@
       try { localStorage.setItem(KEY, new Date().toISOString().slice(0, 10)); } catch (e) {}
       gate.classList.add('gate-leave');
       document.documentElement.classList.remove('gate-open');
-      setTimeout(function () { gate.remove(); }, 450);
+      setTimeout(function () { gate.remove(); document.dispatchEvent(new CustomEvent('sg:gate-closed')); }, 450);
     });
     // keep keyboard focus inside the notice while it's open
     gate.addEventListener('keydown', function (e) {
