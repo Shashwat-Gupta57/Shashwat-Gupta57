@@ -1307,6 +1307,10 @@ kbd {
 /* ---------- the build: the page assembles itself (js/build.js) ---------- */
 html.sw-on body { visibility: hidden; }
 html.sw-on [data-sw="1"], html.sw-on .gate, html.sw-on .sw-ui { visibility: visible; }
+html.sw-on [data-sw="0"] { visibility: hidden; }
+/* the timeline's own slide-in would hide text as it's typed: while building, entries just sit in place */
+html.sw-on .hz-copy > * > span, html.sw-on .hz-stem { transform: none; transition: none; }
+html.sw-on .hz-dot { transform: translate(-50%, -50%); transition: none; }
 [data-sw-ghost] { visibility: hidden !important; }
 .sw-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9000; pointer-events: none; }
 .sw-tile { position: fixed; left: 50%; top: 50%; z-index: 8999; width: 76px; height: 76px; margin: -38px 0 0 -38px; display: grid; place-items: center;

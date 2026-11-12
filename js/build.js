@@ -24,6 +24,7 @@
 
   var state = null;   // the running build, or null
   var api = window.SGBuild = { running: false, pending: false, replay: replay, skip: function () { if (state) skip(); } };
+  Object.defineProperty(api, 'state', { get: function () { return state; } });   // for inspecting a run from the console
 
   /* ---------------- taking the page apart ---------------- */
   function transparent(c) { return !c || c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(c); }
@@ -69,7 +70,12 @@
     root.classList.remove('sw-on');   // measure the page as it really is; nothing paints inside this task
     Array.prototype.forEach.call(document.querySelectorAll('body > header, body > main, body > footer'), function (s) { walk(s, null, null); });
     if (had) root.classList.add('sw-on');
-    layers.forEach(function (l) { if (l.kind === 'text') l.str = ownText(l); });
+    layers.forEach(function (l) {
+      if (l.kind === 'text') l.str = ownText(l);
+      // every piece starts explicitly hidden: otherwise revealing a container (the nav, a card,
+      // the map) would show everything inside it before anyone had built it
+      l.el.setAttribute('data-sw', '0');
+    });
     return layers;
   }
 
@@ -466,7 +472,8 @@
       // anything still waiting its turn on screen keeps the tour here
       for (var q = state.head; q < state.jobs.length && !inView; q++) {
         var P = state.jobs[q];
-        if (!P.taken && where(P.layer ? P.layer.el : P.group.items[0].el) === 'here') inView = true;
+        // only work that could start now counts: a piece whose container is still below the fold mustn't hold the tour
+        if (!P.taken && (!P.parent || P.parent.done) && where(P.layer ? P.layer.el : P.group.items[0].el) === 'here') inView = true;
       }
       var busy = false;
       state.agents.forEach(function (a) {
