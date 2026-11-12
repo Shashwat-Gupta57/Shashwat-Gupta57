@@ -229,6 +229,8 @@
     }
   })();
 
+  function building() { return root.classList.contains('sw-on'); }
+
   /* ---------------- decrypt text ---------------- */
   var GLYPHS = '!<>-_\\/[]{}=+*^?#$%&01ABCDEFGHJKLMNPQRSTUVWXYZ';
   // Decrypts one or more elements as a single sweep: every element starts scrambled, and the
@@ -243,7 +245,8 @@
       el.setAttribute('aria-label', t);
       return t;
     });
-    if (reduceMotion) { els.forEach(function (el, k) { el.textContent = texts[k]; }); return; }
+    // no scramble under reduced motion, or while the page is being built (js/build.js types it in instead)
+    if (reduceMotion || building()) { els.forEach(function (el, k) { el.textContent = texts[k]; }); return; }
     var totalChars = texts.reduce(function (n, t) { return n + t.length; }, 0);
     var frame = 0, last = 8 + totalChars * 2;
     (function step() {
@@ -269,7 +272,7 @@
     el.dataset.done = '1';
     var target = el.dataset.count === 'projects' ? PROJECTS.length : +el.dataset.count, suffix = el.dataset.suffix || '';
     var fmt = function (n) { return n.toLocaleString('en-US') + suffix; };
-    if (reduceMotion) { el.textContent = fmt(target); return; }
+    if (reduceMotion || building()) { el.textContent = fmt(target); return; }
     var start = performance.now(), dur = 1400;
     (function tick(now) {
       var p = Math.min(1, (now - start) / dur);
