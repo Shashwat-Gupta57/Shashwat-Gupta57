@@ -22,7 +22,9 @@
   var STATE = { active: 1, in: 1, on: 1, lit: 1, match: 1, launch: 1, future: 1 };
   var COLORS = ['#9b8cff', '#5b9bff', '#ff6a3d', '#3ddc84', '#ffc247', '#f472b6', '#22d3ee', '#ef4444'];
   // timings at 1×, in ms (typing in characters per second)
-  var T = { flyMin: 280, flyMax: 800, drag: 560, wipe: 800, copy: 460, paste: 380, select: 280, gap: 70, cpsMin: 22, cpsMax: 80, typeFor: 1.15, tourStep: .82, tourDur: 900 };
+  var T = { flyMin: 280, flyMax: 800, drag: 560, wipe: 800, copy: 460, paste: 380, select: 280, gap: 70, cpsMin: 22, cpsMax: 80, typeFor: 1.15 };
+  // the tour glides steadily: a share of the screen height per second, slower while lots on screen is unbuilt
+  var GLIDE = { base: .085, busy: .28, some: .6, idle: 3, smooth: 450 };
   var HELPERS = 3;
   // Parts that run on code: a cursor right-clicks, picks "Write code…", and the part's real source is
   // typed into an editor beside it (read from the site's own scripts, so it's always the current code)
@@ -542,7 +544,7 @@
       '<button type="button" data-a="skip" aria-label="Skip the build (Esc)">✕</button>';
   }
   function setTour(on) {
-    state.tour = on;
+    state.tour = on; state.sy = null; state.v = 0;
     var b = state.hud.querySelector('[data-a="tour"]');
     if (b) b.setAttribute('aria-pressed', String(on));
   }
@@ -589,13 +591,14 @@
 
     if (state.phase === 'build') {
       // 1. your screen: hand out ready on-screen work in page order (backdrops just appear)
-      var free = state.agents.filter(function (a) { return !a.job; }), inView = false, backlog = [];
+      var free = state.agents.filter(function (a) { return !a.job; }), inView = false, backlog = [], pending = 0;
       state.sets = state.sets.filter(function (g) { return g.queue.length; });
       for (var i = state.head; i < state.jobs.length; i++) {
         var J = state.jobs[i];
         if (J.taken) { if (i === state.head) state.head++; continue; }
-        if (J.parent && !J.parent.done) continue;
         var w = where(jobEl(J));
+        if (w === 'here') pending++;   // everything still to build on screen, ready or not, sets the tour's pace
+        if (J.parent && !J.parent.done) continue;
         if (w === 'void' && J.layer) { J.taken = true; instant(J.layer); continue; }
         if (w !== 'here' && w !== 'void') { backlog.push(J); continue; }
         inView = true;
@@ -606,8 +609,9 @@
       });
       state.hereWaiting = inView && !free.length;
       // 2. the backlog: when your screen has nothing waiting, free cursors go back for unfinished work,
-      //    nearest first. While touring, the tour brings in what's below, so only what's above counts.
-      if (free.length && !inView && (!state.tour || atEnd())) {
+      //    nearest first. While touring, the tour brings in what's below, so only what's above counts
+      //    (pieces the glide carried past before they were finished).
+      if (free.length && !inView) {
         backlog = backlog.filter(function (J) { return !state.tour || atEnd() || where(jobEl(J)) === 'above'; })
           .sort(function (a, b) { return distance(jobEl(a)) - distance(jobEl(b)); });
         while (free.length && backlog.length) take(backlog.shift(), free);
@@ -615,22 +619,25 @@
           while (free.length && g.queue.length && g.helpers < HELPERS) join(g, free);
         });
       }
-      var busy = false;
+      var busy = false, busyHere = 0;
       state.agents.forEach(function (a) {
         if (a.job && !a.task) next(a, now);
-        if (a.task) { if (now >= a.task.t0 || a.task.phase !== 'fly') work(a, now); busy = true; }
+        if (a.task) { if (now >= a.task.t0 || a.task.phase !== 'fly') work(a, now); busy = true; if (a.y > 0 && a.y < H) busyHere++; }
         else { a.x += Math.sin(now / 700 + a.seed) * .25; a.y += Math.cos(now / 900 + a.seed) * .25; }
       });
 
-      // tour: once this screen is built, glide down to the next
-      if (state.tour && !busy && !inView && !state.scroll) {
+      // tour: a steady glide down the page while the cursors build. It eases off while a lot on screen
+      // is still unbuilt, keeps a gentle pace otherwise, and speeds up across stretches with nothing to do.
+      if (state.tour) {
         var max = document.documentElement.scrollHeight - H;
-        if (scrollY < max - 2) state.scroll = { from: scrollY, to: Math.min(max, scrollY + H * T.tourStep), t0: now, dur: T.tourDur / state.speed };
-      }
-      if (state.scroll) {
-        var s = state.scroll, sk = Math.min(1, (now - s.t0) / s.dur), se = sk < .5 ? 2 * sk * sk : 1 - Math.pow(-2 * sk + 2, 2) / 2;
-        window.scrollTo({ top: s.from + (s.to - s.from) * se, behavior: 'instant' });
-        if (sk >= 1) state.scroll = null;
+        var pace = pending > 8 ? GLIDE.busy : pending > 3 ? GLIDE.some : pending === 0 && !busyHere ? GLIDE.idle : 1;
+        var want = GLIDE.base * H * pace * state.speed;
+        state.v = (state.v || 0) + (want - (state.v || 0)) * Math.min(1, dt / GLIDE.smooth);
+        if (state.sy == null || Math.abs(scrollY - state.sy) > 3) state.sy = scrollY;   // re-sync if anything else moved the page
+        if (state.sy < max) {
+          state.sy = Math.min(max, state.sy + state.v * dt / 1000);
+          window.scrollTo({ top: state.sy, behavior: 'instant' });
+        }
       }
       state.builtEl.textContent = state.built;
       state.barI.style.width = (state.built / state.layers.length * 100) + '%';
