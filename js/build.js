@@ -7,9 +7,10 @@
    edited. Tour mode scrolls along as each screen finishes; scrolling yourself takes over. Whatever is on
    your screen is built first; anything you scrolled past, or haven't reached, is kept as a backlog
    that free cursors go back to (off screen) whenever your screen doesn't need them. Nothing is skipped.
-   Plays once per browser session; "Tour site" in the nav replays it. Esc or ✕ skips. Skipped under
+   Every page builds itself once per browser session; the Tour button at the right of the nav
+   ("Tour site" on the home page, "Tour page" elsewhere) replays it. Esc or ✕ skips. Skipped under
    reduced motion (unless asked for), with ?build=off, and of course without JavaScript.
-   The inline script in index.html's <head> hides the page before first paint (html.sw-on). */
+   js/prebuild.js, in each page's <head>, decides and hides the page before first paint (html.sw-on). */
 (function () {
   'use strict';
 
@@ -740,7 +741,7 @@
     if (state) return;
     api.pending = false;
     root.classList.add('sw-on');
-    try { sessionStorage.setItem('sg-built', '1'); } catch (e) {}
+    try { sessionStorage.setItem('sg-built:' + location.pathname.replace(/index\.html$/, ''), '1'); } catch (e) {}
     settle();
     loadCode();
     // the map always starts from its default overview, so a build is the same size every time
@@ -806,7 +807,7 @@
     requestAnimationFrame(function () { requestAnimationFrame(start); });
   }
 
-  // "Tour site" in the nav replays the build here (other pages link to index.html?tour)
+  // the Tour button in the nav replays this page's build (without JavaScript it's a plain ?tour link)
   Array.prototype.forEach.call(document.querySelectorAll('[data-tour]'), function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); replay(); });
   });

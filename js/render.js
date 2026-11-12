@@ -206,6 +206,7 @@
           (gh ? '<a href="' + esc(gh) + '" target="_blank" rel="noopener">GitHub ↗</a>' : '') + '</nav>' +
         '<a class="ms-home mono" href="' + BASE + 'work.html" title="Shashwat Gupta — all projects"><span class="brand-mark">SG</span><span class="ms-home-label">all projects</span></a>' +
         '<button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></button>' +
+        '<a class="tour-btn" href="?tour" data-tour title="Watch this page build itself"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><span>Tour page</span></a>' +
       '</div></header>';
     }
 

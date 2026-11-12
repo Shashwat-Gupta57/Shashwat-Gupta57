@@ -52,6 +52,7 @@ const shell = (p, page, body) => {
   <meta name="theme-color" content="#0c0c0e" />
   <link rel="icon" href="../../${esc(pz.icon && !pz.icon.endsWith('.svg') ? pz.icon : 'assets/favicon.svg')}" />
   <script>document.documentElement.classList.remove("no-js");(function(){try{var t=localStorage.getItem('sg-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <script src="../../js/prebuild.js?v=dev"></script>
   <link rel="stylesheet" href="../../assets/fonts/fonts.css" />
   <link rel="stylesheet" href="../../css/style.css?v=dev" />
 </head>
@@ -71,6 +72,7 @@ const shell = (p, page, body) => {
   <script src="../../js/paths.js?v=dev" defer></script>
   <script src="../../js/main.js?v=dev" defer></script>
   <script src="../../js/gate.js?v=dev" defer></script>
+  <script src="../../js/build.js?v=dev" defer></script>
 </body>
 </html>
 `;
