@@ -14,6 +14,16 @@
   var R = window.SiteRender(BASE, PROJECTS, CATS, window.DOCS, window.STRUCTURE, window.RELEASES);
   var esc = R.esc;
 
+  /* ---------------- phone menu: the nav links drop down under the bar ---------------- */
+  (function navMenu() {
+    var btn = $('#navMenu'), nav = $('#nav');
+    if (!btn || !nav) return;
+    function set(open) { nav.classList.toggle('menu-open', open); btn.setAttribute('aria-expanded', String(open)); }
+    btn.addEventListener('click', function () { set(!nav.classList.contains('menu-open')); });
+    $$('#navLinks a').forEach(function (a) { a.addEventListener('click', function () { set(false); }); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+  })();
+
   /* ---------------- theme ---------------- */
   var root = document.documentElement;
   function currentTheme() {

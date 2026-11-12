@@ -36,7 +36,7 @@
   var CODE_CPS = 1200;   // typed for the look of it, not to be read
   // simple effects are added from the right-click menu instead; shadows and loops are held back until then
   var HOVERS = '.btn, .stat, .cn-card, .tk-col, .socials a, .tour-btn, .theme-btn, .nav-links a, .orbit, .spot-compare, .mail';
-  var MENU = ['Cut', 'Copy', 'Paste', '-', 'Add hover effect', 'Add shadow', 'Add animation', '-', 'Write code…', 'Inspect'];
+  var MENU = ['Copy', 'Paste', '-', 'Add hover effect', 'Add shadow', 'Add animation', '-', 'Write code…'];
   var PICK = { hover: 'Add hover effect', shadow: 'Add shadow', animation: 'Add animation', code: 'Write code…' };   // at most this many cursors share one set of copies
 
   var state = null;   // the running build, or null
@@ -736,6 +736,8 @@
     try { sessionStorage.setItem('sg-built', '1'); } catch (e) {}
     settle();
     loadCode();
+    // the map always starts from its default overview, so a build is the same size every time
+    Array.prototype.forEach.call(document.querySelectorAll('[data-constellation]'), function (h) { if (h.__map) h.__map.reset(); });
     var layers, jobs;
     try { layers = capture(); jobs = plan(layers); } catch (e) { root.classList.remove('sw-on'); return; }
     if (!layers.length) { root.classList.remove('sw-on'); return; }

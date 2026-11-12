@@ -148,24 +148,34 @@
 
     /* ---------- layout: seed a spiral per cluster, then pull together and push apart ---------- */
     var W = 0, H = 0, built = false;
+    // On a phone the map is laid out top to bottom instead: the spider first, then each cluster in
+    // turn, fitted to the screen width and scrolled with the page (no panning or zooming to fight with).
+    var compact = false, PHONE = ['talken', 'products', 'tools', 'desktop', 'games', 'other'];
+    function phone() { return window.innerWidth < 720; }
     function layout() {
       nodes.forEach(function (n) { n.w = n.el.offsetWidth; n.h = n.el.offsetHeight; });
       var coreN = nodes['#core'];
       coreN.x = 0; coreN.y = 0; coreN.fixed = true; coreN.g = 'core';
+      var down = coreN.h / 2 + 140;
+      groups.slice().sort(function (x, y) { return PHONE.indexOf(x.key) - PHONE.indexOf(y.key); }).forEach(function (g) {
+        if (!compact) return;
+        var tall = 120 + Math.ceil((g.members.length + 1) / 2) * 230;
+        g.cy = down + tall / 2; down += tall + 120;
+      });
       groups.forEach(function (g) {
-        var a = g.angle * Math.PI / 180, cx = Math.cos(a) * RX, cy = Math.sin(a) * RY;
+        var a = g.angle * Math.PI / 180, cx = compact ? 0 : Math.cos(a) * RX, cy = compact ? g.cy : Math.sin(a) * RY;
         var list = [nodes['#' + g.key]].concat(g.members.slice().sort(function (x, y) { return tierOf(x) - tierOf(y) || num[x.id] - num[y.id]; }).map(function (p) { return nodes[p.id]; }));
         list.forEach(function (n, i) {
           var r = i ? 190 * Math.sqrt(i) : 0, t = i * 2.39996 + a;
-          n.x = cx + Math.cos(t) * r * 1.3; n.y = cy + Math.sin(t) * r;
+          n.x = cx + Math.cos(t) * r * (compact ? .8 : 1.3); n.y = cy + Math.sin(t) * r;
           n.cx = cx; n.cy = cy; n.g = g.key; n.k = i ? .03 : .2;
         });
       });
       var live = nodes.filter(function (n) { return !n.fixed; });
       for (var it = 0; it < 760; it++) {
-        if (it < 700) live.forEach(function (n) { var k = it > 450 ? n.k / 3 : n.k; n.x += (n.cx - n.x) * k; n.y += (n.cy - n.y) * k; });
+        if (it < 700) live.forEach(function (n) { var k = it > 450 ? n.k / 3 : n.k; n.x += (n.cx - n.x) * k * (compact ? 2.2 : 1); n.y += (n.cy - n.y) * k; });
         for (var i = 0; i < nodes.length; i++) for (var j = i + 1; j < nodes.length; j++) {
-          var a = nodes[i], b = nodes[j], pad = a.g === b.g ? PAD_IN : PAD_OUT;
+          var a = nodes[i], b = nodes[j], pad = a.g === b.g ? PAD_IN : compact ? 150 : PAD_OUT;
           var dx = b.x - a.x, dy = b.y - a.y;
           var ox = (a.w + b.w) / 2 + pad - Math.abs(dx), oy = (a.h + b.h) / 2 + pad - Math.abs(dy);
           if (ox <= 0 || oy <= 0) continue;
@@ -176,7 +186,7 @@
           else { a.x -= sx / 2; a.y -= sy / 2; b.x += sx / 2; b.y += sy / 2; }
         }
       }
-      var M = 280, minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      var M = compact ? 90 : 280, minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       nodes.forEach(function (n) {
         minX = Math.min(minX, n.x - n.w / 2); maxX = Math.max(maxX, n.x + n.w / 2);
         minY = Math.min(minY, n.y - n.h / 2); maxY = Math.max(maxY, n.y + n.h / 2);
@@ -343,7 +353,7 @@
 
     /* ---------- dragging, pinching, wheel ---------- */
     var ptrs = {}, drag = null, dragged = false, pinch = null;
-    function interactive() { return !coarse || full; }
+    function interactive() { return !compact && (!coarse || full); }
     view.addEventListener('pointerdown', function (e) {
       if (!interactive() || e.target.closest('.cn-ui') || (e.pointerType === 'mouse' && e.button !== 0)) return;
       ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
@@ -393,11 +403,13 @@
       if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; return; }
       var t = e.target.closest('.cn-card, .cn-label');
       if (!t || !world.contains(t)) return;
+      if (compact) return;
       if (t.classList.contains('cn-label')) { e.preventDefault(); cluster(t.dataset.node.slice(1)); }
       else if (far) { e.preventDefault(); focusNode(nodes[t.dataset.id], 1); }
     }, true);
 
     view.addEventListener('wheel', function (e) {
+      if (compact) return;
       var r = view.getBoundingClientRect();
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
@@ -493,6 +505,7 @@
       var c = e.target.closest('.cn-card'); if (!c) return;
       light(c);
       var n = nodes[c.dataset.id], x = n.l * s + tx, y = n.t * s + ty;
+      if (compact) return;
       if (far || x < 20 || y < 20 || x + n.w * s > vw - 20 || y + n.h * s > vh - 20) focusNode(n, Math.max(s, .85));
     });
     world.addEventListener('focusout', unlight);
@@ -525,7 +538,7 @@
       nodes.forEach(function (n) { if (n.card) n.el.classList.toggle('match', matches.indexOf(n) >= 0); });
       view.classList.add('is-query');
       drawTree(matches); drawMini();
-      if (matches.length) { var b = bbox(matches); fly(viewFor(b.x, b.y, b.w, b.h, 1, 70)); }
+      if (matches.length && !compact) { var b = bbox(matches); fly(viewFor(b.x, b.y, b.w, b.h, 1, 70)); }
       else { hint.textContent = 'nothing matches “' + (q.text || q.tag || q.cat) + '”'; flashHint(); }
       return matches.length;
     }
@@ -563,16 +576,31 @@
     function build() {
       if (built || !view.offsetWidth) return;
       built = true;
+      compact = phone();
+      host.classList.toggle('compact', compact);
       layout();
       vw = view.clientWidth; vh = view.clientHeight;
       minS = Math.min(.3, Math.min(vw / W, vh / H) * .9);
-      // on a phone the whole map is too small to read, so start on the spider at a legible zoom
-      if (vw < 720) { var c = nodes['#core']; fly(viewFor(c.l, c.t, c.w, c.h, .34, 0), 0); }
-      else fitAll(0);
+      home();
       host.classList.add('ready');
+    }
+    // the default view: everything at once, or on a phone the spider at a legible zoom
+    function home() {
+      if (compact) { compactView(); return; }
+      fitAll(0);
+    }
+    // phone: the whole map at the screen's width, and the box as tall as the map then is
+    function compactView() {
+      vw = view.clientWidth || host.clientWidth;
+      s = vw / W; tx = 0; ty = 0;
+      vh = Math.ceil(H * s);
+      host.querySelector('.cn-stage').style.height = vh + 'px';
+      apply();
     }
     if ('ResizeObserver' in window) new ResizeObserver(function () {
       if (!built) { build(); return; }
+      if (phone() !== compact) { built = false; host.querySelector('.cn-stage').style.height = ''; unlight(); clear(); build(); return; }
+      if (compact) { if (Math.abs(view.clientWidth - vw) > 1) compactView(); return; }
       var nw = view.clientWidth, nh = view.clientHeight;
       if (!nw || !nh) return;
       var cx = (vw / 2 - tx) / s, cy = (vh / 2 - ty) / s;
@@ -582,11 +610,15 @@
     var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 1500); })]).then(build);
 
-    return {
+    var api = {
       query: function (q) { find.value = ''; resetChips(); return query(q); },
       clear: function () { clear(); fitAll(); },
-      refresh: build
+      refresh: build,
+      // back to the default view with nothing lit (the site build does this so every build sees the same map)
+      reset: function () { if (!built) return; unlight(); clear(); stop(); if (full) setFull(false); home(); }
     };
+    host.__map = api;
+    return api;
   }
 
   window.SiteMap = { mount: mount };
