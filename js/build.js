@@ -25,7 +25,7 @@
   // timings at 1×, in ms (typing in characters per second)
   var T = { flyMin: 280, flyMax: 800, drag: 560, wipe: 800, copy: 460, paste: 380, select: 280, gap: 70, cpsMin: 22, cpsMax: 80, typeFor: 1.15 };
   // the tour glides steadily: a share of the screen height per second, slower while lots on screen is unbuilt
-  var GLIDE = { base: .085, busy: .28, some: .6, idle: 3, smooth: 450 };
+  var GLIDE = { base: .085, busy: .28, some: .6, idle: 3, smooth: 450, holdAt: .25, creepAt: .5, creep: .18 };
   var HELPERS = 3;
   // Parts that run on code: a cursor right-clicks, picks "Write code…", and the part's real source is
   // typed into an editor beside it (read from the site's own scripts, so it's always the current code)
@@ -34,13 +34,16 @@
     { sel: '.spider-box', file: 'spider.js', from: '  function drawSpider(', lines: 30 },
     { sel: '.cn-view', file: 'constellation.js', from: '    /* ---------- the camera ---------- */', lines: 30 },
     { sel: '.cn-svg', file: 'constellation.js', from: "    // the spider's web", lines: 26 },
-    { sel: '.cn-mini', file: 'constellation.js', from: '    /* ---------- minimap ---------- */', lines: 24 }
+    { sel: '.cn-mini', file: 'constellation.js', from: '    /* ---------- minimap ---------- */', lines: 24 },
+    { sel: '.theme-btn', file: 'main.js', from: '  /* ---------------- theme ---------------- */', lines: 30 },
+    // the moving lines behind a section: right-click the empty background, "Add background by code"
+    { sel: '.np-paths > canvas', file: 'paths.js', from: '  function draw(host) {', lines: 30, bg: true }
   ];
   var CODE_CPS = 1200;   // typed for the look of it, not to be read
   // simple effects are added from the right-click menu instead; shadows and loops are held back until then
   var HOVERS = '.btn, .stat, .cn-card, .tk-col, .socials a, .tour-btn, .theme-btn, .nav-links a, .orbit, .spot-compare, .mail';
-  var MENU = ['Copy', 'Paste', '-', 'Add hover effect', 'Add shadow', 'Add animation', '-', 'Write code…'];
-  var PICK = { hover: 'Add hover effect', shadow: 'Add shadow', animation: 'Add animation', code: 'Write code…' };   // at most this many cursors share one set of copies
+  var MENU = ['Copy', 'Paste', '-', 'Add hover effect', 'Add shadow', 'Add animation', '-', 'Add background by code', 'Write code…'];
+  var PICK = { hover: 'Add hover effect', shadow: 'Add shadow', animation: 'Add animation', code: 'Write code…', bg: 'Add background by code' };   // at most this many cursors share one set of copies
 
   var state = null;   // the running build, or null
   var api = window.SGBuild = { running: false, pending: false, replay: replay, skip: function () { if (state) skip(); } };
@@ -96,7 +99,7 @@
       // the map) would show everything inside it before anyone had built it
       l.el.setAttribute('data-sw', '0');
       var code = CODE.filter(function (c) { return l.el.matches(c.sel); })[0];
-      if (code) { l.code = code; return; }
+      if (code) { l.code = code; if (code.bg) { l.bg = true; l.el.__bg = true; } return; }
       var cs = getComputedStyle(l.el);
       l.effect = cs.animationName && cs.animationName !== 'none' ? 'animation'
         : l.el.matches(HOVERS) ? 'hover'
@@ -210,7 +213,8 @@
   /* ---------------- revealing ---------------- */
   function reveal(layer, how) {
     layer.el.setAttribute('data-sw', '1');
-    var d = (how === 'wipe' ? T.wipe : 380) / state.speed;
+    var d = (how === 'wipe' ? T.wipe : how === 'fade' ? 1400 : 380) / state.speed;
+    if (how === 'fade') { layer.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: d, easing: 'ease-out' }); return; }
     if (how === 'wipe') layer.el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: d, easing: 'cubic-bezier(.16,1,.3,1)' });
     else if (how === 'pop') layer.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: d, easing: 'ease-out' });
   }
@@ -249,6 +253,7 @@
   // the right, not reached yet), or 'void' (no size, or a backdrop bigger than the screen: just shown)
   function where(el) {
     var r = rectOf(el), W = innerWidth, H = innerHeight;
+    if (el.__bg) return r.bottom < H * .3 ? 'above' : r.top > H * .7 ? 'below' : 'here';
     if (!r.width || !r.height || r.height > H * 1.2 || r.width * r.height > W * H * 1.3) return 'void';
     if (r.bottom < 0 || r.right < 0) return 'above';
     if (r.top > H * .95 || r.left > W * .97) return 'below';
@@ -308,6 +313,7 @@
       if (st.do === 'copy') to = { x: r.left + r.width * .5, y: r.top + Math.min(r.height * .5, 40) };
       if (st.do === 'edit') { var cc = caretAt(st.layer); to = { x: cc.x, y: cc.y }; }
       if (st.do === 'effect') to = { x: r.left + Math.min(r.width * .55, 140), y: r.top + Math.min(r.height * .5, 24) };
+      if (st.do === 'layer' && st.layer.bg) to = { x: innerWidth * .66, y: Math.max(110, Math.min(innerHeight * .55, r.top + 160)) };
       var d = Math.hypot(to.x - ag.x, to.y - ag.y);
       ag.task = { st: st, phase: 'fly', t0: now + T.gap / state.speed, dur: Math.min(T.flyMax, Math.max(T.flyMin, d / .9)) / state.speed, from: { x: ag.x, y: ag.y }, to: to };
       return;
@@ -334,6 +340,7 @@
       if (st.do === 'paste') { tk.phase = 'paste'; tk.dur = T.paste / state.speed; paste(st); pop(); return; }
       if (st.do === 'edit') { tk.phase = 'select'; tk.dur = T.select / state.speed; return; }
       if (st.do === 'effect') { openMenu(ag, tk, PICK[L.effect]); return; }
+      if (L.bg && L.code.text) { openMenu(ag, tk, PICK.bg); return; }
       if (L.drag) { tk.phase = 'drag'; tk.dur = (L.kind === 'atom' ? T.drag * 1.2 : T.drag) / state.speed; }
       else { tk.phase = 'type'; reveal(L); }
       return;
@@ -347,6 +354,7 @@
       tk.box = null; pop();
       if (L.kind === 'text') { prepText(L); reveal(L, 'pop'); tk.phase = 'type'; tk.t0 = now; return; }
       if (L.code && L.code.text) { openMenu(ag, tk, PICK.code); return; }
+      if (L.bg) { reveal(L, 'fade'); built(ag, L); return; }
       reveal(L, L.kind === 'atom' ? 'wipe' : 'pop');
       built(ag, L);
       return;
@@ -375,7 +383,7 @@
       if (now - cw.ran < 340 / state.speed) return;
       cw.el.classList.add('sw-closing');
       setTimeout(function () { cw.el.remove(); }, 260);
-      reveal(L, L.kind === 'atom' ? 'wipe' : 'pop');
+      reveal(L, L.bg ? 'fade' : L.kind === 'atom' ? 'wipe' : 'pop');
       built(ag, L);
       return;
     }
@@ -423,9 +431,12 @@
     el.innerHTML = '<div class="sw-code-bar"><span class="dots"><i></i><i></i><i></i></span><b>' + c.file + '</b><span class="sw-run">▶ Run</span></div><pre></pre>';
     el.style.setProperty('--c', ag.color);
     document.body.appendChild(el);
-    var r = rectOf(L.el), w = el.offsetWidth, h = el.offsetHeight;
-    var x = r.right + 16 + w < innerWidth ? r.right + 16 : r.left - 16 - w > 0 ? r.left - 16 - w : Math.max(8, Math.min(innerWidth - w - 8, r.left + 24));
-    var y = Math.max(72, Math.min(innerHeight - h - 90, r.top));
+    var r = rectOf(L.el), w = el.offsetWidth, h = el.offsetHeight, x, y;
+    if (L.bg) { x = Math.max(8, Math.min(innerWidth - w - 8, ag.x - w - 24)); y = Math.max(72, Math.min(innerHeight - h - 90, ag.y - 40)); }
+    else {
+      x = r.right + 16 + w < innerWidth ? r.right + 16 : r.left - 16 - w > 0 ? r.left - 16 - w : Math.max(8, Math.min(innerWidth - w - 8, r.left + 24));
+      y = Math.max(72, Math.min(innerHeight - h - 90, r.top));
+    }
     el.style.left = x + 'px'; el.style.top = y + 'px';
     var toks = tokens(c.text);
     tk.code = { el: el, pre: el.querySelector('pre'), run: el.querySelector('.sw-run'), toks: toks, len: c.text.length, shown: 0 };
@@ -550,6 +561,20 @@
     if (b) b.setAttribute('aria-pressed', String(on));
   }
 
+  // the top edge of the highest piece on screen that isn't finished yet (Infinity if there is none)
+  function topUnfinished() {
+    var top = Infinity, H = innerHeight, W = innerWidth;
+    for (var i = 0; i < state.layers.length; i++) {
+      var l = state.layers[i];
+      if (l.done) continue;
+      var r = l.el.getBoundingClientRect();
+      if (!r.width || !r.height || r.bottom <= 0 || r.top >= H || r.right <= 0 || r.left >= W) continue;
+      if (!l.bg && (r.height > H * 1.2 || r.width * r.height > W * H * 1.3)) continue;   // backdrops appear on their own
+      top = Math.min(top, Math.max(0, r.top));
+    }
+    return top;
+  }
+
   // give a job to the free cursor nearest to it
   function take(J, free) {
     var r = rectOf(jobEl(J)), best = 0, bd = Infinity;
@@ -629,9 +654,16 @@
 
       // tour: a steady glide down the page while the cursors build. It eases off while a lot on screen
       // is still unbuilt, keeps a gentle pace otherwise, and speeds up across stretches with nothing to do.
+      // And it never carries unfinished work out of view: while the highest unfinished piece on screen
+      // is near the top it holds still, and creeps while it's in the upper half.
       if (state.tour) {
         var max = document.documentElement.scrollHeight - H;
         var pace = pending > 8 ? GLIDE.busy : pending > 3 ? GLIDE.some : pending === 0 && !busyHere ? GLIDE.idle : 1;
+        if (!(state.frameN = (state.frameN || 0) + 1) || state.frameN % 4 === 0) state.top = topUnfinished();
+        if (state.built !== state.lastBuilt) { state.lastBuilt = state.built; state.lastGain = now; }
+        var stuck = now - (state.lastGain || now) > 6000;   // safety: never hold forever
+        if (!stuck && state.top < H * GLIDE.holdAt) pace = 0;
+        else if (!stuck && state.top < H * GLIDE.creepAt) pace = Math.min(pace, GLIDE.creep);
         var want = GLIDE.base * H * pace * state.speed;
         state.v = (state.v || 0) + (want - (state.v || 0)) * Math.min(1, dt / GLIDE.smooth);
         if (state.sy == null || Math.abs(scrollY - state.sy) > 3) state.sy = scrollY;   // re-sync if anything else moved the page
