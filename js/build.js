@@ -1,9 +1,11 @@
-/* The build: the home page assembles itself in front of you, put together by eight of the projects
-   on it, each a cursor in its own colour. The real page is hidden (visibility only, so nothing
+/* The build: the home page assembles itself in front of you, put together by eight cursors, each
+   in its own colour. The real page is hidden (visibility only, so nothing
    moves), taken apart into layers, and put back top to bottom the way a person would build it:
    boxes are dragged out with a selection rectangle and a size label, text is typed in, and anything
    repeated (stat tiles, chips, timeline entries, map cards…) is built once, copied, pasted and
-   edited. Tour mode scrolls along as each screen finishes; scrolling yourself takes over.
+   edited. Tour mode scrolls along as each screen finishes; scrolling yourself takes over. Whatever is on
+   your screen is built first; anything you scrolled past, or haven't reached, is kept as a backlog
+   that free cursors go back to (off screen) whenever your screen doesn't need them. Nothing is skipped.
    Plays once per browser session; "Tour site" in the nav replays it. Esc or ✕ skips. Skipped under
    reduced motion (unless asked for), with ?build=off, and of course without JavaScript.
    The inline script in index.html's <head> hides the page before first paint (html.sw-on). */
@@ -17,7 +19,7 @@
   var ATOMS = '.term, .hz-end, img, svg, canvas, video, pre';
   // classes that only mark state, so they don't make two otherwise identical siblings different
   var STATE = { active: 1, in: 1, on: 1, lit: 1, match: 1, launch: 1, future: 1 };
-  var CREW = ['talken', 'notes-plus', 'jctx', 'rex-run', 'life', 'codemeter', 'backbench', 'nglobe'];
+  var COLORS = ['#9b8cff', '#5b9bff', '#ff6a3d', '#3ddc84', '#ffc247', '#f472b6', '#22d3ee', '#ef4444'];
   // timings at 1×, in ms (typing in characters per second)
   var T = { flyMin: 280, flyMax: 800, drag: 560, wipe: 800, copy: 460, paste: 380, select: 280, gap: 70, cpsMin: 22, cpsMax: 80, typeFor: 1.15, tourStep: .82, tourDur: 900 };
   var HELPERS = 3;   // at most this many cursors share one set of copies
@@ -198,25 +200,31 @@
     return (.2126 * (v >> 16 & 255) + .7152 * (v >> 8 & 255) + .0722 * (v & 255)) / 255;
   }
   function makeAgents() {
-    var all = window.PROJECTS || [];
-    var list = CREW.map(function (id) { return all.filter(function (p) { return p.id === id; })[0]; }).filter(Boolean);
-    if (!list.length) list = [{ title: 'agent', poster: { to: '#ff6a3d' } }];
     var cx = innerWidth / 2, cy = innerHeight / 2;
-    return list.map(function (p, i) {
-      var c = (p.poster && p.poster.to) || '#ff6a3d', a = i / list.length * Math.PI * 2, r = 74 + (i % 2) * 30;
-      return { p: p, color: c, ink: lum(c) > .62 ? '#0c0c0e' : '#fff', x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r,
+    return COLORS.map(function (c, i) {
+      var a = i / COLORS.length * Math.PI * 2, r = 74 + (i % 2) * 30;
+      return { color: c, ink: lum(c) > .62 ? '#0c0c0e' : '#fff', x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r,
                ang: a, rad: r, job: null, steps: [], task: null, seed: Math.random() * 1000, side: i % 2 ? 1 : -1 };
     });
   }
   function rectOf(el) { return el.getBoundingClientRect(); }
   function ease(k) { return 1 - Math.pow(1 - k, 3); }
-  // where something is relative to the screen: here (build it), gone by (just show it), or ahead (wait)
+  // where something is relative to the screen: 'here', 'above' (scrolled past), 'below' (below or to
+  // the right, not reached yet), or 'void' (no size, or a backdrop bigger than the screen: just shown)
   function where(el) {
     var r = rectOf(el), W = innerWidth, H = innerHeight;
-    if (!r.width || !r.height || r.bottom < 0 || r.right < 0 || r.height > H * 1.2 || r.width * r.height > W * H * 1.3) return 'gone';
-    if (r.top > H * .95 || r.left > W * .97) return 'ahead';
+    if (!r.width || !r.height || r.height > H * 1.2 || r.width * r.height > W * H * 1.3) return 'void';
+    if (r.bottom < 0 || r.right < 0) return 'above';
+    if (r.top > H * .95 || r.left > W * .97) return 'below';
     return 'here';
   }
+  // how far off screen a piece is, for picking the nearest backlog first
+  function distance(el) {
+    var r = rectOf(el), H = innerHeight, W = innerWidth;
+    return Math.max(0, -r.bottom, r.top - H) + Math.max(0, -r.right, r.left - W);
+  }
+  function atEnd() { return scrollY >= document.documentElement.scrollHeight - innerHeight - 2; }
+  function jobEl(J) { return J.layer ? J.layer.el : J.group.items[0].el; }
 
   // turn a job into the steps one cursor will carry out
   function stepsFor(job) {
@@ -234,21 +242,27 @@
     return steps;
   }
 
-  // start the next step: decide where to fly, or skip it if it already scrolled by
+  // Start the next step. Backdrops just appear. Off-screen steps are worked on off screen (that's the
+  // backlog), except that while touring, things below simply wait for the tour to bring them in.
+  // Between items of a copied set, a cursor working off screen hands the rest back if your screen
+  // has work waiting, and the set stays in the backlog for whoever is free next.
   function next(ag, now) {
     while (ag.steps.length) {
       var st = ag.steps[0], el = st.do === 'paste' || st.do === 'copy' ? st.item.el : st.layer.el;
-      if (st.do === 'edit' && st.item.instant) { ag.steps.shift(); continue; }
       if ((st.do === 'layer' || st.do === 'edit') && st.layer.done) { ag.steps.shift(); continue; }
       var w = where(el);
-      if (w === 'gone') {
+      if (w === 'void') {
         ag.steps.shift();
         if (st.do === 'layer') instant(st.layer);
-        else if (st.do === 'paste') { st.item.instant = true; st.item.layers.forEach(instant); }
+        else if (st.do === 'paste') { st.item.layers.forEach(instant); ag.steps = ag.steps.filter(function (x) { return x.item !== st.item; }); }
         else if (st.do === 'edit') { finishText(st.layer); done(st.layer); }
+        else if (st.do === 'copy') { st.group.copied = true; state.sets.push(st.group); }
         continue;
       }
-      if (w === 'ahead') { ag.waiting = true; return; }
+      if (w === 'below' && state.tour && !atEnd()) { ag.waiting = true; return; }
+      if (w !== 'here' && st.do === 'paste' && state.hereWaiting) {
+        ag.job.group.queue.unshift(st.item); ag.steps = []; break;   // back to your screen; the set waits
+      }
       ag.waiting = false;
       ag.steps.shift();
       var r = rectOf(el), to = { x: r.left, y: r.top };
@@ -260,7 +274,7 @@
       return;
     }
     var gr = ag.job && ag.job.group;
-    if (gr && gr.copied && gr.queue.length) { ag.steps = pasteSteps(gr); next(ag, now); return; }
+    if (gr && gr.copied && gr.queue.length && !(state.hereWaiting && where(gr.queue[0].el) !== 'here')) { ag.steps = pasteSteps(gr); next(ag, now); return; }
     if (gr) gr.helpers--;
     ag.job = null; ag.waiting = false;
   }
@@ -327,7 +341,7 @@
   }
 
   /* ---------------- drawing: cursors, selection boxes, size labels, carets ---------------- */
-  var MONO = '600 11px "JetBrains Mono", ui-monospace, monospace', SANS = '600 11px Inter, system-ui, sans-serif';
+  var MONO = '600 11px "JetBrains Mono", ui-monospace, monospace';
   function roundRect(x, y, w, h, r) { var c = state.ctx; c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
   function pill(text, x, y, bg, ink, font) {
     var c = state.ctx; c.font = font; var w = c.measureText(text).width + 12;
@@ -392,18 +406,15 @@
       c.globalAlpha = ag.alpha == null ? 1 : ag.alpha;
       var tk = ag.task, ph = tk && tk.phase;
       if (ph === 'type') ibeam(ag); else arrow(ag);
-      if (tk && ph !== 'fly') {
-        var w = pill(ag.p.title, ag.x + 14, ag.y + 16, ag.color, ag.ink, SANS);
-        if (ph === 'copy' || ph === 'paste') pill(ph === 'copy' ? 'Ctrl+C' : 'Ctrl+V', ag.x + 18 + w, ag.y + 16, '#fff', '#0c0c0e', MONO);
-        if (ph === 'select') pill('Ctrl+A', ag.x + 18 + w, ag.y + 16, '#fff', '#0c0c0e', MONO);
-      }
+      if (ph === 'copy' || ph === 'paste') pill(ph === 'copy' ? 'Ctrl+C' : 'Ctrl+V', ag.x + 14, ag.y + 16, '#fff', '#0c0c0e', MONO);
+      if (ph === 'select') pill('Ctrl+A', ag.x + 14, ag.y + 16, '#fff', '#0c0c0e', MONO);
       c.globalAlpha = 1;
     });
   }
 
   /* ---------------- the HUD ---------------- */
   function hudHTML(agents, total) {
-    return '<span class="sw-avs" aria-hidden="true">' + agents.map(function (a) { return a.p.poster && a.p.poster.icon ? '<img src="' + BASE + a.p.poster.icon + '" alt="" />' : ''; }).join('') + '</span>' +
+    return '<span class="sw-avs" aria-hidden="true">' + agents.map(function (a) { return '<i style="background:' + a.color + '"></i>'; }).join('') + '</span>' +
       '<span class="sw-msg"><b>' + agents.length + '</b> agents</span>' +
       '<span class="sw-sep" aria-hidden="true"></span>' +
       '<span class="sw-layers"><b data-sw-built>0</b> / ' + total + ' layers</span>' +
@@ -417,6 +428,21 @@
     state.tour = on;
     var b = state.hud.querySelector('[data-a="tour"]');
     if (b) b.setAttribute('aria-pressed', String(on));
+  }
+
+  // give a job to the free cursor nearest to it
+  function take(J, free) {
+    var r = rectOf(jobEl(J)), best = 0, bd = Infinity;
+    free.forEach(function (a, j) { var d = Math.hypot(a.x - r.left, a.y - r.top); if (d < bd) { bd = d; best = j; } });
+    var ag = free.splice(best, 1)[0];
+    J.taken = true; ag.job = J; ag.steps = stepsFor(J);
+  }
+  // a free cursor joins a set that's already been copied, and takes its next slot
+  function join(g, free) {
+    var r0 = rectOf(g.queue[0].el), bi = 0, bd = Infinity;
+    free.forEach(function (a, j) { var d = Math.hypot(a.x - r0.left, a.y - r0.top); if (d < bd) { bd = d; bi = j; } });
+    var helper = free.splice(bi, 1)[0];
+    helper.job = { group: g }; helper.steps = pasteSteps(g); g.helpers++;
   }
 
   /* ---------------- the loop ---------------- */
@@ -445,35 +471,32 @@
     }
 
     if (state.phase === 'build') {
-      // hand jobs out in page order, once what they sit on is built and they're on screen
-      var free = state.agents.filter(function (a) { return !a.job; }), inView = false;
+      // 1. your screen: hand out ready on-screen work in page order (backdrops just appear)
+      var free = state.agents.filter(function (a) { return !a.job; }), inView = false, backlog = [];
       state.sets = state.sets.filter(function (g) { return g.queue.length; });
-      state.sets.forEach(function (g) {
-        while (free.length && g.queue.length && g.helpers < HELPERS && where(g.queue[0].el) === 'here') {
-          var r0 = rectOf(g.queue[0].el), bi = 0, bdd = Infinity;
-          free.forEach(function (a, j) { var d = Math.hypot(a.x - r0.left, a.y - r0.top); if (d < bdd) { bdd = d; bi = j; } });
-          var helper = free.splice(bi, 1)[0];
-          helper.job = { group: g }; helper.steps = pasteSteps(g); g.helpers++;
-        }
-      });
-      for (var i = state.head; i < state.jobs.length && free.length; i++) {
+      for (var i = state.head; i < state.jobs.length; i++) {
         var J = state.jobs[i];
         if (J.taken) { if (i === state.head) state.head++; continue; }
         if (J.parent && !J.parent.done) continue;
-        var first = J.layer ? J.layer.el : J.group.items[0].el, w = where(first);
-        if (w === 'ahead') continue;
-        J.taken = true;
-        if (w === 'gone' && J.layer) { instant(J.layer); continue; }
-        var r = rectOf(first), best = 0, bd = Infinity;
-        free.forEach(function (a, j) { var d = Math.hypot(a.x - r.left, a.y - r.top); if (d < bd) { bd = d; best = j; } });
-        var ag = free.splice(best, 1)[0];
-        ag.job = J; ag.steps = stepsFor(J);
+        var w = where(jobEl(J));
+        if (w === 'void' && J.layer) { J.taken = true; instant(J.layer); continue; }
+        if (w !== 'here' && w !== 'void') { backlog.push(J); continue; }
+        inView = true;
+        if (free.length) take(J, free);
       }
-      // anything still waiting its turn on screen keeps the tour here
-      for (var q = state.head; q < state.jobs.length && !inView; q++) {
-        var P = state.jobs[q];
-        // only work that could start now counts: a piece whose container is still below the fold mustn't hold the tour
-        if (!P.taken && (!P.parent || P.parent.done) && where(P.layer ? P.layer.el : P.group.items[0].el) === 'here') inView = true;
+      state.sets.forEach(function (g) {
+        while (free.length && g.queue.length && g.helpers < HELPERS && where(g.queue[0].el) === 'here') join(g, free);
+      });
+      state.hereWaiting = inView && !free.length;
+      // 2. the backlog: when your screen has nothing waiting, free cursors go back for unfinished work,
+      //    nearest first. While touring, the tour brings in what's below, so only what's above counts.
+      if (free.length && !inView && (!state.tour || atEnd())) {
+        backlog = backlog.filter(function (J) { return !state.tour || atEnd() || where(jobEl(J)) === 'above'; })
+          .sort(function (a, b) { return distance(jobEl(a)) - distance(jobEl(b)); });
+        while (free.length && backlog.length) take(backlog.shift(), free);
+        state.sets.slice().sort(function (a, b) { return distance(a.queue[0].el) - distance(b.queue[0].el); }).forEach(function (g) {
+          while (free.length && g.queue.length && g.helpers < HELPERS) join(g, free);
+        });
       }
       var busy = false;
       state.agents.forEach(function (a) {
@@ -492,17 +515,6 @@
         window.scrollTo({ top: s.from + (s.to - s.from) * se, behavior: 'instant' });
         if (sk >= 1) state.scroll = null;
       }
-      // nothing left on screen, nothing more below: whatever never came into view simply appears
-      if (!busy && !inView && !state.scroll) {
-        var atEnd = scrollY >= document.documentElement.scrollHeight - H - 2;
-        state.stall = atEnd ? (state.stall || now) : 0;
-        if (state.stall && now - state.stall > 1200) {
-          state.agents.forEach(function (a) { a.steps = []; a.job = null; a.waiting = false; });
-          state.sets.forEach(function (g) { g.queue = []; });
-          state.layers.forEach(function (l) { if (!l.done) instant(l); });
-        }
-      }
-
       state.builtEl.textContent = state.built;
       state.barI.style.width = (state.built / state.layers.length * 100) + '%';
       if (state.built >= state.layers.length && !busy) finish(now);
@@ -522,7 +534,7 @@
     state.phase = 'outro'; state.t0 = now;
     var secs = ((now - state.tStart) / 1000 * state.speed).toFixed(1);
     state.hud.classList.add('sw-done');
-    state.hud.innerHTML = '<span class="sw-msg">Built by <b>' + state.agents.length + '</b> projects in <b>' + secs + 's</b></span>' +
+    state.hud.innerHTML = '<span class="sw-msg">Built by <b>' + state.agents.length + '</b> agents in <b>' + secs + 's</b></span>' +
       '<button type="button" data-a="replay">↻ Replay</button><button type="button" data-a="close" aria-label="Close">✕</button>';
     var hud = state.hud;
     setTimeout(function () { hud.classList.add('sw-gone'); setTimeout(function () { hud.remove(); }, 600); }, 6000);

@@ -1323,8 +1323,8 @@ html.sw-on .hz-dot { transform: translate(-50%, -50%); transition: none; }
   font-size: 13px; color: var(--muted); white-space: nowrap; transition: opacity .6s, transform .6s; }
 .sw-hud b { color: var(--text); font-weight: 600; }
 .sw-avs { display: flex; }
-.sw-avs img { width: 22px; height: 22px; margin-left: -7px; border-radius: 50%; border: 2px solid var(--bg-2); object-fit: cover; background: var(--surface); }
-.sw-avs img:first-child { margin-left: 0; }
+.sw-avs i { width: 13px; height: 13px; margin-left: -4px; border-radius: 50%; border: 2px solid var(--bg-2); }
+.sw-avs i:first-child { margin-left: 0; }
 .sw-sep { width: 1px; height: 16px; background: var(--line-2); }
 .sw-bar { width: 80px; height: 3px; border-radius: 3px; background: var(--line-2); overflow: hidden; }
 .sw-bar i { display: block; width: 0; height: 100%; background: var(--h-work); transition: width .2s; }
