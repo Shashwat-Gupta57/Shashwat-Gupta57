@@ -1343,6 +1343,28 @@ html.sw-on .hz-dot { transform: translate(-50%, -50%); transition: none; }
   .sw-avs, .sw-bar, .sw-sep, .sw-hud [data-a="speed"], .sw-hud [data-a="sound"] span { display: none; }
 }
 
+/* the right-click menu and the code window the cursors use */
+.sw-menu { position: fixed; z-index: 9002; min-width: 190px; padding: 5px; border-radius: 10px; border: 1px solid var(--line-2);
+  background: color-mix(in srgb, var(--bg-2) 94%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px -14px rgba(0, 0, 0, .85); font: 500 12.5px var(--sans); color: var(--text); animation: sw-menu .14s ease-out; }
+@keyframes sw-menu { from { opacity: 0; transform: scale(.96); transform-origin: 0 0; } }
+.sw-menu span { display: block; padding: 6px 12px; border-radius: 6px; }
+.sw-menu span.on { background: var(--h-work); color: #fff; }
+.sw-menu hr { margin: 4px 6px; border: 0; border-top: 1px solid var(--line-2); }
+.sw-code { position: fixed; z-index: 9002; width: min(480px, 42vw); border-radius: 12px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line-2));
+  background: #0a0a0c; box-shadow: 0 30px 80px -24px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .03); animation: sw-code .18s ease-out; transition: opacity .25s, transform .25s; }
+@keyframes sw-code { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+.sw-code.sw-closing { opacity: 0; transform: scale(.97); }
+.sw-code-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #1f1f23; font: 500 11.5px var(--mono); color: #9a9890; }
+.sw-code-bar .dots { display: flex; gap: 5px; } .sw-code-bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: #2a2a30; }
+.sw-code-bar b { color: #ecebe6; font-weight: 600; }
+.sw-run { margin-left: auto; padding: 3px 9px; border-radius: 6px; border: 1px solid #2a2a30; color: #9a9890; transition: all .2s; }
+.sw-run.on { background: #3ddc84; border-color: #3ddc84; color: #0c0c0e; }
+.sw-code pre { margin: 0; height: 250px; overflow: hidden; padding: 12px 14px; font: 11.5px/1.55 var(--mono); color: #d9d6cc; white-space: pre; tab-size: 2; }
+.sw-code .cm { color: #6b6a65; font-style: italic; } .sw-code .st { color: #a5e3b0; } .sw-code .kw { color: #c792ea; }
+.sw-code .nu { color: #ffc247; } .sw-code .fn { color: #82aaff; }
+.sw-caret { display: inline-block; width: 7px; height: 13px; margin-left: 1px; vertical-align: -2px; background: var(--c); animation: caret 1s steps(1) infinite; }
+
 /* "Tour site": the last thing in the nav, replays the build */
 .tour-btn { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line-2);
   font: 500 12.5px var(--mono); color: var(--text); text-decoration: none; transition: border-color .2s, background .2s; }

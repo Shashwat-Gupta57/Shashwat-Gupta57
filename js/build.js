@@ -1,8 +1,9 @@
 /* The build: the home page assembles itself in front of you, put together by eight cursors, each
    in its own colour. The real page is hidden (visibility only, so nothing
    moves), taken apart into layers, and put back top to bottom the way a person would build it:
-   boxes are dragged out with a selection rectangle and a size label, text is typed in, and anything
-   repeated (stat tiles, chips, timeline entries, map cards…) is built once, copied, pasted and
+   boxes are dragged out with a selection rectangle and a size label, text is typed in, effects are
+   added from a right-click menu, the animated parts get their real code typed into an editor window,
+   and anything repeated (stat tiles, chips, timeline entries, map cards…) is built once, copied, pasted and
    edited. Tour mode scrolls along as each screen finishes; scrolling yourself takes over. Whatever is on
    your screen is built first; anything you scrolled past, or haven't reached, is kept as a backlog
    that free cursors go back to (off screen) whenever your screen doesn't need them. Nothing is skipped.
@@ -22,7 +23,21 @@
   var COLORS = ['#9b8cff', '#5b9bff', '#ff6a3d', '#3ddc84', '#ffc247', '#f472b6', '#22d3ee', '#ef4444'];
   // timings at 1×, in ms (typing in characters per second)
   var T = { flyMin: 280, flyMax: 800, drag: 560, wipe: 800, copy: 460, paste: 380, select: 280, gap: 70, cpsMin: 22, cpsMax: 80, typeFor: 1.15, tourStep: .82, tourDur: 900 };
-  var HELPERS = 3;   // at most this many cursors share one set of copies
+  var HELPERS = 3;
+  // Parts that run on code: a cursor right-clicks, picks "Write code…", and the part's real source is
+  // typed into an editor beside it (read from the site's own scripts, so it's always the current code)
+  var CODE = [
+    { sel: '.term', file: 'main.js', from: '(function walker()', lines: 30 },
+    { sel: '.spider-box', file: 'spider.js', from: '  function drawSpider(', lines: 30 },
+    { sel: '.cn-view', file: 'constellation.js', from: '    /* ---------- the camera ---------- */', lines: 30 },
+    { sel: '.cn-svg', file: 'constellation.js', from: "    // the spider's web", lines: 26 },
+    { sel: '.cn-mini', file: 'constellation.js', from: '    /* ---------- minimap ---------- */', lines: 24 }
+  ];
+  var CODE_CPS = 1200;   // typed for the look of it, not to be read
+  // simple effects are added from the right-click menu instead; shadows and loops are held back until then
+  var HOVERS = '.btn, .stat, .cn-card, .tk-col, .socials a, .tour-btn, .theme-btn, .nav-links a, .orbit, .spot-compare, .mail';
+  var MENU = ['Cut', 'Copy', 'Paste', '-', 'Add hover effect', 'Add shadow', 'Add animation', '-', 'Write code…', 'Inspect'];
+  var PICK = { hover: 'Add hover effect', shadow: 'Add shadow', animation: 'Add animation', code: 'Write code…' };   // at most this many cursors share one set of copies
 
   var state = null;   // the running build, or null
   var api = window.SGBuild = { running: false, pending: false, replay: replay, skip: function () { if (state) skip(); } };
@@ -77,8 +92,26 @@
       // every piece starts explicitly hidden: otherwise revealing a container (the nav, a card,
       // the map) would show everything inside it before anyone had built it
       l.el.setAttribute('data-sw', '0');
+      var code = CODE.filter(function (c) { return l.el.matches(c.sel); })[0];
+      if (code) { l.code = code; return; }
+      var cs = getComputedStyle(l.el);
+      l.effect = cs.animationName && cs.animationName !== 'none' ? 'animation'
+        : l.el.matches(HOVERS) ? 'hover'
+        : l.drag && cs.boxShadow !== 'none' && !/inset/.test(cs.boxShadow) ? 'shadow' : null;
+      if (l.effect === 'animation') hold(l, 'animation-play-state', 'paused');
+      if (l.effect !== 'animation' && cs.boxShadow !== 'none' && !/inset/.test(cs.boxShadow)) hold(l, 'box-shadow', 'none');
     });
     return layers;
+  }
+
+  // hold an effect back (inline !important) until a cursor adds it; release puts the page's own style back
+  function hold(l, prop, val) {
+    (l.held = l.held || []).push({ prop: prop, prev: l.el.style.getPropertyValue(prop), prio: l.el.style.getPropertyPriority(prop) });
+    l.el.style.setProperty(prop, val, 'important');
+  }
+  function release(l) {
+    (l.held || []).forEach(function (h) { if (h.prev) l.el.style.setProperty(h.prop, h.prev, h.prio); else l.el.style.removeProperty(h.prop); });
+    l.held = null;
   }
 
   // Repeated siblings (same tag and classes, same inner make-up) become a group: built once, then
@@ -179,7 +212,7 @@
     else if (how === 'pop') layer.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: d, easing: 'ease-out' });
   }
   function done(layer) { if (!layer.done) { layer.done = true; state.built++; } }
-  function instant(layer) { finishText(layer); reveal(layer); done(layer); }
+  function instant(layer) { finishText(layer); release(layer); reveal(layer); done(layer); }
 
   /* ---------------- sound: tiny clicks made in the browser, off until asked for ---------------- */
   var ac = null, lastTick = 0;
@@ -250,6 +283,7 @@
     while (ag.steps.length) {
       var st = ag.steps[0], el = st.do === 'paste' || st.do === 'copy' ? st.item.el : st.layer.el;
       if ((st.do === 'layer' || st.do === 'edit') && st.layer.done) { ag.steps.shift(); continue; }
+      if (st.do === 'effect' && !st.layer.held && st.layer.effect !== 'hover') { ag.steps.shift(); continue; }
       var w = where(el);
       if (w === 'void') {
         ag.steps.shift();
@@ -257,6 +291,7 @@
         else if (st.do === 'paste') { st.item.layers.forEach(instant); ag.steps = ag.steps.filter(function (x) { return x.item !== st.item; }); }
         else if (st.do === 'edit') { finishText(st.layer); done(st.layer); }
         else if (st.do === 'copy') { st.group.copied = true; state.sets.push(st.group); }
+        else if (st.do === 'effect') release(st.layer);
         continue;
       }
       if (w === 'below' && state.tour && !atEnd()) { ag.waiting = true; return; }
@@ -269,6 +304,7 @@
       if (st.do === 'layer' && st.layer.kind === 'text' && !st.layer.drag) { prepText(st.layer); var c = caretAt(st.layer); to = { x: c.x, y: c.y }; }
       if (st.do === 'copy') to = { x: r.left + r.width * .5, y: r.top + Math.min(r.height * .5, 40) };
       if (st.do === 'edit') { var cc = caretAt(st.layer); to = { x: cc.x, y: cc.y }; }
+      if (st.do === 'effect') to = { x: r.left + Math.min(r.width * .55, 140), y: r.top + Math.min(r.height * .5, 24) };
       var d = Math.hypot(to.x - ag.x, to.y - ag.y);
       ag.task = { st: st, phase: 'fly', t0: now + T.gap / state.speed, dur: Math.min(T.flyMax, Math.max(T.flyMin, d / .9)) / state.speed, from: { x: ag.x, y: ag.y }, to: to };
       return;
@@ -294,6 +330,7 @@
       if (st.do === 'copy') { tk.phase = 'copy'; tk.dur = T.copy / state.speed; return; }
       if (st.do === 'paste') { tk.phase = 'paste'; tk.dur = T.paste / state.speed; paste(st); pop(); return; }
       if (st.do === 'edit') { tk.phase = 'select'; tk.dur = T.select / state.speed; return; }
+      if (st.do === 'effect') { openMenu(ag, tk, PICK[L.effect]); return; }
       if (L.drag) { tk.phase = 'drag'; tk.dur = (L.kind === 'atom' ? T.drag * 1.2 : T.drag) / state.speed; }
       else { tk.phase = 'type'; reveal(L); }
       return;
@@ -306,8 +343,37 @@
       state.fading.push({ x: r.left, y: r.top, w: r.width, h: r.height, color: ag.color, ink: ag.ink, born: now });
       tk.box = null; pop();
       if (L.kind === 'text') { prepText(L); reveal(L, 'pop'); tk.phase = 'type'; tk.t0 = now; return; }
+      if (L.code && L.code.text) { openMenu(ag, tk, PICK.code); return; }
       reveal(L, L.kind === 'atom' ? 'wipe' : 'pop');
-      done(L); ag.task = null;
+      built(ag, L);
+      return;
+    }
+    if (tk.phase === 'menu') {
+      // the cursor slides down the menu to its option, then clicks it
+      var m = tk.menu, mk = Math.max(0, Math.min(1, (k - .3) / .5)), me = ease(mk);
+      ag.x = m.x + (m.ox - m.x) * me; ag.y = m.y + (m.oy - m.y) * me;
+      if (mk > 0) m.item.classList.add('on');
+      if (k < 1) return;
+      m.el.remove(); tk.menu = null; tk.t0 = now;
+      if (st.do !== 'effect' && L.code) { openCode(ag, tk, L); return; }
+      release(L);
+      state.flashes.push({ el: L.el, color: ag.color, ink: ag.ink, label: '✓ ' + (L.effect === 'hover' ? 'hover effect' : L.effect) + ' added', born: now });
+      tk.phase = 'applied'; tk.dur = 420 / state.speed;
+      return;
+    }
+    if (tk.phase === 'applied') { if (k >= 1) ag.task = null; return; }
+    if (tk.phase === 'code') {
+      // open, type the source at a blur, press Run, close, and the part comes alive
+      var cw = tk.code, n = Math.min(cw.len, Math.floor((now - tk.t0 - 180 / state.speed) / 1000 * CODE_CPS * state.speed));
+      if (n > cw.shown) { cw.shown = n; cw.pre.innerHTML = codeHTML(cw.toks, n) + '<i class="sw-caret"></i>'; cw.pre.scrollTop = cw.pre.scrollHeight; tick(); }
+      var b = cw.pre.getBoundingClientRect(); ag.x = b.left + 24; ag.y = b.bottom - 14;
+      if (n < cw.len) return;
+      if (!cw.ran) { cw.ran = now; cw.run.classList.add('on'); pop(); return; }
+      if (now - cw.ran < 340 / state.speed) return;
+      cw.el.classList.add('sw-closing');
+      setTimeout(function () { cw.el.remove(); }, 260);
+      reveal(L, L.kind === 'atom' ? 'wipe' : 'pop');
+      built(ag, L);
       return;
     }
     if (tk.phase === 'copy' || tk.phase === 'paste') {
@@ -325,8 +391,42 @@
       var c = caretAt(L);
       tk.caret = c; ag.x = c.x + 3; ag.y = c.y + c.h * .55;
       if (L.typed < L.total) return;
-      finishText(L); done(L); ag.task = null;
+      finishText(L); built(ag, L);
     }
+  }
+
+  // a piece is finished; if it has an effect to add, its cursor does that next
+  function built(ag, L) {
+    done(L); ag.task = null;
+    if (L.effect && L.wantsEffect !== false) ag.steps.unshift({ do: 'effect', layer: L });
+  }
+  // right-click: a context menu opens at the cursor with the option to pick highlighted on the way down
+  function openMenu(ag, tk, pick) {
+    var el = document.createElement('div');
+    el.className = 'sw-menu sw-ui'; el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = MENU.map(function (o) { return o === '-' ? '<hr>' : '<span>' + o + '</span>'; }).join('');
+    document.body.appendChild(el);
+    var x = Math.min(ag.x + 4, innerWidth - el.offsetWidth - 8), y = Math.min(ag.y + 4, innerHeight - el.offsetHeight - 8);
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    var item = Array.prototype.filter.call(el.children, function (c) { return c.textContent === pick; })[0], r = item.getBoundingClientRect();
+    tk.menu = { el: el, item: item, x: ag.x, y: ag.y, ox: r.left + 18, oy: r.top + r.height / 2 };
+    tk.phase = 'menu'; tk.dur = 900 / state.speed; tk.rclick = performance.now();
+    pop();
+  }
+  // the editor window: beside the part where there's room, typing the part's real code
+  function openCode(ag, tk, L) {
+    var c = L.code, el = document.createElement('div');
+    el.className = 'sw-code sw-ui'; el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<div class="sw-code-bar"><span class="dots"><i></i><i></i><i></i></span><b>' + c.file + '</b><span class="sw-run">▶ Run</span></div><pre></pre>';
+    el.style.setProperty('--c', ag.color);
+    document.body.appendChild(el);
+    var r = rectOf(L.el), w = el.offsetWidth, h = el.offsetHeight;
+    var x = r.right + 16 + w < innerWidth ? r.right + 16 : r.left - 16 - w > 0 ? r.left - 16 - w : Math.max(8, Math.min(innerWidth - w - 8, r.left + 24));
+    var y = Math.max(72, Math.min(innerHeight - h - 90, r.top));
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    var toks = tokens(c.text);
+    tk.code = { el: el, pre: el.querySelector('pre'), run: el.querySelector('.sw-run'), toks: toks, len: c.text.length, shown: 0 };
+    tk.phase = 'code'; tk.t0 = performance.now();
   }
 
   // Ctrl+V: the copy lands in its slot showing the text it was copied with, ready to be edited
@@ -335,6 +435,7 @@
     it.layers.forEach(function (l, k) {
       if (l.kind === 'text') { prepEdit(l, st.src.layers[k].str); l.el.setAttribute('data-sw', '1'); if (l.str === st.src.layers[k].str) { finishText(l); done(l); } }
       else { l.el.setAttribute('data-sw', '1'); done(l); }
+      release(l);
     });
     // drop in from a little up and left, like a paste landing
     it.el.animate([{ opacity: .35, translate: '-10px -10px' }, { opacity: 1, translate: '0 0' }], { duration: T.paste / state.speed, easing: 'cubic-bezier(.16,1,.3,1)' });
@@ -382,8 +483,23 @@
       selection(f, f.color, f.ink, a * .9, true);
       return true;
     });
+    state.flashes = state.flashes.filter(function (f) {
+      var a = 1 - (now - f.born) / (900 / state.speed);
+      if (a <= 0) return false;
+      var r = rectOf(f.el), grow = (1 - a) * 6;
+      c.globalAlpha = a; c.strokeStyle = f.color; c.lineWidth = 2;
+      roundRect(r.left - 4 - grow, r.top - 4 - grow, r.width + 8 + grow * 2, r.height + 8 + grow * 2, 10); c.stroke();
+      pill(f.label, r.left, r.top - 26, f.color, f.ink, MONO);
+      c.globalAlpha = 1;
+      return true;
+    });
     state.agents.forEach(function (ag) {
       var tk = ag.task; if (!tk) return;
+      if (tk.rclick && now - tk.rclick < 380) {
+        var q = (now - tk.rclick) / 380;
+        c.globalAlpha = 1 - q; c.strokeStyle = ag.color; c.lineWidth = 2;
+        c.beginPath(); c.arc(tk.menu ? tk.menu.x : ag.x, tk.menu ? tk.menu.y : ag.y, 4 + q * 14, 0, 7); c.stroke(); c.globalAlpha = 1;
+      }
       var ph = tk.phase, el = tk.st.layer ? tk.st.layer.el : tk.st.item.el;
       if (tk.box) selection(tk.box, ag.color, ag.ink, 1, true);
       if (ph === 'copy' || ph === 'paste') {
@@ -408,6 +524,7 @@
       if (ph === 'type') ibeam(ag); else arrow(ag);
       if (ph === 'copy' || ph === 'paste') pill(ph === 'copy' ? 'Ctrl+C' : 'Ctrl+V', ag.x + 14, ag.y + 16, '#fff', '#0c0c0e', MONO);
       if (ph === 'select') pill('Ctrl+A', ag.x + 14, ag.y + 16, '#fff', '#0c0c0e', MONO);
+      if (ph === 'menu' && now - tk.rclick < 500) pill('Right-click', ag.x + 14, ag.y + 16, '#fff', '#0c0c0e', MONO);
       c.globalAlpha = 1;
     });
   }
@@ -544,7 +661,8 @@
   function teardown(removeHud) {
     if (!state) return;
     cancelAnimationFrame(state.raf);
-    state.layers.forEach(function (l) { finishText(l); l.el.removeAttribute('data-sw'); delete l.el.__sw; });
+    state.layers.forEach(function (l) { finishText(l); release(l); l.el.removeAttribute('data-sw'); delete l.el.__sw; });
+    Array.prototype.forEach.call(document.querySelectorAll('.sw-menu, .sw-code'), function (m) { m.remove(); });
     Array.prototype.forEach.call(document.querySelectorAll('[data-sw-ghost]'), function (g) { g.remove(); });
     root.classList.remove('sw-on');
     state.canvas.remove(); state.tile.remove();
@@ -559,6 +677,41 @@
     if (!state) return;
     state.layers.forEach(function (l) { if (!l.done) instant(l); });
     teardown(true);
+  }
+
+  // fetch each code part's source once (the scripts are already cached) and keep its excerpt
+  function loadCode() {
+    var cache = {};
+    CODE.forEach(function (c) {
+      var tag = document.querySelector('script[src*="' + c.file + '"]');
+      if (!tag) return;
+      (cache[c.file] = cache[c.file] || fetch(tag.src).then(function (r) { return r.text(); })).then(function (t) {
+        var i = t.indexOf(c.from);
+        if (i >= 0) c.text = t.slice(i).split('\n').slice(0, c.lines).join('\n');
+      }).catch(function () {});
+    });
+  }
+  // a tiny highlighter: enough to colour comments, strings, keywords, numbers and calls
+  var TOK = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|\b(function|var|return|if|else|for|while|new|this|true|false|null|typeof)\b|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)(?=\()/g;
+  function tokens(src) {
+    var out = [], last = 0, m;
+    TOK.lastIndex = 0;
+    while ((m = TOK.exec(src))) {
+      if (m.index > last) out.push({ t: src.slice(last, m.index) });
+      out.push({ t: m[0], c: m[1] ? 'cm' : m[2] ? 'st' : m[3] ? 'kw' : m[4] ? 'nu' : 'fn' });
+      last = m.index + m[0].length;
+    }
+    if (last < src.length) out.push({ t: src.slice(last) });
+    return out;
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function codeHTML(toks, n) {
+    var html = '', left = n;
+    for (var i = 0; i < toks.length && left > 0; i++) {
+      var piece = toks[i].t.slice(0, left); left -= piece.length;
+      html += toks[i].c ? '<span class="' + toks[i].c + '">' + esc(piece) + '</span>' : esc(piece);
+    }
+    return html;
   }
 
   // the page's own entrance effects would fight the build: settle them first
@@ -582,6 +735,7 @@
     root.classList.add('sw-on');
     try { sessionStorage.setItem('sg-built', '1'); } catch (e) {}
     settle();
+    loadCode();
     var layers, jobs;
     try { layers = capture(); jobs = plan(layers); } catch (e) { root.classList.remove('sw-on'); return; }
     if (!layers.length) { root.classList.remove('sw-on'); return; }
@@ -594,7 +748,7 @@
     hud.innerHTML = hudHTML(agents, layers.length);
 
     state = { layers: layers, jobs: jobs, agents: agents, canvas: canvas, ctx: canvas.getContext('2d'), tile: tile, hud: hud, fading: [],
-              built: 0, head: 0, sets: [], speed: 1, tour: true, sound: false, phase: 'scan', t0: performance.now() };
+              built: 0, head: 0, sets: [], flashes: [], speed: 1, tour: true, sound: false, phase: 'scan', t0: performance.now() };
     state.msg = hud.querySelector('.sw-msg'); state.msg.innerHTML = 'Scanning page…';
     state.builtEl = hud.querySelector('[data-sw-built]'); state.barI = hud.querySelector('.sw-bar i');
     api.running = true;
