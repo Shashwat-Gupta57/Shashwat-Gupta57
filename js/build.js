@@ -239,11 +239,20 @@
     var v = parseInt(m[1], 16);
     return (.2126 * (v >> 16 & 255) + .7152 * (v >> 8 & 255) + .0722 * (v & 255)) / 255;
   }
-  function makeAgents() {
-    var cx = innerWidth / 2, cy = innerHeight / 2;
+  function makeAgents(fromEdges) {
+    var W = innerWidth, H = innerHeight, cx = W / 2, cy = H / 2;
     return COLORS.map(function (c, i) {
       var a = i / COLORS.length * Math.PI * 2, r = 74 + (i % 2) * 30;
-      return { color: c, ink: lum(c) > .62 ? '#0c0c0e' : '#fff', x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r,
+      var x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      if (fromEdges) {
+        // just off screen, spread round all four sides, as if each came in from somewhere else
+        var along = .15 + Math.random() * .7, out = 36;
+        if (i % 4 === 0) { x = -out; y = H * along; }
+        else if (i % 4 === 1) { x = W + out; y = H * along; }
+        else if (i % 4 === 2) { x = W * along; y = H + out; }
+        else { x = W * along; y = -out; }
+      }
+      return { color: c, ink: lum(c) > .62 ? '#0c0c0e' : '#fff', x: x, y: y, alpha: fromEdges ? 1 : 0,
                ang: a, rad: r, job: null, steps: [], task: null, seed: Math.random() * 1000, side: i % 2 ? 1 : -1 };
     });
   }
@@ -561,18 +570,28 @@
     if (b) b.setAttribute('aria-pressed', String(on));
   }
 
-  // the top edge of the highest piece on screen that isn't finished yet (Infinity if there is none)
+  // How close the unfinished work on screen is to leaving it, as a share of the screen (Infinity if
+  // nothing on screen is unfinished). Normally pieces leave by the top, so it's their top edge over the
+  // screen height. Inside the pinned horizontal timeline, scrolling slides the strip left, so a piece
+  // there leaves by the left edge: its left over the screen width. Anything else pinned there doesn't
+  // move until the pin lets go, so its distance only starts counting after that.
   function topUnfinished() {
-    var top = Infinity, H = innerHeight, W = innerWidth;
+    var near = Infinity, H = innerHeight, W = innerWidth;
     for (var i = 0; i < state.layers.length; i++) {
       var l = state.layers[i];
       if (l.done) continue;
+      if (!l.bg && where(l.el) !== 'here') continue;   // only what a cursor can work on right now
       var r = l.el.getBoundingClientRect();
-      if (!r.width || !r.height || r.bottom <= 0 || r.top >= H || r.right <= 0 || r.left >= W) continue;
-      if (!l.bg && (r.height > H * 1.2 || r.width * r.height > W * H * 1.3)) continue;   // backdrops appear on their own
-      top = Math.min(top, Math.max(0, r.top));
+      if (r.bottom <= 0 || r.top >= H || r.right <= 0 || r.left >= W) continue;
+      var d = Math.max(0, r.top) / H, pin = l.el.closest('[data-hscroll].hz-on');
+      if (pin) {
+        var left = Math.max(0, pin.getBoundingClientRect().bottom - H);   // scroll left before the pin lets go
+        d = (Math.max(0, r.top) + left) / H;
+        if (l.el.closest('.hz-track')) d = Math.min(d, Math.max(0, r.left) / W);
+      }
+      near = Math.min(near, d);
     }
-    return top;
+    return near;
   }
 
   // give a job to the free cursor nearest to it
@@ -662,8 +681,8 @@
         if (!(state.frameN = (state.frameN || 0) + 1) || state.frameN % 4 === 0) state.top = topUnfinished();
         if (state.built !== state.lastBuilt) { state.lastBuilt = state.built; state.lastGain = now; }
         var stuck = now - (state.lastGain || now) > 6000;   // safety: never hold forever
-        if (!stuck && state.top < H * GLIDE.holdAt) pace = 0;
-        else if (!stuck && state.top < H * GLIDE.creepAt) pace = Math.min(pace, GLIDE.creep);
+        if (!stuck && state.top < GLIDE.holdAt) pace = 0;
+        else if (!stuck && state.top < GLIDE.creepAt) pace = Math.min(pace, GLIDE.creep);
         var want = GLIDE.base * H * pace * state.speed;
         state.v = (state.v || 0) + (want - (state.v || 0)) * Math.min(1, dt / GLIDE.smooth);
         if (state.sy == null || Math.abs(scrollY - state.sy) > 3) state.sy = scrollY;   // re-sync if anything else moved the page
@@ -786,12 +805,16 @@
     var tile = document.createElement('div'); tile.className = 'sw-tile sw-ui'; tile.setAttribute('aria-hidden', 'true'); tile.textContent = 'SG';
     var hud = document.createElement('div'); hud.className = 'sw-hud sw-ui'; hud.setAttribute('role', 'status');
     document.body.appendChild(canvas); document.body.appendChild(tile); document.body.appendChild(hud);
-    var agents = makeAgents();
+    // project pages skip the intro: an empty page, and the cursors arrive from the edges
+    var direct = /\/projects\//.test(location.pathname);
+    var agents = makeAgents(direct);
     hud.innerHTML = hudHTML(agents, layers.length);
+    if (direct) tile.style.display = 'none';
 
     state = { layers: layers, jobs: jobs, agents: agents, canvas: canvas, ctx: canvas.getContext('2d'), tile: tile, hud: hud, fading: [],
               built: 0, head: 0, sets: [], flashes: [], speed: 1, tour: true, sound: false, phase: 'scan', t0: performance.now() };
     state.msg = hud.querySelector('.sw-msg'); state.msg.innerHTML = 'Scanning page…';
+    if (direct) { state.phase = 'build'; state.tStart = state.t0; state.msg.innerHTML = '<b>' + agents.length + '</b> agents'; }
     state.builtEl = hud.querySelector('[data-sw-built]'); state.barI = hud.querySelector('.sw-bar i');
     api.running = true;
 
